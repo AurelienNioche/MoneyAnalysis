@@ -42,9 +42,8 @@ def main():
         "money_bar_std": np.random.random(4) / 100,
     }
 
-    data.update(medium.run())
     data.update(monetary_behavior.run())
-
+    data.update(medium.run())
     graph.make_figs(data)
 
 

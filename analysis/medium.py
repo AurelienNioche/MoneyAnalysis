@@ -3,112 +3,50 @@ from game.models import Room, User, Choice
 import numpy as np
 
 from analysis.tools.conversion import Converter
+from analysis.tools import economy_labels
 
 
 def run():
 
-    output_data = {
-
-    }
+    output_data = {}
 
     # -------------------------------- #
+
+    print("******** Analysis of medium *************")
 
     rooms = Room.objects.all().order_by('id')
 
-    room_id = [r.id for r in rooms]
+    for r in rooms:
 
-    room_t_max = [r.t_max for r in rooms]
+        print("Room ", r.id)
 
-    room_n_good = [r.n_type for r in rooms]
+        n_good = r.n_type
 
-    # -------------------------------- #
-    # ------- Analyse by room -------- #
-    # -------------------------------- #
+        users = User.objects.filter(room_id=r.id)
 
-    # ---- Pooled over time ------ #
+        room_data = np.zeros((n_good, r.t_max), dtype=int)
 
-    for i, r_id in enumerate(room_id):
+        for t in range(r.t_max):
 
-        print("Room ", i)
+            for u in users:
 
-        n_good = room_n_good[i]
+                choice = Choice.objects.get(room_id=r.id, user_id=u.id, t=t)
 
-        print("N good", n_good)
-        print()
+                in_hand = Converter.convert_value(choice.good_in_hand, n_good=n_good)
+                desired = Converter.convert_value(choice.desired_good, n_good=n_good)
 
-        good_list = [n_good - 1, ] + list(range(n_good - 1))
+                prod = Converter.convert_value(u.production_good, n_good=n_good)
+                cons = Converter.convert_value(u.consumption_good, n_good=n_good)
 
-        for prod_good in good_list:
+                if in_hand == prod:
+                    if desired != cons:
+                        room_data[desired, t] += 1
 
-            users = User.objects.filter(room_id=r_id, production_good=Converter.reverse_value(prod_good, n_good=n_good))
-            u_id = [u.id for u in users]
+                else:
+                    if desired == cons:
+                        room_data[in_hand, t] += 1
 
-            cpt_good = Converter.convert_value(users[0].consumption_good, n_good=n_good)
-            print("Prod", prod_good, "Cons", cpt_good, "N", len(u_id))
-
-            u_score = [u.score for u in users]
-
-            means = []
-
-            for ui, us in zip(u_id, u_score):
-                choices = Choice.objects.filter(room_id=r_id, user_id=ui, t__gt=29)
-
-                in_hand = np.asarray(Converter.convert([c.good_in_hand for c in choices], n_good=n_good))
-                desired = np.asarray(Converter.convert([c.desired_good for c in choices], n_good=n_good))
-
-                prod_in_hand = in_hand == prod_good
-                cpt_for_desired = desired == cpt_good
-
-                dir_ex = prod_in_hand * cpt_for_desired
-                means.append(np.mean(dir_ex))
-                # #print(f"Prop dir exch {np.mean(dir_ex):.2f}; Score {us}")
-
-            print(f"Dist of means = {means}")
-            print(f"Mean = {np.mean(means):.2f} (+/- {np.std(means):.2f}); median = {np.median(means):.2f}")
-            print("-" * 5)
-
-    # -------------- By time step  ---------- #
-
-    data_list = []
-
-    for i, r_id in enumerate(room_id):
-
-        print("Room ", i)
-
-        t_max = room_t_max[i]
-        n_good = room_n_good[i]
-
-        print("N good", n_good)
-        print()
-
-        good_list = [n_good - 1, ] + list(range(n_good - 1))
-
-        data = np.zeros((t_max, n_good))
-
-        for agent_idx, prod_good in enumerate(good_list):
-
-            users = User.objects.filter(room_id=r_id, production_good=Converter.reverse_value(prod_good, n_good=n_good))
-            u_id = [u.id for u in users]
-
-            cpt_good = Converter.convert_value(users[0].consumption_good, n_good=n_good)
-            print("Prod", prod_good, "Cons", cpt_good, "N", len(u_id))
-
-            for t in range(t_max):
-                choices = Choice.objects.filter(room_id=r_id, user_id__in=u_id, t=t)
-
-                in_hand = np.asarray(Converter.convert([c.good_in_hand for c in choices], n_good=n_good))
-                desired = np.asarray(Converter.convert([c.desired_good for c in choices], n_good=n_good))
-
-                prod_in_hand = in_hand == prod_good
-                cpt_for_desired = desired == cpt_good
-
-                dir_ex = prod_in_hand * cpt_for_desired
-
-                print(f"Prop dir exch for {t}: {np.mean(dir_ex):.2f}")
-
-                data[t, agent_idx] = np.mean(dir_ex)
-
-        data_list.append(data)
-        print("*" * 10)
+        label = economy_labels.get(r.id) + '_medium'
+        output_data[label] = room_data / (len(users) / n_good)
 
     return output_data
