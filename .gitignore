@@ -100,3 +100,4 @@ ENV/
 
 .idea/
 templates/
+game/migrations/
