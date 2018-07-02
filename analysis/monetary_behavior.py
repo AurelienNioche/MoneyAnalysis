@@ -14,4 +14,4 @@
 
 def run():
 
-    pass
+    return {}

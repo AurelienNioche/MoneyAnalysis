@@ -20,15 +20,32 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "MoneyAnalysis.settings")
 from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 
-
+import numpy as np
 from analysis import demographics, medium, monetary_behavior
+from graph import graph
 
 
 def main():
 
     demographics.run()
-    medium.run()
-    monetary_behavior.run()
+
+    data = {
+        "3_good_non_uniform_monetary_behavior": np.random.random((3, 50)),
+        "3_good_non_uniform_medium": np.random.random((3, 50)),
+        "3_good_uniform_monetary_behavior": np.random.random((3, 50)),
+        "3_good_uniform_medium": np.random.random((3, 50)),
+        "4_good_non_uniform_monetary_behavior": np.random.random((4, 50)),
+        "4_good_non_uniform_medium": np.random.random((4, 50)),
+        "4_good_uniform_monetary_behavior": np.random.random((4, 50)),
+        "4_good_uniform_medium": np.random.random((4, 50)),
+        "money_bar_mean": np.random.random(4),
+        "money_bar_std": np.random.random(4) / 100,
+    }
+
+    data.update(medium.run())
+    data.update(monetary_behavior.run())
+
+    graph.make_figs(data)
 
 
 if __name__ == '__main__':
