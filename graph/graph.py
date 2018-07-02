@@ -149,13 +149,14 @@ def _money_bar_plots(means, errors, labels, ax=None, letter=None):
     ax.set_xticklabels(labels, rotation='vertical')
     ax.set_xticks(labels_pos)
 
-    ax.axhline(y=max(means[0:2])+0.05, xmin=0.15, xmax=0.4, color='black')
-    ax.text(s='***',
-            y=max(means[0:2])+0.075, x=0.5, horizontalalignment='center', verticalalignment='center')
-
-    ax.axhline(y=max(means[2:4]) + 0.06, xmin=0.63, xmax=0.88, color='black')
-    ax.text(s='***',
-            y=max(means[2:4]) + 0.085, x=2.5, horizontalalignment='center', verticalalignment='center')
+    # For significance bars
+    # ax.axhline(y=max(means[0:2])+0.05, xmin=0.15, xmax=0.4, color='black')
+    # ax.text(s='***',
+    #         y=max(means[0:2])+0.075, x=0.5, horizontalalignment='center', verticalalignment='center')
+    #
+    # ax.axhline(y=max(means[2:4]) + 0.06, xmin=0.63, xmax=0.88, color='black')
+    # ax.text(s='***',
+    #         y=max(means[2:4]) + 0.085, x=2.5, horizontalalignment='center', verticalalignment='center')
 
     ax.set_ylim(0, 1)
     ax.set_yticks((0, 0.5, 1))
@@ -260,8 +261,14 @@ if __name__ == '__main__':
         "4_good_non_uniform_medium": np.random.random((4, 50)),
         "4_good_uniform_monetary_behavior": np.random.random((4, 50)),
         "4_good_uniform_medium": np.random.random((4, 50)),
-        "money_bar_mean": np.random.random(4),
-        "money_bar_std": np.random.random(4) / 100,
+        "3_good_non_uniform_mean": np.random.random(),
+        "3_good_uniform_mean": np.random.random(),
+        "4_good_non_uniform_mean": np.random.random(),
+        "4_good_uniform_mean": np.random.random(),
+        "3_good_non_uniform_sem": np.random.random() / 100,
+        "3_good_uniform_sem":  np.random.random() / 100,
+        "4_good_non_uniform_sem": np.random.random() / 100,
+        "4_good_uniform_sem": np.random.random() / 100,
     }
 
     make_figs(example_data)
