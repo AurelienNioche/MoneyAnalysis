@@ -1,4 +1,5 @@
 import numpy as np
+from scipy import stats
 
 from analysis.tools.conversion import Converter
 from analysis.tools import economy_labels
@@ -58,8 +59,16 @@ def run(m=0):
 
                 room_data[prod, t] = np.mean(monetary_conform_list)
 
-        label = economy_labels.get(r.id) + '_monetary_behavior'
-        output_data[label] = room_data
+        label = economy_labels.get(r.id)
+
+        mean = np.mean(room_data.flatten())
+        sem = stats.sem(room_data.flatten())
+
+        keys = label + '_mean', label + '_sem', label + '_monetary_behavior'
+        values = mean, sem, room_data
+
+        for k, v in zip(keys, values):
+            output_data[k] = v
 
     print()
     return output_data
