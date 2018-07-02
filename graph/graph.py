@@ -195,12 +195,27 @@ def make_figs(data):
 
     ax = fig.add_subplot(gs[:, 4])
 
-    _money_bar_plots(data['money_bar_mean'], data['money_bar_std'], labels=[
-        '3 goods - Non-un. rep.',
-        '3 goods - Un. rep.',
-        '4 goods - Non-un. rep.',
-        '4 goods - Un. rep.'
-    ], ax=ax, letter=next(letter))
+    _money_bar_plots(
+        [
+            data['3_good_non_uniform_mean'],
+            data['3_good_uniform_mean'],
+            data['4_good_non_uniform_mean'],
+            data['4_good_uniform_mean']
+        ],
+        [
+            data['3_good_non_uniform_sem'],
+            data['3_good_uniform_sem'],
+            data['4_good_non_uniform_sem'],
+            data['4_good_uniform_sem']
+        ],
+        labels=
+        [
+            '3 goods - Non-un. rep.',
+            '3 goods - Un. rep.',
+            '4 goods - Non-un. rep.',
+            '4 goods - Un. rep.'
+        ],
+        ax=ax, letter=next(letter))
 
     ax.set_aspect(aspect=14.5, anchor='NE')
 
