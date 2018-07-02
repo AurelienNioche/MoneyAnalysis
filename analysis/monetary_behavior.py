@@ -10,3 +10,8 @@
 #         monetary_conform = agent_choice in [(agent.P, self.m), (self.m, agent.C)]
 #
 #     self.bkp_monetary_bhv[agent.idx, self.t] = int(monetary_conform)
+
+
+def run():
+
+    pass

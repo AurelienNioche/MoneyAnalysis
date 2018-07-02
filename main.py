@@ -21,17 +21,16 @@ from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 
 
-from analysis import demographics
+from analysis import demographics, medium, monetary_behavior
 
 
 def main():
 
-    # ---------- Demographics ---------- #
-
     demographics.run()
+    medium.run()
+    monetary_behavior.run()
 
 
 if __name__ == '__main__':
-
 
     main()
