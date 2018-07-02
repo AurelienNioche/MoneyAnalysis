@@ -1,4 +1,4 @@
-from analysis.conversion import Converter
+from analysis.tools.conversion import Converter
 from game.models import User, Choice, Room
 import numpy as np
 import matplotlib.pyplot as plt

@@ -2,7 +2,7 @@ from game.models import Room, User, Choice
 
 import numpy as np
 
-from analysis.conversion import Converter
+from analysis.tools.conversion import Converter
 
 
 def run():
