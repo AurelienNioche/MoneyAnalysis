@@ -21,33 +21,47 @@ from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 
 import numpy as np
-from analysis import demographics, medium, monetary_behavior, life_expectancy
-from graph import graph
+from analysis import demographics, medium, monetary_behavior, strategy, life_expectancy, \
+    strategy_count, strategy_count_pool
+import graph.strategy
+import graph.life_expectancy
 
 
 def main():
 
-    demographics.run()
+    # demographics.run()
 
-    data = {
-        "3_good_non_uniform_monetary_behavior": np.random.random((3, 50)),
-        "3_good_non_uniform_medium": np.random.random((3, 50)),
-        "3_good_uniform_monetary_behavior": np.random.random((3, 50)),
-        "3_good_uniform_medium": np.random.random((3, 50)),
-        "4_good_non_uniform_monetary_behavior": np.random.random((4, 50)),
-        "4_good_non_uniform_medium": np.random.random((4, 50)),
-        "4_good_uniform_monetary_behavior": np.random.random((4, 50)),
-        "4_good_uniform_medium": np.random.random((4, 50)),
-        "money_bar_mean": np.random.random(4),
-        "money_bar_std": np.random.random(4) / 100,
-    }
-
+    # data = {
+    #     "3_good_non_uniform_monetary_behavior": np.random.random((3, 50)),
+    #     "3_good_non_uniform_medium": np.random.random((3, 50)),
+    #     "3_good_uniform_monetary_behavior": np.random.random((3, 50)),
+    #     "3_good_uniform_medium": np.random.random((3, 50)),
+    #     "4_good_non_uniform_monetary_behavior": np.random.random((4, 50)),
+    #     "4_good_non_uniform_medium": np.random.random((4, 50)),
+    #     "4_good_uniform_monetary_behavior": np.random.random((4, 50)),
+    #     "4_good_uniform_medium": np.random.random((4, 50)),
+    #     "money_bar_mean": np.random.random(4),
+    #     "money_bar_std": np.random.random(4) / 100,
+    # }
+    #
     # data.update(monetary_behavior.run())
     # data.update(medium.run())
     # graph.make_figs(data)
-    life_expectancy.run()
 
+    # data = life_expectancy.run()
+    # graph.life_expectancy.plot(data, f_name="fig/life_expectancy.pdf")
 
+    # for m in range(4):
+    #     data = strategy.run(m=m)
+    #     graph.strategy.plot(data, m_color=f'C{m}', f_name=f'fig/strategy_m{m}.pdf')
+    #
+    # m = 5
+    # data = strategy.run(m=m, order_by_m=False)
+    # graph.strategy.plot(data, m_color=f'C{m}', f_name=f'fig/strategy_m{m}.pdf')
+
+    # strategy_count.run()
+
+    strategy_count_pool.run()
 
 if __name__ == '__main__':
 

@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def bar(means, errors, labels, title, subplot_spec=None, fig=None):
+def bar(means, errors, labels, title, subplot_spec=None, fig=None, color="black"):
 
     if subplot_spec:
         ax = fig.add_subplot(subplot_spec)
@@ -14,7 +14,7 @@ def bar(means, errors, labels, title, subplot_spec=None, fig=None):
     ax.spines['right'].set_visible(False)
 
     ax.tick_params(length=0)
-    ax.set_title(f"$\{title}$", fontsize=20)
+    ax.set_title(f"{title}", fontsize=20)
 
     # print(labels)
 
@@ -26,4 +26,4 @@ def bar(means, errors, labels, title, subplot_spec=None, fig=None):
     ax.set_ylim(0, 1)
 
     # create
-    ax.bar(labels_pos, means, yerr=errors, edgecolor="white", align="center", color="black")
+    ax.bar(labels_pos, means, yerr=errors, edgecolor="white", align="center", color=color)

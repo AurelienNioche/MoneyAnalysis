@@ -1,5 +1,4 @@
 import numpy as np
-from scipy import stats
 
 from analysis.tools.conversion import Converter
 from analysis.tools import economy_labels
@@ -12,84 +11,106 @@ def run():
 
     print('*' * 5)
     print('Life expectancy')
-    print('*' * 5)
+    print('*' * 5 + '\n')
+
     # -------------- #
 
     rooms = Room.objects.all().order_by('id')
 
     for r in rooms:
 
-        print('*' * 5 + f'Room {r.id}' + '*' * 5)
+        print('=' * 20 + f'Room {r.id}' + '=' * 20)
 
         n_good = r.n_type
 
-        room_data = np.zeros(n_good)
+        n_g = np.zeros((n_good, r.t_max), dtype=int)
+        n_prod = np.zeros((n_good, r.t_max), dtype=int)
+        n_remaining = np.zeros((n_good, r.t_max), dtype=int)
+        n_cons = np.zeros((n_good, r.t_max), dtype=int)
 
-        good_list = [n_good - 1, ] + list(range(n_good - 1))
+        for g in range(n_good):
 
-        for g in good_list:
-
-            n_g = np.zeros(r.t_max)
-            n_prod = np.zeros(r.t_max)
-            n_remaining = np.zeros(r.t_max)
-            n_cons = np.zeros(r.t_max)
+            g_reversed = Converter.reverse_value(g, n_good=n_good)
+            print(f"----------------------- g = {g} ------------------------")  # (g_reversed = {g_reversed})")
 
             for t in range(r.t_max):
 
-                print('t=', t)
+                print(f'\n******* t = {t} *******\n')
+
+                # ------------- #
+                # Compute number of goods in circulation for g
 
                 in_hands = Choice.objects.filter(
-                    room_id=r.id, good_in_hand=Converter.reverse_value(g, n_good=n_good), t=t
-
+                    room_id=r.id, good_in_hand=g_reversed, t=t
                 )
 
-                if t == 0:
+                n_g[g, t] = len(in_hands)  # for t > 0: n_g[g, t] = n_remaining[g, t-1] + n_prod[g, t]
 
-                    n_prod[t] = len(in_hands)
-                    n_g[t] = len(in_hands)
+                # ------------- #
+                # Compute production for g
+
+                if t == 0:
+                    n_prod[g, t] = n_g[g, t]
 
                 else:
+                    users = User.objects.filter(
+                        room_id=r.id,
+                        production_good=g_reversed
+                    )
 
-                    n_prod[t] = n_cons[t-1]
-                    n_g[t] = n_remaining[t-1] + n_prod[t]
+                    choices = Choice.objects.filter(
+                        room_id=r.id,
+                        desired_good=users[0].consumption_good,
+                        t=t,
+                        success=True,
+                        user_id__in=[u.id for u in users]
+                    )
 
-                assert n_g[t] == len(in_hands), f'{n_g[t]}, {len(in_hands)}'
+                    if (t+1) < r.t_max:
+                        n_prod[g, t+1] = len(choices)
+
+                # ---------- #
+                # Compute number of consumption for g
 
                 choices = Choice.objects.filter(
-                    room_id=r.id, desired_good=Converter.reverse_value(g, n_good=n_good), t=t,
+                    room_id=r.id, desired_good=g_reversed, t=t,
                     success=True
                 )
 
                 for c in choices:
 
-                    u_cons_good = User.objects.get(id=c.user_id).consumption_good
+                    u = User.objects.get(id=c.user_id)
+                    cons = Converter.convert_value(u.consumption_good, n_good=n_good)
 
-                    cons = Converter.convert_value(u_cons_good, n_good=n_good)
-                    desired = Converter.convert_value(c.desired_good, n_good=n_good)
+                    if cons == g:
+                        # print(f"user id {u.id} has g in hand and consumes it")
+                        n_cons[g, t] += 1
 
-                    if cons == desired:
-                        n_cons[t] += 1
+                    # else:
+                    #     print(f"user id {u.id} has now g in hand")
 
-                n_remaining[t] = n_g[t] - n_cons[t]
+                # --------------- #
+                # Compute number of remaining for g
 
-                print('prod', n_prod[t])
-                print('remaining', n_remaining[t])
-                print('cons', n_cons[t])
+                n_remaining[g, t] = n_g[g, t] - n_cons[g, t]
 
-            # print()
-            # room_data[prod] = np.mean(n_remaining)
+                # --------------- #
+                # Summary
 
+                print('n_g', n_g[g, t])
+                print('n_prod', n_prod[g, t])
+                print('n_remaining', n_remaining[g, t])
+                print('n_cons', n_cons[g, t])
 
-        # label = economy_labels.get(r.id)
-        #
-        # mean = np.mean(room_data.flatten())
-        # sem = stats.sem(room_data.flatten())
-        #
-        # keys = label + '_mean', label + '_sem', label + '_monetary_behavior'
-        # values = mean, sem, room_data
-        #
-        # for k, v in zip(keys, values):
-        #     output_data[k] = v
+                # --------------- #
+
+        label = economy_labels.get(r.id) + "_life_expectancy"
+        output_data[label] = {
+            "n_g": n_g,
+            "n_prod": n_prod,
+            "n_cons": n_cons,
+            "n_remaining": n_remaining
+        }
 
     print()
     return output_data
