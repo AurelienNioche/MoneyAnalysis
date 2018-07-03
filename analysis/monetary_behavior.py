@@ -28,9 +28,8 @@ def run(m=0):
 
         for prod in good_list:
 
-            users = [
-                u for u in User.objects.filter(
-                    room_id=r.id, production_good=Converter.reverse_value(prod, n_good=n_good))]
+            users = User.objects.filter(
+                    room_id=r.id, production_good=Converter.reverse_value(prod, n_good=n_good))
 
             for t in range(r.t_max):
 
