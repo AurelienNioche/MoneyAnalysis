@@ -21,7 +21,7 @@ from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 
 import numpy as np
-from analysis import demographics, medium, monetary_behavior
+from analysis import demographics, medium, monetary_behavior, life_expectancy
 from graph import graph
 
 
@@ -42,9 +42,11 @@ def main():
         "money_bar_std": np.random.random(4) / 100,
     }
 
-    data.update(monetary_behavior.run())
-    data.update(medium.run())
-    graph.make_figs(data)
+    # data.update(monetary_behavior.run())
+    # data.update(medium.run())
+    # graph.make_figs(data)
+    life_expectancy.run()
+
 
 
 if __name__ == '__main__':
