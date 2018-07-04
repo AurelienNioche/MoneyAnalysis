@@ -22,7 +22,7 @@ application = get_wsgi_application()
 
 import numpy as np
 from analysis import demographics, medium, monetary_behavior, strategy, life_expectancy, \
-    strategy_count, strategy_count_pool
+    strategy_count, strategy_count_pool, monetary_behavior_pool
 import graph.strategy
 import graph.life_expectancy
 import graph.strategy_count_pool
@@ -44,7 +44,7 @@ def main():
     #     "money_bar_mean": np.random.random(4),
     #     "money_bar_std": np.random.random(4) / 100,
     # }
-    #
+
     # data.update(monetary_behavior.run())
     # data.update(medium.run())
     # graph.make_figs(data)
@@ -62,8 +62,13 @@ def main():
 
     # strategy_count.run()
 
-    data = strategy_count_pool.run()
-    graph.strategy_count_pool.plot(data, f_name=f'fig/strategy_count_pool.pdf')
+    # data = strategy_count_pool.run()
+    # graph.strategy_count_pool.plot(data, f_name=f'fig/strategy_count_pool.pdf')
+
+    # data = monetary_behavior_pool.run()
+    # graph.strategy_count_pool.plot(data, suffix='_monetary_behavior_pool',
+    #                                f_name=f'fig/monetary_behavior_pool.pdf')
+    pass
 
 
 if __name__ == '__main__':

@@ -5,16 +5,14 @@ import os
 
 from graph.tools import bar
 
-script_name = '_strategy_count_pool'
 
-
-def plot(data, f_name=None):
+def plot(data, f_name=None, suffix='_strategy_count_pool'):
 
     data_keys = \
-        "3_good_non_uniform" + script_name, \
-        "3_good_uniform" + script_name, \
-        "4_good_non_uniform" + script_name, \
-        "4_good_uniform" + script_name
+        "3_good_non_uniform" + suffix, \
+        "3_good_uniform" + suffix, \
+        "4_good_non_uniform" + suffix, \
+        "4_good_uniform" + suffix
 
     fig = plt.figure(figsize=(15, 15))
     gs = grd.GridSpec(nrows=2, ncols=2, width_ratios=[1, 1], height_ratios=[3, 4])
@@ -26,7 +24,7 @@ def plot(data, f_name=None):
 
         bar.bar(
             means=data[k]['mean'], errors=data[k]['std'], subplot_spec=gs[c[0], c[1]], fig=fig,
-            labels=[str(i) for i in range(len(data[k]['mean']))], title=k.replace(script_name, ''),
+            labels=[str(i) for i in range(len(data[k]['mean']))], title=k.replace(suffix, ''),
             color="C7"
         )
 
