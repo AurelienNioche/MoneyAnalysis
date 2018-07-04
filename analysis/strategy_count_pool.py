@@ -6,10 +6,6 @@ from analysis.tools import economy_labels
 from game.models import Room, User, Choice
 import scipy.stats
 
-from graph.tools.bar import bar
-import matplotlib.pyplot as plt
-import matplotlib.gridspec as grd
-import itertools as it
 
 def run():
 
@@ -39,7 +35,6 @@ def run():
             n_users = len(users)
 
             data_good_mean = np.zeros(n_users)
-            # data_good_std = np.zeros(n_users)
 
             for i, u in enumerate(users):
 
@@ -68,40 +63,14 @@ def run():
                     data_user[t] = v
 
                 data_good_mean[i] = np.mean(data_user)
-                # data_good_std[i] = scipy.stats.sem(data_user)
 
             data_room_mean[g] = np.mean(data_good_mean)
             data_room_std[g] = scipy.stats.sem(data_good_mean)
 
-        output_data[economy_labels.get(r.id)] = {
+        label = economy_labels.get(r.id) + '_strategy_count_pool'
+        output_data[label] = {
             'mean': data_room_mean,
             'std': data_room_std
         }
-
-    # ----------------- #
-
-    data_keys = \
-        "3_good_non_uniform", \
-        "3_good_uniform", \
-        "4_good_non_uniform", \
-        "4_good_uniform"
-
-    fig = plt.figure(figsize=(15, 15))
-    gs = grd.GridSpec(nrows=2, ncols=2, width_ratios=[1, 1], height_ratios=[3, 4])
-
-    coord = it.product(range(2), repeat=2)
-
-    for i, k in enumerate(data_keys):
-        c = next(coord)
-
-        bar(
-            means=output_data[k]['mean'], errors=output_data[k]['std'], subplot_spec=gs[c[0], c[1]], fig=fig,
-            labels=[str(i) for i in range(len(output_data[k]['mean']))], title=k,
-            color="C7"
-        )
-
-    plt.show()
-
-    # ------------- #
 
     return output_data

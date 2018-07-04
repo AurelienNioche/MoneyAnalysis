@@ -25,6 +25,7 @@ from analysis import demographics, medium, monetary_behavior, strategy, life_exp
     strategy_count, strategy_count_pool
 import graph.strategy
 import graph.life_expectancy
+import graph.strategy_count_pool
 
 
 def main():
@@ -61,7 +62,9 @@ def main():
 
     # strategy_count.run()
 
-    strategy_count_pool.run()
+    data = strategy_count_pool.run()
+    graph.strategy_count_pool.plot(data, f_name=f'fig/strategy_count_pool.pdf')
+
 
 if __name__ == '__main__':
 
