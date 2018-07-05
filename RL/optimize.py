@@ -3,7 +3,7 @@ from scipy.optimize import minimize
 
 from game.models import Room, User,Choice
 from analysis.tools.conversion import Converter
-from model.rl_agent import RLAgent
+from RL.model.rl_agent import RLAgent
 
 
 def compute_score(cognitive_parameters, *args):

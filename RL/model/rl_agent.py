@@ -1,8 +1,8 @@
 import numpy as np
 import itertools as it
 import math
-from model.stupid_agent import StupidAgent
-from model.get_paths import get_paths
+from RL.model.stupid_agent import StupidAgent
+from RL.model.get_paths import get_paths
 
 np.seterr(all='raise')
 
