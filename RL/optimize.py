@@ -49,7 +49,7 @@ class Fit:
         print('Error: ', error, end='\r')
 
         self.error = error
-        return error
+        return np.random.random()
 
 
 def run():
@@ -61,7 +61,7 @@ def run():
     space = [
         hp.uniform('alpha', 0.1, 1.),
         hp.uniform('beta', 0.75, 1.25),
-        hp.uniform('gamma', 0.1,  1.)
+        hp.uniform('gamma', 0.001,  1.)
     ]
 
     for r in rooms:
@@ -82,12 +82,12 @@ def run():
                 fn=f.compute_score,
                 space=space,
                 algo=tpe.suggest,
-                max_evals=400,
+                max_evals=100,
             )
 
             alpha, beta, gamma = res['alpha'], res['beta'], res['gamma']
 
-            print(f"User {u.id}: error={f.error}, cognitive parameters: a={alpha:.2f}, b={beta:.2f}, g={gamma:.2f}")
+            print(f"User {u.id}: error={f.error}, cognitive parameters: a={alpha:.2f}, b={beta:.2f}, g={gamma:.3f}")
 
         break
 

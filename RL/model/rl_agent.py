@@ -4,7 +4,7 @@ import math
 from RL.model.stupid_agent import StupidAgent
 from RL.model.get_paths import get_paths
 
-np.seterr(all='raise')
+# np.seterr(all='raise')
 
 
 class RLAgent(StupidAgent):

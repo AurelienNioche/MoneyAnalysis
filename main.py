@@ -20,15 +20,15 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "MoneyAnalysis.settings")
 from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 
-import numpy as np
-from analysis import demographics, medium, monetary_behavior, strategy, life_expectancy, \
-    strategy_count, strategy_count_pool, monetary_behavior_pool
-import graph.strategy
-import graph.life_expectancy
-import graph.strategy_count_pool
+# import numpy as np
+# from analysis import demographics, medium, monetary_behavior, strategy, life_expectancy, \
+#     strategy_count, strategy_count_pool, monetary_behavior_pool
+# import graph.strategy
+# import graph.life_expectancy
+# import graph.strategy_count_pool
 
 import RL.optimize
-import WSS.optimize
+# import WSS.optimize
 
 
 def main():
