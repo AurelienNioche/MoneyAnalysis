@@ -27,6 +27,8 @@ import graph.strategy
 import graph.life_expectancy
 import graph.strategy_count_pool
 
+import RL.optimize
+import WSS.optimize
 
 def main():
 
@@ -68,8 +70,9 @@ def main():
     # data = monetary_behavior_pool.run()
     # graph.strategy_count_pool.plot(data, suffix='_monetary_behavior_pool',
     #                                f_name=f'fig/monetary_behavior_pool.pdf')
-    pass
 
+    RL.optimize.run()
+    WSS.optimize.run()
 
 if __name__ == '__main__':
 

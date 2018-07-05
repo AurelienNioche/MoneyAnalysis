@@ -6,11 +6,12 @@ def f(param):
     return x**2 + y
 
 
-def main():
+def run():
 
-    res = minimize(f, x0=(100, 100))
-    print(res)
+    pass
+    # res = minimize(f, x0=(100, 100))
+    # print(res)
 
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()
