@@ -1,10 +1,13 @@
 import numpy as np
 from scipy.optimize import minimize
 from hyperopt import fmin, rand, hp, tpe
+import pickle
+import itertools as it
 
 from game.models import Room, User,Choice
 from analysis.tools.conversion import Converter
 from RL.model.rl_agent import RLAgent
+from analysis.tools import economy_labels
 
 
 class Fit:
@@ -44,12 +47,12 @@ class Fit:
             # For t+1
             agent.learn_from_human_choice(in_hand=in_hand, desired=desired, successful=int(choice.success))
 
-        error = np.mean(data_user)
+        error = np.sum(data_user)
 
         print('Error: ', error, end='\r')
 
         self.error = error
-        return np.random.random()
+        return error
 
 
 def run():
@@ -58,6 +61,8 @@ def run():
 
     rooms = Room.objects.all().order_by('id')
 
+    data = {}
+
     space = [
         hp.uniform('alpha', 0.1, 1.),
         hp.uniform('beta', 0.75, 1.25),
@@ -65,6 +70,14 @@ def run():
     ]
 
     for r in rooms:
+
+        l = economy_labels.get(r.id)
+
+        data[l] = {
+            'alpha': np.zeros(r.n_user),
+            'beta': np.zeros(r.n_user),
+            'gamma': np.zeros(r.n_user)
+        }
 
         print("\n", "*" * 5, f"Room {r.id}", "*" * 5)
 
@@ -82,14 +95,43 @@ def run():
                 fn=f.compute_score,
                 space=space,
                 algo=tpe.suggest,
-                max_evals=100,
+                max_evals=1,
             )
 
             alpha, beta, gamma = res['alpha'], res['beta'], res['gamma']
 
+            for k, v in res.items():
+                data[l][k][i] = v
+
             print(f"User {u.id}: error={f.error}, cognitive parameters: a={alpha:.2f}, b={beta:.2f}, g={gamma:.3f}")
 
-        break
+    pickle.dump(obj=data, file=open('data/fit.p', 'wb'))
+
+    main_plot(data)
+
+
+def main_plot(data):
+
+    import matplotlib.pyplot as plt
+    import matplotlib.gridspec as grd
+
+    gs = grd.GridSpec(nrows=2, ncols=6)
+
+    fig = plt.figure()
+
+    coord = it.product(range(2), range(6))
+
+    for room_title, room_value in data.items():
+
+        for k, v in room_value.items():
+
+            ax = fig.add_subplot(gs[next(coord)])
+
+            ax.hist(v, bins='auto')
+
+            ax.set_title(room_title + ' ' + k)
+
+    plt.show()
 
 
 if __name__ == "__main__":
