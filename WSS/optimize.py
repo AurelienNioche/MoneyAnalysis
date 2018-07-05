@@ -14,9 +14,43 @@ class WWSAgent:
         self.prod = prod
         self.cons = cons
 
-    def choose(self, in_hand):
+        self.med = [i for i in range(n_good) if i not in (prod, cons)]
 
-        desired = 0
+        self.possible_strategies = ['direct', ] + [f'indirect_{i}' for i in range(n_good-2)]
+
+        self.current_strategy = None
+
+    def choose(self, in_hand, previous_success):
+
+        if not previous_success:
+            possible = [i for i in self.possible_strategies if i != self.current_strategy]
+            self.current_strategy = np.random.choice(possible)
+
+        if self.current_strategy == 'direct':
+
+            if in_hand == self.prod:
+                desired = self.cons
+
+            else:
+                desired = self.prod
+
+        else:
+
+            for i in range(len(self.med)):
+
+                if self.current_strategy == f'indirect_{i}':
+
+                    if in_hand == self.prod:
+                        desired = self.med[i]
+
+                    elif in_hand == self.med[i]:
+                        desired = self.cons
+
+                    else:
+                        desired = self.prod
+
+                    break
+
         return desired
 
 
@@ -31,6 +65,8 @@ def compute_error(r, u):
 
     agent = WWSAgent(prod=prod, cons=cons, n_good=n_good)
 
+    previous_success = None
+
     for t in range(r.t_max):
 
         choice = Choice.objects.get(room_id=r.id, user_id=u.id, t=t)
@@ -38,16 +74,19 @@ def compute_error(r, u):
         in_hand = Converter.convert_value(choice.good_in_hand, n_good=n_good)
         desired = Converter.convert_value(choice.desired_good, n_good=n_good)
 
-        v = desired != agent.choose(in_hand=in_hand)
+        v = desired != agent.choose(in_hand=in_hand, previous_success=previous_success)
 
         data_user[t] = v
 
-    return np.sum(data_user)
+        # For t + 1
+        previous_success = choice.success
+
+    return np.mean(data_user)
 
 
 def run():
 
-    print("******** Analysis of strategy *************")
+    print("******** Analysis: Win, Stay or Switch *************")
 
     rooms = Room.objects.all().order_by('id')
 
@@ -57,10 +96,15 @@ def run():
 
         users = User.objects.filter(room_id=r.id)
 
+        errors = np.zeros(len(users))
+
         for i, u in enumerate(users):
 
-            r = compute_error(r, u)
+            error = compute_error(r, u)
 
-            print(f"User {u.id}: error = {r}")
+            print(f"User {u.id}: error = {error}")
 
-        break
+            errors[i] = error
+
+        print(f"Mean error = {np.mean(errors):.2f} (+/- {np.std(errors):.2f})")
+        print()
