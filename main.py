@@ -72,7 +72,7 @@ def main():
     #                                f_name=f'fig/monetary_behavior_pool.pdf')
 
     RL.optimize.run()
-    WSS.optimize.run()
+    # WSS.optimize.run()
 
 if __name__ == '__main__':
 
