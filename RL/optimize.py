@@ -8,6 +8,8 @@ from RL.model.rl_agent import RLAgent
 
 def compute_score(cognitive_parameters, *args):
 
+    cognitive_parameters = np.asarray(cognitive_parameters)[::-1]
+
     r, u = args
 
     data_user = np.zeros(r.t_max)
@@ -47,7 +49,7 @@ def run():
 
     rooms = Room.objects.all().order_by('id')
 
-    cognitive_parameters = np.array([0.1, 1, 0.1])
+    cognitive_parameters = np.array([0.8, 1, 0.01])
 
     for r in rooms:
 
@@ -58,9 +60,10 @@ def run():
         for i, u in enumerate(users):
 
             res = minimize(fun=compute_score, x0=cognitive_parameters, args=(r, u),
-                           bounds=[(0., .99), (0.5, 1.5), (0., 1.)])
+                           bounds=[(0., 1.), (0.5, 1.5), (0.01, 1.)], tol=1e-6, method='BFGS')
             alpha, beta, gamma = res.x
             print(f"User {u.id}: score = {r}, cognitive parameters: a={alpha}, b={beta}, g={gamma}")
+            print(res)
 
 
 if __name__ == "__main__":

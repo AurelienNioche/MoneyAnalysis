@@ -97,10 +97,6 @@ class RLAgent(StupidAgent):
 
         exchanges, values = self.which_exchange_do_you_want_to_try(in_hand)
 
-        max_value = np.max(values)
-
-        idx_max_values = [i for i in range(len(values)) if values[i] == max_value]
-
         idx_ex = -1
         for i, ex in enumerate(exchanges):
             if ex == (in_hand, desired):
@@ -109,11 +105,26 @@ class RLAgent(StupidAgent):
 
         assert idx_ex != -1
 
-        if idx_ex in idx_max_values:
-            return 1 - self.gamma
+        soft = self.softmax(np.asarray(values), temp=self.gamma)
+        return soft[idx_ex]
 
-        else:
-            return self.gamma / (len(exchanges) - len(idx_max_values))
+        # max_value = np.max(values)
+        #
+        # idx_max_values = [i for i in range(len(values)) if values[i] == max_value]
+        #
+        # idx_ex = -1
+        # for i, ex in enumerate(exchanges):
+        #     if ex == (in_hand, desired):
+        #         idx_ex = i
+        #         break
+        #
+        # assert idx_ex != -1
+        #
+        # if idx_ex in idx_max_values:
+        #     return 1 - self.gamma
+        #
+        # else:
+        #     return self.gamma / (len(exchanges) - len(idx_max_values))
 
     @staticmethod
     def softmax(x, temp):
