@@ -97,6 +97,8 @@ class RLAgent(StupidAgent):
 
         exchanges, values = self.which_exchange_do_you_want_to_try(in_hand)
 
+        self.softmax(np.asarray(values), temp=self.gamma)
+
         max_value = np.max(values)
 
         idx_max_values = [i for i in range(len(values)) if values[i] == max_value]
