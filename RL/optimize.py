@@ -14,6 +14,8 @@ class Fit:
         self.r = room
         self.u = user
 
+        self.error = None
+
     def compute_score(self, cognitive_parameters):
 
         data_user = np.zeros(self.r.t_max)
@@ -36,7 +38,7 @@ class Fit:
 
             p_choice = agent.get_p_choose(in_hand, desired)
 
-            v = - p_choice
+            v = 1 - p_choice
             data_user[t] = v
 
             # For t+1
@@ -46,6 +48,7 @@ class Fit:
 
         print('Error: ', error, end='\r')
 
+        self.error = error
         return error
 
 
@@ -79,12 +82,12 @@ def run():
                 fn=f.compute_score,
                 space=space,
                 algo=tpe.suggest,
-                max_evals=40,
+                max_evals=400,
             )
 
             alpha, beta, gamma = res['alpha'], res['beta'], res['gamma']
 
-            print(f"User {u.id}: score = {r}, cognitive parameters: a={alpha}, b={beta}, g={gamma}")
+            print(f"User {u.id}: error={f.error}, cognitive parameters: a={alpha:.2f}, b={beta:.2f}, g={gamma:.2f}")
 
         break
 
