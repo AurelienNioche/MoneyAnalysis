@@ -114,3 +114,12 @@ class RLAgent(StupidAgent):
 
         else:
             return self.gamma / (len(exchanges) - len(idx_max_values))
+
+    @staticmethod
+    def softmax(x, temp):
+
+        try:
+            return np.exp(x / temp) / np.sum(np.exp(x / temp))
+        except (Warning, FloatingPointError) as w:
+            print(x, temp)
+            raise Exception(f'{w} [x={x}, temp={temp}]')
