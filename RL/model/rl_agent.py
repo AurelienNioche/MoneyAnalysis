@@ -30,9 +30,9 @@ class RLAgent(StupidAgent):
 
         return acceptance
 
-    def choose(self, in_hand):
-        exchanges, values = self.which_exchange_do_you_want_to_try(in_hand)
-        self.epsilon_rule(exchanges=exchanges, values=values)
+    # def choose(self, in_hand):
+    #     exchanges, values = self.which_exchange_do_you_want_to_try(in_hand)
+    #     self.epsilon_rule(exchanges=exchanges, values=values)
 
     def which_exchange_do_you_want_to_try(self, in_hand):
 
@@ -53,10 +53,12 @@ class RLAgent(StupidAgent):
                     break
 
             if num:
+
                 try:
                     value = 1 / math.pow(1 + self.beta, num)
                 except OverflowError:
                     value = 0
+
             else:
                 value = 0
 
@@ -77,15 +79,38 @@ class RLAgent(StupidAgent):
         else:
             self.attempted_exchange = exchanges[max_idx]
 
-    def learn(self, successful):
-
-        self.acceptance[self.attempted_exchange] += \
-            self.alpha * (successful - self.acceptance[self.attempted_exchange])
-
-    def get_exchange_value(self, in_hand, desired):
-
-        return self.acceptance[(in_hand, desired)]
+    # def learn(self, successful):
     #
-    # def set_attempted_exchange(self, in_hand, desired):
-    #
-    #     self.attempted_exchange = (in_hand, desired)
+    #     self.acceptance[self.attempted_exchange] += \
+    #         self.alpha * (successful - self.acceptance[self.attempted_exchange])
+
+    def learn_from_human_choice(self, in_hand, desired, successful):
+
+        self.attempted_exchange = (in_hand, desired)
+
+        diff = self.alpha * (successful - self.acceptance[self.attempted_exchange])
+
+        if diff >= 0:
+            self.acceptance[self.attempted_exchange] += diff
+
+    def get_p_choose(self, in_hand, desired):
+
+        exchanges, values = self.which_exchange_do_you_want_to_try(in_hand)
+
+        max_value = np.max(values)
+
+        idx_max_values = [i for i in range(len(values)) if values[i] == max_value]
+
+        idx_ex = -1
+        for i, ex in enumerate(exchanges):
+            if ex == (in_hand, desired):
+                idx_ex = i
+                break
+
+        assert idx_ex != -1
+
+        if idx_ex in idx_max_values:
+            return 1 - self.gamma
+
+        else:
+            return self.gamma / (len(exchanges) - len(idx_max_values))

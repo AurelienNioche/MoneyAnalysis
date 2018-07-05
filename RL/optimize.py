@@ -10,7 +10,7 @@ def compute_score(cognitive_parameters, *args):
 
     r, u = args
 
-    data_user = np.zeros(r.t_max, dtype=int)
+    data_user = np.zeros(r.t_max)
 
     n_good = r.n_type
 
@@ -26,16 +26,19 @@ def compute_score(cognitive_parameters, *args):
         in_hand = Converter.convert_value(choice.good_in_hand, n_good=n_good)
         desired = Converter.convert_value(choice.desired_good, n_good=n_good)
 
-        agent.choose(in_hand)
-        agent.learn(int(choice.success))
+        # agent.choose(in_hand)
 
-        exchange_v = agent.get_exchange_value(in_hand, desired)
+        p_choice = agent.get_p_choose(in_hand, desired)
 
-        v = 1 - exchange_v
-
+        v = - p_choice
         data_user[t] = v
 
-    return np.sum(data_user)
+        # For t+1
+        agent.learn_from_human_choice(in_hand=in_hand, desired=desired, successful=int(choice.success))
+
+    error = np.sum(data_user)
+    print(cognitive_parameters, error)
+    return error
 
 
 def run():
@@ -44,7 +47,7 @@ def run():
 
     rooms = Room.objects.all().order_by('id')
 
-    cognitive_parameters = np.array([0.5, 0.5, 0.5])
+    cognitive_parameters = np.array([0.1, 1, 0.1])
 
     for r in rooms:
 
@@ -54,8 +57,9 @@ def run():
 
         for i, u in enumerate(users):
 
-            alpha, beta, gamma = minimize(fun=compute_score, x0=cognitive_parameters, args=(r, u)).x
-
+            res = minimize(fun=compute_score, x0=cognitive_parameters, args=(r, u),
+                           bounds=[(0., .99), (0.5, 1.5), (0., 1.)])
+            alpha, beta, gamma = res.x
             print(f"User {u.id}: score = {r}, cognitive parameters: a={alpha}, b={beta}, g={gamma}")
 
 
