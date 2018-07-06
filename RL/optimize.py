@@ -57,6 +57,8 @@ class Fit:
 
 def run():
 
+    if not os.path.exists('data/fit.p'):
+
     print("******** Analysis of strategy *************")
 
     rooms = Room.objects.all().order_by('id')
@@ -95,7 +97,7 @@ def run():
                 fn=f.compute_score,
                 space=space,
                 algo=tpe.suggest,
-                max_evals=1,
+                max_evals=100,
             )
 
             alpha, beta, gamma = res['alpha'], res['beta'], res['gamma']

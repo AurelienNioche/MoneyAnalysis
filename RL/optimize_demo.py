@@ -17,7 +17,7 @@ space = hp.choice('a',
 
 # minimize the objective over the space
 from hyperopt import fmin, tpe
-best = fmin(objective, space, algo=tpe.suggest, max_evals=100)
+best = fmin(objective, space, algo=tpe.suggest, max_evals=10000)
 
 print(best)
 # -> {'a': 1, 'c2': 0.01420615366247227}
