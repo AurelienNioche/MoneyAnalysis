@@ -158,7 +158,7 @@ def main(f_name=None):
 
     else:
 
-        data = pickle.load(file=open(f_name, 'rb'))
+        data = pickle.load(file=open(fit_file, 'rb'))
 
     hist(data, f_name)
 
