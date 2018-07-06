@@ -24,38 +24,38 @@ application = get_wsgi_application()
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as grd
 import itertools as it
+import pickle
 # from analysis import demographics, medium, monetary_behavior, strategy, life_expectancy, \
 #     strategy_count, strategy_count_pool, monetary_behavior_pool
 # import graph.strategy
 # import graph.life_expectancy
 # import graph.strategy_count_pool
 
-import RL.optimize
-# import WSS.optimize
 import simulation.economy
-import simulation.data_format
-import graph.graph
 
-import RL.simulation.format_data
-import analysis.tools.economy_labels
-import analysis.tools.economy_repartitions
-import analysis.monetary_and_medium
-import RL.optimize
+import analysis.fit.RL.optimize
+import analysis.tools
+import analysis.tools.format
+import analysis.tools.economy
+import analysis.graph
+import analysis.compute.monetary_and_medium
+import analysis.graph.monetary_and_medium
 
 
 def plot_data(data, f_name=None):
+
     coord = it.product(range(2), range(3))
     gs = grd.GridSpec(nrows=2, ncols=3)
 
     fig = plt.figure()
 
     for i in range(len(data['repartition'])):
-        data_mbh = simulation.data_format.for_monetary_behavior_over_t(data['monetary_bhv'][i], data['repartition'])
+        data_mbh = analysis.tools.format.for_monetary_behavior_over_t(data['monetary_bhv'][i], data['repartition'])
 
-        graph.graph._monetary_behavior_over_t(data=data_mbh, fig=fig, subplot_spec=gs[next(coord)], title=f'm={i}')
+        analysis.graph.monetary_and_medium.monetary_behavior_over_t(data=data_mbh, fig=fig, subplot_spec=gs[next(coord)], title=f'm={i}')
 
-    data_m = simulation.data_format.for_medium_over_t(data['medium'], data['repartition'])
-    graph.graph._medium_over_t(data=data_m, fig=fig, subplot_spec=gs[next(coord)])
+    data_m = analysis.tools.format.for_medium_over_t(data['medium'], data['repartition'])
+    analysis.graph.monetary_and_medium.medium_over_t(data=data_m, fig=fig, subplot_spec=gs[next(coord)])
 
     plt.tight_layout()
 
@@ -65,21 +65,26 @@ def plot_data(data, f_name=None):
 
 
 def run_experiment():
-    data = analysis.monetary_and_medium.run()
+    data = analysis.compute.monetary_and_medium.run()
 
     for label, room_data in data.items():
         plot_data(room_data, f_name=f'xp_{label}.pdf')
 
 
 def run_simulation():
-    for r_id in analysis.tools.economy_labels.mapping.keys():
-        data_fit = RL.simulation.format_data.run()
 
-        label = analysis.tools.economy_labels.get(r_id)
+    data = pickle.load(open('data/fit.p', 'rb'))
+
+    for r_id in analysis.tools.economy.labels.keys():
+
+        # after reformatting
+        data_fit = analysis.tools.format.for_fit(data)
+
+        label = analysis.tools.economy.labels.get(r_id)
 
         cognitive_parameters = data_fit[label]
 
-        repartition = analysis.tools.economy_repartitions.get(r_id)
+        repartition = analysis.tools.economy.repartitions.get(r_id)
 
         res = simulation.economy.launch(
             agent_model='RLAgent',
@@ -96,10 +101,10 @@ def run_simulation():
 
 def main():
 
-    run_experiment()
-    run_simulation()
-
-    RL.optimize.main(f_name='hist.pdf')
+    # run_experiment()
+    # run_simulation()
+    #
+    analysis.fit.RL.optimize.run()
 
     # demographics.run()
 
