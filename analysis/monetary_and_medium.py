@@ -1,23 +1,12 @@
-import matplotlib.pyplot as plt
-import matplotlib.gridspec as grd
 import numpy as np
-import itertools as it
 
-from game.models import Room
-from analysis import monetary_behavior
+from game.models import Room, User, Choice
 from analysis.tools import economy_repartitions, economy_labels
-import simulation.data_format
-
-import graph.graph
-
+from analysis.tools.conversion import Converter
 
 
 def run():
 
-    coord = it.product(range(4), range(6))
-    gs = grd.GridSpec(nrows=4, ncols=6)
-
-    fig = plt.figure()
     rooms = Room.objects.all().order_by('id')
 
     data = {}
@@ -26,30 +15,51 @@ def run():
 
         n_good = r.n_type
         print(r.id)
-        label = economy_labels.get(r.id)
 
-        data[label] = {}
+        users = User.objects.filter(room_id=r.id)
+
+        monetary_behavior = np.zeros((n_good, r.n_user, r.t_max))
+        medium = np.zeros((n_good, r.t_max))
 
         for m in range(n_good):
 
-            monetary_data = monetary_behavior.run(
-                m=m, room_id=r.id
-            )[label + '_monetary_behavior']
+            for t in range(r.t_max):
 
-            data[label].update({
-                f'monetary_behavior_{m}': monetary_data
-            })
+                for i, u in enumerate(users):
 
-            repartition = economy_repartitions.get(r.id)
+                    choices = Choice.objects.filter(room_id=r.id, t=t, user_id=u.id)
 
-            for i in range(n_good):
-                print(len(data[label][f'monetary_behavior_{m}'][i]))
+                    for c in choices:
 
-                data = simulation.data_format.for_monetary_behavior_over_t(data[label][f'monetary_behavior_{m}'][i], repartition)
+                        desired = Converter.convert_value(c.desired_good, n_good=n_good)
+                        in_hand = Converter.convert_value(c.good_in_hand, n_good=n_good)
 
-                graph.graph._monetary_behavior_over_t(data=data, fig=fig, subplot_spec=gs[next(coord)], title=f'm={m}')
+                        prod = Converter.convert_value(
+                            u.production_good,
+                            n_good=n_good)
 
-     # data = simulation.data_format.for_medium_over_t(res['medium'], repartition)
-     # graph.graph._medium_over_t(data=data, fig=fig, subplot_spec=gs[next(coord)])
+                        cons = Converter.convert_value(
+                            u.consumption_good,
+                            n_good=n_good)
 
-    plt.show()
+                        if m in (prod, cons):
+                            monetary_conform = (in_hand, desired) == (prod, cons)
+
+                        else:
+                            monetary_conform = (in_hand, desired) in [(prod, m), (m, cons)]
+
+                            if monetary_conform:
+                                medium[m, t] += 1
+
+                        monetary_behavior[m, i, t] = monetary_conform
+
+        repartition = economy_repartitions.get(r.id)
+
+        label = economy_labels.get(r.id)
+        data[label] = {
+            'monetary_bhv': monetary_behavior,
+            'medium': medium,
+            'repartition': repartition
+        }
+
+    return data

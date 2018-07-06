@@ -117,7 +117,7 @@ def run(f_name):
     return data
 
 
-def hist(data):
+def hist(data, f_name):
 
     gs = grd.GridSpec(nrows=2, ncols=6)
 
@@ -135,10 +135,13 @@ def hist(data):
 
             ax.set_title(room_title + ' ' + k)
 
+    if f_name is not None:
+        os.makedirs('fig', exist_ok=True)
+        plt.savefig(f'fig/{f_name}.pdf')
     plt.show()
 
 
-def main():
+def main(f_name=None):
 
     parser = argparse.ArgumentParser(description='Human vs RL agent fitting')
 
@@ -147,17 +150,17 @@ def main():
 
     args = parser.parse_args()
 
-    f_name = 'data/fit.p'
+    fit_file = 'data/fit.p'
 
-    if args.force or not os.path.exists(f_name):
+    if args.force or not os.path.exists(fit_file):
 
-        data = run(f_name=f_name)
+        data = run(f_name=fit_file)
 
     else:
 
         data = pickle.load(file=open(f_name, 'rb'))
 
-    hist(data)
+    hist(data, f_name)
 
 
 if __name__ == "__main__":

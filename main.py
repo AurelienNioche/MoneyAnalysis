@@ -20,7 +20,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "MoneyAnalysis.settings")
 from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 
-import numpy as np
+
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as grd
 import itertools as it
@@ -40,11 +40,67 @@ import RL.simulation.format_data
 import analysis.tools.economy_labels
 import analysis.tools.economy_repartitions
 import analysis.monetary_and_medium
+import RL.optimize
+
+
+def plot_data(data, f_name=None):
+    coord = it.product(range(2), range(3))
+    gs = grd.GridSpec(nrows=2, ncols=3)
+
+    fig = plt.figure()
+
+    for i in range(len(data['repartition'])):
+        data_mbh = simulation.data_format.for_monetary_behavior_over_t(data['monetary_bhv'][i], data['repartition'])
+
+        graph.graph._monetary_behavior_over_t(data=data_mbh, fig=fig, subplot_spec=gs[next(coord)], title=f'm={i}')
+
+    data_m = simulation.data_format.for_medium_over_t(data['medium'], data['repartition'])
+    graph.graph._medium_over_t(data=data_m, fig=fig, subplot_spec=gs[next(coord)])
+
+    plt.tight_layout()
+
+    if f_name is not None:
+        os.makedirs('fig', exist_ok=True)
+        plt.savefig(f'fig/{f_name}')
+
+
+def run_experiment():
+    data = analysis.monetary_and_medium.run()
+
+    for label, room_data in data.items():
+        plot_data(room_data, f_name=f'xp_{label}.pdf')
+
+
+def run_simulation():
+    for r_id in analysis.tools.economy_labels.mapping.keys():
+        data_fit = RL.simulation.format_data.run()
+
+        label = analysis.tools.economy_labels.get(r_id)
+
+        cognitive_parameters = data_fit[label]
+
+        repartition = analysis.tools.economy_repartitions.get(r_id)
+
+        res = simulation.economy.launch(
+            agent_model='RLAgent',
+            repartition=repartition,
+            t_max=50,
+            economy_model='prod: i-1',
+            cognitive_parameters=cognitive_parameters,
+            seed=123
+        )
+        res['repartition'] = repartition
+
+        plot_data(res, f_name=f"sim_{label}.pdf")
 
 
 def main():
 
     run_experiment()
+    run_simulation()
+
+    RL.optimize.main(f_name='hist.pdf')
+
     # demographics.run()
 
     # data = {
@@ -86,48 +142,6 @@ def main():
 
     # RL.optimize.run()
     # WSS.optimize.run()
-
-
-def run_experiment():
-
-    analysis.monetary_and_medium.run()
-
-
-def run_simulation():
-
-    data = RL.simulation.format_data.run()
-
-    cognitive_parameters = data[analysis.tools.economy_labels.get(414)] # [(0.1, 1., 0.01), ] * np.sum(repartition)
-
-    repartition = analysis.tools.economy_repartitions.get(414)
-
-    res = simulation.economy.launch(
-        agent_model='RLAgent',
-        repartition=repartition,
-        t_max=50,
-        economy_model='prod: i-1',
-        cognitive_parameters=cognitive_parameters,
-        seed=123
-    )
-
-    coord = it.product(range(2), range(3))
-    gs = grd.GridSpec(nrows=2, ncols=3)
-
-    fig = plt.figure()
-
-    for i in range(len(repartition)):
-        # ax = fig.add_subplot(gs[next(coord)])
-
-        print(len(res['monetary_bhv'][i]))
-
-        data = simulation.data_format.for_monetary_behavior_over_t(res['monetary_bhv'][i], repartition)
-
-        graph.graph._monetary_behavior_over_t(data=data, fig=fig, subplot_spec=gs[next(coord)], title=f'm={i}')
-
-    data = simulation.data_format.for_medium_over_t(res['medium'], repartition)
-    graph.graph._medium_over_t(data=data, fig=fig, subplot_spec=gs[next(coord)])
-
-    plt.show()
 
 
 if __name__ == '__main__':
