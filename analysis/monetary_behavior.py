@@ -6,7 +6,7 @@ from analysis.tools import economy_labels
 from game.models import Room, User, Choice
 
 
-def run(m=0):
+def run(m=0, room_id=None):
 
     output_data = {}
 
@@ -14,15 +14,20 @@ def run(m=0):
 
     print("******** Analysis of monetary behavior *************")
 
-    rooms = Room.objects.all().order_by('id')
+    if room_id is None:
+
+        rooms = Room.objects.all().order_by('id')
+    else:
+        rooms = Room.objects.filter(id=room_id)
 
     for r in rooms:
 
         print("Room ", r.id)
 
         n_good = r.n_type
+        n_agent = r.n_user
 
-        room_data = np.zeros((n_good, r.t_max))
+        room_data = np.zeros((n_good, n_agent, r.t_max))
 
         good_list = [n_good - 1, ] + list(range(n_good - 1))
 

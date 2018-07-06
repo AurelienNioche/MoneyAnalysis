@@ -38,10 +38,13 @@ import graph.graph
 
 import RL.simulation.format_data
 import analysis.tools.economy_labels
+import analysis.tools.economy_repartitions
+import analysis.monetary_and_medium
 
 
 def main():
 
+    run_experiment()
     # demographics.run()
 
     # data = {
@@ -56,8 +59,8 @@ def main():
     #     "money_bar_mean": np.random.random(4),
     #     "money_bar_std": np.random.random(4) / 100,
     # }
-
-    # data.update(monetary_behavior.run())
+    #
+    # # data.update(monetary_behavior.run())
     # data.update(medium.run())
     # graph.make_figs(data)
 
@@ -84,11 +87,19 @@ def main():
     # RL.optimize.run()
     # WSS.optimize.run()
 
+
+def run_experiment():
+
+    analysis.monetary_and_medium.run()
+
+
+def run_simulation():
+
     data = RL.simulation.format_data.run()
 
     cognitive_parameters = data[analysis.tools.economy_labels.get(414)] # [(0.1, 1., 0.01), ] * np.sum(repartition)
 
-    repartition = np.array([9, 9, 18])
+    repartition = analysis.tools.economy_repartitions.get(414)
 
     res = simulation.economy.launch(
         agent_model='RLAgent',
@@ -105,8 +116,9 @@ def main():
     fig = plt.figure()
 
     for i in range(len(repartition)):
-        print(i)
         # ax = fig.add_subplot(gs[next(coord)])
+
+        print(len(res['monetary_bhv'][i]))
 
         data = simulation.data_format.for_monetary_behavior_over_t(res['monetary_bhv'][i], repartition)
 
@@ -119,5 +131,8 @@ def main():
 
 
 if __name__ == '__main__':
+
+    # main()
+    # run_simulation()
 
     main()

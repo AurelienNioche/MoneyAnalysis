@@ -1,6 +1,7 @@
 import numpy as np
 import simulation.economy
 
+
 def for_monetary_behavior_over_t(monetary_bhv, repartition):
 
     n_good = len(repartition)
