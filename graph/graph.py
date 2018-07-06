@@ -32,7 +32,7 @@ def _bar(means, errors, labels, title, subplot_spec=None, fig=None):
     ax.bar(labels_pos, means, yerr=errors, edgecolor="white", align="center", color="black")
 
 
-def _monetary_behavior_over_t(data, fig, subplot_spec, letter=None):
+def _monetary_behavior_over_t(data, fig, subplot_spec, letter=None, title=None):
 
     """
     :param data: (array n_good * t_max) data
@@ -52,7 +52,7 @@ def _monetary_behavior_over_t(data, fig, subplot_spec, letter=None):
         ax = fig.add_subplot(gs[i, 0])
         ax.plot(data[i], color=colors[i], linewidth=2)
         ax.set_yticks([0, 1])
-        ax.set_ylim(0, 1)
+        ax.set_ylim(-0.1, 1.1)
         ax.set_xlim(0, len(data[i]))
 
         ax.axhline(y=1 / (n_good - 1), linewidth=1, linestyle='--', color='0.5', zorder=-10)
@@ -77,6 +77,9 @@ def _monetary_behavior_over_t(data, fig, subplot_spec, letter=None):
             transform=ax0.transAxes,
             fontsize=20)
 
+    if title is not None:
+        ax0.set_title(title)
+
 
 def _medium_over_t(data, fig, subplot_spec, letter=None):
 
@@ -98,8 +101,8 @@ def _medium_over_t(data, fig, subplot_spec, letter=None):
         ax = fig.add_subplot(gs[i, 0])
         ax.plot(data[i], color=colors[i], linewidth=2)
         ax.set_yticks([0, 1])
-        ax.set_yticklabels(['0', f'n/{n_good}'])
-        ax.set_ylim(0, 1)
+        # ax.set_yticklabels(['0', f'n/{n_good}'])
+        ax.set_ylim(-0.01, 1.01)
         ax.set_xlim(0, len(data[i]))
         if i == (n_good - 1):
             ax.set_xlabel('$t$')

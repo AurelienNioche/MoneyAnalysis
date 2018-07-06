@@ -20,7 +20,10 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "MoneyAnalysis.settings")
 from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 
-# import numpy as np
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.gridspec as grd
+import itertools as it
 # from analysis import demographics, medium, monetary_behavior, strategy, life_expectancy, \
 #     strategy_count, strategy_count_pool, monetary_behavior_pool
 # import graph.strategy
@@ -28,8 +31,13 @@ application = get_wsgi_application()
 # import graph.strategy_count_pool
 
 import RL.optimize
-import RL.simulation.format_data
 # import WSS.optimize
+import simulation.economy
+import simulation.data_format
+import graph.graph
+
+import RL.simulation.format_data
+import analysis.tools.economy_labels
 
 
 def main():
@@ -73,9 +81,41 @@ def main():
     # graph.strategy_count_pool.plot(data, suffix='_monetary_behavior_pool',
     #                                f_name=f'fig/monetary_behavior_pool.pdf')
 
-    # RL.optimize.main()
-    RL.simulation.format_data.run()
+    # RL.optimize.run()
     # WSS.optimize.run()
+
+    data = RL.simulation.format_data.run()
+
+    cognitive_parameters = data[analysis.tools.economy_labels.get(414)] # [(0.1, 1., 0.01), ] * np.sum(repartition)
+
+    repartition = np.array([9, 9, 18])
+
+    res = simulation.economy.launch(
+        agent_model='RLAgent',
+        repartition=repartition,
+        t_max=50,
+        economy_model='prod: i-1',
+        cognitive_parameters=cognitive_parameters,
+        seed=123
+    )
+
+    coord = it.product(range(2), range(3))
+    gs = grd.GridSpec(nrows=2, ncols=3)
+
+    fig = plt.figure()
+
+    for i in range(len(repartition)):
+        print(i)
+        # ax = fig.add_subplot(gs[next(coord)])
+
+        data = simulation.data_format.for_monetary_behavior_over_t(res['monetary_bhv'][i], repartition)
+
+        graph.graph._monetary_behavior_over_t(data=data, fig=fig, subplot_spec=gs[next(coord)], title=f'm={i}')
+
+    data = simulation.data_format.for_medium_over_t(res['medium'], repartition)
+    graph.graph._medium_over_t(data=data, fig=fig, subplot_spec=gs[next(coord)])
+
+    plt.show()
 
 
 if __name__ == '__main__':

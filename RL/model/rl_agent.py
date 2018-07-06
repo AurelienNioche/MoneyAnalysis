@@ -11,7 +11,7 @@ class RLAgent(StupidAgent):
 
     name = "RLAgent"
 
-    def __init__(self, prod, cons, n_goods, cognitive_parameters):
+    def __init__(self, prod, cons, n_goods, cognitive_parameters, idx=None):
 
         super().__init__(prod=prod, cons=cons, n_goods=n_goods, cognitive_parameters=cognitive_parameters)
 
@@ -20,6 +20,8 @@ class RLAgent(StupidAgent):
         self.acceptance = self.get_acceptance_dic(n_goods)
 
         self.paths = get_paths(final_node=cons, n_nodes=n_goods)
+
+        self.idx = idx
 
     @staticmethod
     def get_acceptance_dic(n_goods):
@@ -34,7 +36,17 @@ class RLAgent(StupidAgent):
     #     exchanges, values = self.which_exchange_do_you_want_to_try(in_hand)
     #     self.epsilon_rule(exchanges=exchanges, values=values)
 
-    def which_exchange_do_you_want_to_try(self, in_hand):
+    def which_exchange_do_you_want_to_try(self):
+
+        exchanges, values = self.get_exchanges_and_values(in_hand=self.H)
+
+        p = self.softmax(np.asarray(values), temp=self.gamma)
+        idx_ex = np.random.choice(np.arange(len(exchanges)), p=p)
+
+        self.attempted_exchange = exchanges[idx_ex]
+        return self.attempted_exchange
+
+    def get_exchanges_and_values(self, in_hand):
 
         exchanges = []
         values = []
@@ -46,7 +58,7 @@ class RLAgent(StupidAgent):
                 easiness = self.acceptance[exchange]
                 if easiness:
 
-                    num += 1/easiness
+                    num += 1 / easiness
 
                 else:
                     num = 0
@@ -67,22 +79,17 @@ class RLAgent(StupidAgent):
 
         return exchanges, values
 
-    def epsilon_rule(self, values, exchanges):
-
-        max_idx = np.argmax(values)
-
-        if np.random.random() < self.gamma:
-            del exchanges[max_idx]
-            random_idx = np.random.randint(len(exchanges))
-            self.attempted_exchange = exchanges[random_idx]
-
-        else:
-            self.attempted_exchange = exchanges[max_idx]
-
-    # def learn(self, successful):
+    # def epsilon_rule(self, values, exchanges):
     #
-    #     self.acceptance[self.attempted_exchange] += \
-    #         self.alpha * (successful - self.acceptance[self.attempted_exchange])
+    #     max_idx = np.argmax(values)
+    #
+    #     if np.random.random() < self.gamma:
+    #         del exchanges[max_idx]
+    #         random_idx = np.random.randint(len(exchanges))
+    #         self.attempted_exchange = exchanges[random_idx]
+    #
+    #     else:
+    #         self.attempted_exchange = exchanges[max_idx]
 
     def learn_from_human_choice(self, in_hand, desired, successful):
 
@@ -131,6 +138,18 @@ class RLAgent(StupidAgent):
         #
         # else:
         #     return self.gamma / (len(exchanges) - len(idx_max_values))
+
+    def consume(self):
+
+        self.learn_from_result()
+        super().consume()
+
+    def learn_from_result(self):
+
+        successful = int(self.H != self.attempted_exchange[0])
+
+        self.acceptance[self.attempted_exchange] += \
+            self.alpha * (successful - self.acceptance[self.attempted_exchange])
 
     @staticmethod
     def softmax(x, temp):

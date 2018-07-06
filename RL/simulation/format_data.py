@@ -36,26 +36,34 @@ def format_data(data):
     # output data structure
     #  np.array([np.array([<param1>, <param2>, <param3>]) * n_user])
 
-    total_user = np.sum([len(data[k]['alpha']) for k, v in data.items()])
+    # total_user = np.sum([len(data[k]['alpha']) for k, v in data.items()])
 
-    users = np.zeros(total_user, dtype=np.ndarray)
-
-    i = 0
+    formatted_data = {}
 
     for k, v in data.items():
 
-        assert len(v['alpha']) == len(v['beta']) == len(v['gamma'])
+        # assert len(v['alpha']) == len(v['beta']) == len(v['gamma'])
 
-        for j in range(len(v['alpha'])):
+        # for j in range(len(v['alpha'])):
+        #
+        #     users[i] = np.array(
+        #
+        #         [v['alpha'][j], v['beta'][j], v['gamma'][j]]
+        #     )
+        #
+        #     i += 1
 
-            users[i] = np.array(
+        n = len(v['alpha'])
+        room_data = np.zeros((n, len(v)))
 
-                [v['alpha'][j], v['beta'][j], v['gamma'][j]]
-            )
+        for i in range(n):
+            # for param_label, param_value in v.items():
 
-            i += 1
+            room_data[i] = v["alpha"][i], v["beta"][i], v["gamma"][i]
 
-    return users
+        formatted_data[k] = room_data
+
+    return formatted_data
 
 
 
