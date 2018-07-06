@@ -28,6 +28,7 @@ application = get_wsgi_application()
 # import graph.strategy_count_pool
 
 import RL.optimize
+import RL.simulation.format_data
 # import WSS.optimize
 
 
@@ -72,7 +73,8 @@ def main():
     # graph.strategy_count_pool.plot(data, suffix='_monetary_behavior_pool',
     #                                f_name=f'fig/monetary_behavior_pool.pdf')
 
-    RL.optimize.main()
+    # RL.optimize.main()
+    RL.simulation.format_data.run()
     # WSS.optimize.run()
 
 
