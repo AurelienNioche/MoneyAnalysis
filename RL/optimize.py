@@ -1,8 +1,12 @@
 import numpy as np
-from scipy.optimize import minimize
-from hyperopt import fmin, rand, hp, tpe
+# from scipy.optimize import minimize
+from hyperopt import fmin, hp, tpe  # rand
 import pickle
+import matplotlib.pyplot as plt
+import matplotlib.gridspec as grd
 import itertools as it
+import os
+import argparse
 
 from game.models import Room, User,Choice
 from analysis.tools.conversion import Converter
@@ -55,9 +59,7 @@ class Fit:
         return error
 
 
-def run():
-
-    if not os.path.exists('data/fit.p'):
+def run(f_name):
 
     print("******** Analysis of strategy *************")
 
@@ -73,9 +75,9 @@ def run():
 
     for r in rooms:
 
-        l = economy_labels.get(r.id)
+        label = economy_labels.get(r.id)
 
-        data[l] = {
+        data[label] = {
             'alpha': np.zeros(r.n_user),
             'beta': np.zeros(r.n_user),
             'gamma': np.zeros(r.n_user)
@@ -97,29 +99,29 @@ def run():
                 fn=f.compute_score,
                 space=space,
                 algo=tpe.suggest,
-                max_evals=100,
+                max_evals=10,
             )
 
             alpha, beta, gamma = res['alpha'], res['beta'], res['gamma']
 
             for k, v in res.items():
-                data[l][k][i] = v
+                data[label][k][i] = v
 
             print(f"User {u.id}: error={f.error}, cognitive parameters: a={alpha:.2f}, b={beta:.2f}, g={gamma:.3f}")
 
-    pickle.dump(obj=data, file=open('data/fit.p', 'wb'))
+    if not os.path.exists('data'):
+        os.makedirs('data')
 
-    main_plot(data)
+    pickle.dump(obj=data, file=open(f_name, 'wb'))
+
+    return data
 
 
-def main_plot(data):
-
-    import matplotlib.pyplot as plt
-    import matplotlib.gridspec as grd
+def hist(data):
 
     gs = grd.GridSpec(nrows=2, ncols=6)
 
-    fig = plt.figure()
+    fig = plt.figure(figsize=(15, 12))
 
     coord = it.product(range(2), range(6))
 
@@ -136,5 +138,38 @@ def main_plot(data):
     plt.show()
 
 
+def main():
+
+    parser = argparse.ArgumentParser(description='Human vs RL agent fitting')
+
+    parser.add_argument('-f', '--force', action="store_true", default=False,
+                        help="Force creation of new data.")
+
+    args = parser.parse_args()
+
+    f_name = 'data/fit.p'
+
+    if args.force or not os.path.exists(f_name):
+
+        data = run(f_name=f_name)
+
+    else:
+
+        data = pickle.load(file=open(f_name, 'rb'))
+
+    hist(data)
+
+
 if __name__ == "__main__":
-    run()
+
+    main()
+
+    # parser = argparse.ArgumentParser(description='Human vs RL agent fitting')
+    #
+    # parser.add_argument('-f', '--force', action="store_true", default=False,
+    #                     help="Force creation of new data.")
+    #
+    # parsed_args = parser.parse_args()
+    #
+    # main(parsed_args)
+

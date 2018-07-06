@@ -72,7 +72,7 @@ def main():
     # graph.strategy_count_pool.plot(data, suffix='_monetary_behavior_pool',
     #                                f_name=f'fig/monetary_behavior_pool.pdf')
 
-    RL.optimize.run()
+    RL.optimize.main()
     # WSS.optimize.run()
 
 
