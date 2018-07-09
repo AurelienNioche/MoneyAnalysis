@@ -42,33 +42,11 @@ import analysis.compute.monetary_and_medium
 import analysis.graph.monetary_and_medium
 
 
-def plot_data(data, f_name=None):
-
-    coord = it.product(range(2), range(3))
-    gs = grd.GridSpec(nrows=2, ncols=3)
-
-    fig = plt.figure(figsize=(14, 14))
-
-    for i in range(len(data['repartition'])):
-        data_mbh = analysis.tools.format.for_monetary_behavior_over_t(data['monetary_bhv'][i], data['repartition'])
-
-        analysis.graph.monetary_and_medium.monetary_behavior_over_t(data=data_mbh, fig=fig, subplot_spec=gs[next(coord)], title=f'm={i}')
-
-    data_m = analysis.tools.format.for_medium_over_t(data['medium'], data['repartition'])
-    analysis.graph.monetary_and_medium.medium_over_t(data=data_m, fig=fig, subplot_spec=gs[next(coord)])
-
-    plt.tight_layout()
-
-    if f_name is not None:
-        os.makedirs('fig', exist_ok=True)
-        plt.savefig(f'fig/{f_name}')
-
-
 def run_experiment():
     data = analysis.compute.monetary_and_medium.run()
 
     for label, room_data in data.items():
-        plot_data(room_data, f_name=f'xp_{label}.pdf')
+        analysis.graph.monetary_and_medium.one_condition(room_data, f_name=f'xp_{label}.pdf')
 
 
 def run_simulation():
@@ -96,7 +74,7 @@ def run_simulation():
         )
         res['repartition'] = repartition
 
-        plot_data(res, f_name=f"sim_{label}.pdf")
+        analysis.graph.monetary_and_medium.one_condition(res, f_name=f"sim_{label}.pdf")
 
 
 def main():

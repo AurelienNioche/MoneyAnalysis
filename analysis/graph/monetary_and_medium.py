@@ -3,6 +3,10 @@ import numpy as np
 import matplotlib.gridspec as grd
 import os
 import string
+import itertools as it
+
+import analysis.tools.format
+import analysis.compute.monetary_and_medium
 
 
 def _bar(means, errors, labels, title, subplot_spec=None, fig=None):
@@ -172,7 +176,29 @@ def _money_bar_plots(means, errors, labels, ax=None, letter=None):
     ax.bar(labels_pos, means, yerr=errors, edgecolor="white", align="center", color="black")
     
 
-def make_figs(data):
+def one_condition(data, f_name):
+
+    coord = it.product(range(2), range(3))
+    gs = grd.GridSpec(nrows=2, ncols=3)
+
+    fig = plt.figure(figsize=(14, 14))
+
+    for i in range(len(data['repartition'])):
+        data_mbh = analysis.tools.format.for_monetary_behavior_over_t(data['monetary_bhv'][i], data['repartition'])
+
+        monetary_behavior_over_t(data=data_mbh, fig=fig, subplot_spec=gs[next(coord)], title=f'm={i}')
+
+    data_m = analysis.tools.format.for_medium_over_t(data['medium'], data['repartition'])
+    medium_over_t(data=data_m, fig=fig, subplot_spec=gs[next(coord)])
+
+    plt.tight_layout()
+
+    if f_name is not None:
+        os.makedirs('fig', exist_ok=True)
+        plt.savefig(f'fig/{f_name}')
+
+
+def overvall(data):
 
     fig = plt.figure(figsize=(14, 6), dpi=200)
     fig.subplots_adjust(left=0.05, bottom=0.1, top=0.94, right=0.98)
@@ -276,4 +302,4 @@ if __name__ == '__main__':
         "4_good_uniform_sem": np.random.random() / 100,
     }
 
-    make_figs(example_data)
+    overvall(example_data)
