@@ -111,6 +111,8 @@ def medium_over_t(data, fig, subplot_spec, letter=None):
         else:
             ax.set_xticks([])
 
+        ax.axhline(y=0.5, linewidth=1, linestyle='--', color='0.5', zorder=-10)
+
         ax.tick_params(labelsize=8)
 
     ax0 = fig.add_subplot(gs[:, :])

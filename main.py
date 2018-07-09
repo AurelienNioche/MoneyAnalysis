@@ -47,7 +47,7 @@ def plot_data(data, f_name=None):
     coord = it.product(range(2), range(3))
     gs = grd.GridSpec(nrows=2, ncols=3)
 
-    fig = plt.figure()
+    fig = plt.figure(figsize=(14, 14))
 
     for i in range(len(data['repartition'])):
         data_mbh = analysis.tools.format.for_monetary_behavior_over_t(data['monetary_bhv'][i], data['repartition'])
@@ -101,10 +101,10 @@ def run_simulation():
 
 def main():
 
-    # run_experiment()
+    run_experiment()
     # run_simulation()
     #
-    analysis.fit.RL.optimize.run()
+    # analysis.fit.RL.optimize.run()
 
     # demographics.run()
 

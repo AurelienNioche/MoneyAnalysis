@@ -99,7 +99,7 @@ def produce_data(f_name):
                 fn=f.compute_score,
                 space=space,
                 algo=tpe.suggest,
-                max_evals=10,
+                max_evals=1000,
             )
 
             alpha, beta, gamma = res['alpha'], res['beta'], res['gamma']
