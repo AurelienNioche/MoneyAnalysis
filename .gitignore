@@ -102,3 +102,5 @@ ENV/
 templates/
 game/migrations/
 fig/
+data/exp_like
+data/exp_like

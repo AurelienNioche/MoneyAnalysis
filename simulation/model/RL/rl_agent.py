@@ -38,11 +38,12 @@ class RLAgent(StupidAgent):
 
         exchanges, values = self.get_exchanges_and_values(in_hand=self.H)
 
-        p = self.softmax(np.asarray(values), temp=self.gamma)
-        idx_ex = np.random.choice(np.arange(len(exchanges)), p=p)
+        #p = self.softmax(np.asarray(values), temp=self.gamma)
+        #{idx_ex = np.random.choice(np.arange(len(exchanges)), p=p)
 
-        self.attempted_exchange = exchanges[idx_ex]
-        return self.attempted_exchange
+        return self.epsilon_rule(values, exchanges)
+
+        # self.attempted_exchange = exchanges[idx_ex]
 
     def get_exchanges_and_values(self, in_hand):
 
@@ -77,17 +78,19 @@ class RLAgent(StupidAgent):
 
         return exchanges, values
 
-    # def epsilon_rule(self, values, exchanges):
-    #
-    #     max_idx = np.argmax(values)
-    #
-    #     if np.random.random() < self.gamma:
-    #         del exchanges[max_idx]
-    #         random_idx = np.random.randint(len(exchanges))
-    #         self.attempted_exchange = exchanges[random_idx]
-    #
-    #     else:
-    #         self.attempted_exchange = exchanges[max_idx]
+    def epsilon_rule(self, values, exchanges):
+
+        max_idx = np.argmax(values)
+
+        if np.random.random() < self.gamma:
+            del exchanges[max_idx]
+            random_idx = np.random.randint(len(exchanges))
+            self.attempted_exchange = exchanges[random_idx]
+
+        else:
+            self.attempted_exchange = exchanges[max_idx]
+
+        return self.attempted_exchange
 
     def learn_from_human_choice(self, in_hand, desired, successful):
 

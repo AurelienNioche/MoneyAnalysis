@@ -32,6 +32,7 @@ import pickle
 # import graph.strategy_count_pool
 
 import simulation.economy
+import simulation.runner
 
 import analysis.fit.RL.optimize
 import analysis.tools
@@ -40,6 +41,55 @@ import analysis.tools.economy
 import analysis.graph
 import analysis.compute.monetary_and_medium
 import analysis.graph.monetary_and_medium
+import analysis.stats.mean_comparison
+
+
+def stats_exp():
+
+    data = analysis.compute.monetary_and_medium.run()
+
+    print('*' * 5, 'TESTING MONETARY BHV', '*' * 5)
+
+    for k, v in data.items():
+
+        print('Room: ', k)
+
+        analysis.stats.mean_comparison.monetary_bhv(v['monetary_bhv'])
+
+    print('*' * 5, 'TESTING USED AS MEDIUM', '*' * 5)
+
+    for k, v in data.items():
+
+        print('Room: ', k)
+
+        analysis.stats.mean_comparison.medium(v['medium'])
+
+
+def stats_sim_exp_like():
+
+    data = simulation.runner.run(exp_like=True)
+
+    cond = analysis.tools.economy.labels.copy().items()
+
+    print('*' * 5, 'TESTING MONETARY BHV', '*' * 5)
+
+    for i, (room_id, label) in enumerate(sorted(cond)):
+
+        monetary_bhv = [b for i, b in enumerate(data.monetary_bhv) if data.room_id[i] == room_id]
+
+        print('Room: ', label)
+
+        analysis.stats.mean_comparison.monetary_bhv(monetary_bhv)
+
+    # print('*' * 5, 'TESTING USED AS MEDIUM', '*' * 5)
+    #
+    # for i, (room_id, label) in enumerate(sorted(cond)):
+    #
+    #     medium = [b for i, b in enumerate(data.medium) if data.room_id[i] == room_id]
+    #
+    #     print('Room: ', label)
+    #
+    #     analysis.stats.mean_comparison.medium(medium)
 
 
 def run_experiment():
@@ -79,57 +129,9 @@ def run_simulation():
 
 def main():
 
-    run_experiment()
-    # run_simulation()
-    #
-    # analysis.fit.RL.optimize.run()
-
-    # demographics.run()
-
-    # data = {
-    #     "3_good_non_uniform_monetary_behavior": np.random.random((3, 50)),
-    #     "3_good_non_uniform_medium": np.random.random((3, 50)),
-    #     "3_good_uniform_monetary_behavior": np.random.random((3, 50)),
-    #     "3_good_uniform_medium": np.random.random((3, 50)),
-    #     "4_good_non_uniform_monetary_behavior": np.random.random((4, 50)),
-    #     "4_good_non_uniform_medium": np.random.random((4, 50)),
-    #     "4_good_uniform_monetary_behavior": np.random.random((4, 50)),
-    #     "4_good_uniform_medium": np.random.random((4, 50)),
-    #     "money_bar_mean": np.random.random(4),
-    #     "money_bar_std": np.random.random(4) / 100,
-    # }
-    #
-    # # data.update(monetary_behavior.run())
-    # data.update(medium.run())
-    # graph.make_figs(data)
-
-    # data = life_expectancy.run()
-    # graph.life_expectancy.plot(data, f_name="fig/life_expectancy.pdf")
-
-    # for m in range(4):
-    #     data = strategy.run(m=m)
-    #     graph.strategy.plot(data, m_color=f'C{m}', f_name=f'fig/strategy_m{m}.pdf')
-    #
-    # m = 5
-    # data = strategy.run(m=m, order_by_m=False)
-    # graph.strategy.plot(data, m_color=f'C{m}', f_name=f'fig/strategy_m{m}.pdf')
-
-    # strategy_count.run()
-
-    # data = strategy_count_pool.run()
-    # graph.strategy_count_pool.plot(data, f_name=f'fig/strategy_count_pool.pdf')
-
-    # data = monetary_behavior_pool.run()
-    # graph.strategy_count_pool.plot(data, suffix='_monetary_behavior_pool',
-    #                                f_name=f'fig/monetary_behavior_pool.pdf')
-
-    # RL.optimize.run()
-    # WSS.optimize.run()
+    stats_sim_exp_like()
 
 
 if __name__ == '__main__':
-
-    # main()
-    # run_simulation()
 
     main()

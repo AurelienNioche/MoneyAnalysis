@@ -1,6 +1,8 @@
 import numpy as np
 import itertools as it
 
+from simulation.model.RL.rl_agent import RLAgent
+
 
 class Economy(object):
 
@@ -68,7 +70,7 @@ class Economy(object):
             for ind in range(n):
                 a = eval(self.agent_model)(
                     prod=i, cons=j,
-                    cognitive_parameters=self.cognitive_parameters[idx],
+                    cognitive_parameters=self.cognitive_parameters,
                     n_goods=self.n_goods,
                     idx=idx
                 )
@@ -120,16 +122,22 @@ class Economy(object):
             # ----------- #
 
         success_idx = []
+
         for i, j in self.exchange_types:
 
             a1 = self.markets[(i, j)]
             a2 = self.markets[(j, i)]
+
             min_a = int(min([len(a1), len(a2)]))
 
             if min_a:
 
-                success_idx += list(np.random.choice(a1, size=min_a, replace=False))
-                success_idx += list(np.random.choice(a2, size=min_a, replace=False))
+                success_idx += list(
+                    np.random.choice(a1, size=min_a, replace=False)
+                )
+                success_idx += list(
+                    np.random.choice(a2, size=min_a, replace=False)
+                )
 
         for idx in success_idx:
 
@@ -137,10 +145,15 @@ class Economy(object):
             agent.proceed_to_exchange()
 
             # ---- For backup ----- #
-            ind_first_part = agent.attempted_exchange[0] == agent.P and agent.attempted_exchange[1] != agent.C
-            ind_second_part = agent.attempted_exchange[0] != agent.P and agent.attempted_exchange[1] == agent.C
+
+            ind_first_part = \
+                agent.attempted_exchange[0] == agent.P and agent.attempted_exchange[1] != agent.C
+            ind_second_part = \
+                agent.attempted_exchange[0] != agent.P and agent.attempted_exchange[1] == agent.C
+
             if ind_first_part:
                 self.bkp_medium[agent.attempted_exchange[1], self.t] += 1
+
             elif ind_second_part:
                 self.bkp_medium[agent.attempted_exchange[0], self.t] += 1
 

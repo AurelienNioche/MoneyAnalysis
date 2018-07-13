@@ -198,7 +198,7 @@ def one_condition(data, f_name):
         plt.savefig(f'fig/{f_name}')
 
 
-def overvall(data):
+def overall(data):
 
     fig = plt.figure(figsize=(14, 6), dpi=200)
     fig.subplots_adjust(left=0.05, bottom=0.1, top=0.94, right=0.98)
@@ -302,4 +302,4 @@ if __name__ == '__main__':
         "4_good_uniform_sem": np.random.random() / 100,
     }
 
-    overvall(example_data)
+    overall(example_data)
