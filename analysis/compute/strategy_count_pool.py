@@ -24,6 +24,8 @@ def run():
         data_room_mean = np.zeros(n_good)
         data_room_std = np.zeros(n_good)
 
+        medium = np.zeros((n_good, r.n_user))
+
         for g in range(n_good):
 
             g_reversed = Converter.reverse_value(g, n_good=n_good)
@@ -64,13 +66,17 @@ def run():
 
                 data_good_mean[i] = np.mean(data_user)
 
+                medium[g, i] = np.mean(data_user)
+
             data_room_mean[g] = np.mean(data_good_mean)
+
             data_room_std[g] = scipy.stats.sem(data_good_mean)
 
         label = economy.labels.get(r.id) + '_strategy_count_pool'
         output_data[label] = {
             'mean': data_room_mean,
-            'std': data_room_std
+            'std': data_room_std,
+            'medium': medium
         }
 
     return output_data

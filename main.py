@@ -41,10 +41,13 @@ import analysis.tools.economy
 import analysis.graph
 import analysis.compute.monetary_and_medium
 import analysis.graph.monetary_and_medium
+import analysis.compute.strategy_count_pool
 import analysis.stats.mean_comparison
 
 
 def stats_exp():
+
+    # --------------- Monetary bhv ------------------------ #
 
     data = analysis.compute.monetary_and_medium.run()
 
@@ -56,11 +59,15 @@ def stats_exp():
 
         analysis.stats.mean_comparison.monetary_bhv(v['monetary_bhv'])
 
+    # --------------- Medium  ------------------------ #
+
     print('*' * 5, 'TESTING USED AS MEDIUM', '*' * 5)
+
+    data = analysis.compute.strategy_count_pool.run()
 
     for k, v in data.items():
 
-        print('Room: ', k)
+        print('Room: ', k.replace('_strategy_count_pool', ''))
 
         analysis.stats.mean_comparison.medium(v['medium'])
 
@@ -129,7 +136,7 @@ def run_simulation():
 
 def main():
 
-    stats_sim_exp_like()
+    stats_exp()
 
 
 if __name__ == '__main__':
