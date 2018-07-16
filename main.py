@@ -164,7 +164,7 @@ def run_simulation():
 
         # SOMETHING TO DO HERE
         # res['repartition'] = repartition
-
+        #
         # analysis.graph.monetary_and_medium.one_condition(res, f_name=f"sim_{label}.pdf")
 
 
