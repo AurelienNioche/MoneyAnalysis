@@ -1,19 +1,23 @@
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as grd
 
-import analysis.tools.format
-import analysis.compute.monetary_and_medium
+import numpy as np
+
+# import analysis.tools.format
+# import analysis.compute.monetary_and_medium
 
 
-def _monetary_behavior_phase_diagram(data, ax, col, labels, n_good, title=None,
-                                    letter=None, n_ticks=3, fig_name=None):
+def _monetary_behavior_phase_diagram(
+        data, ax, col, labels, n_good, title=None,
+        letter=None, n_ticks=3):
+        # , fig_name=None):
 
     im = ax.imshow(data, cmap="binary", origin="lower", vmin=0.0, vmax=1.0)  # , vmin=0.5)
 
     # Create colorbar
-    if col == n_good - 1:
+    if col == n_good - 1 and n_good == 4:
 
-        cbar = ax.figure.colorbar(im, ax=ax)
+        ax.figure.colorbar(im, ax=ax)
 
     step = int(len(labels)/n_ticks)
     lab_to_display = labels[::step]
@@ -46,54 +50,74 @@ def _monetary_behavior_phase_diagram(data, ax, col, labels, n_good, title=None,
         ax.set_ylabel(f'$x_{n_good}$')
 
         ax.text(
-            s=f'{n_good} goods', x=-0.3, y=0, horizontalalignment='center', verticalalignment='center',
+            s=f'{n_good} goods', x=-0.2, y=0.5, horizontalalignment='center', verticalalignment='center',
             transform=ax.transAxes,
-            fontsize=20
+            fontsize=20,
+            rotation='vertical'
         )
+
 
     # if 'fig' in locals():
     #     print('Saving fig.')
-    #     noinspection PyUnboundLocalVariable
-        # fig.tight_layout()
-        #
-        # if fig_name is None:
-        #     fig_name = f'fig/phase_{n_good}.pdf'
-        #
-        # os.makedirs(os.path.dirname(fig_name), exist_ok=True)
-        # plt.savefig(fig_name)
+    #     #noinspection PyUnboundLocalVariable
+    #     fig.tight_layout()
+    #
+    #     if fig_name is None:
+    #         fig_name = f'fig/phase_{n_good}.pdf'
+    #
+    #     os.makedirs(os.path.dirname(fig_name), exist_ok=True)
+    #     plt.savefig(fig_name)
 
 
-def plot(three_good, four_good):
+# def pre_processing(three_good, four_good):
+#
+#     formatted_data, labels = analysis.tools.format.for_phase_diagram(
+#         monetary_bhv,
+#         repartition,
+#         n_good
+#     )
+#
+#     return
 
-    fig = plt.figure(figsize=(15, 15))
+
+def plot(data, labels, f_name):
+
+    fig = plt.figure(figsize=(22, 9))
 
     gs = grd.GridSpec(ncols=4, nrows=2)
 
     for row, n_good in enumerate((3, 4)):
 
-        if n_good == 3:
-
-            monetary_bhv = three_good.monetary_bhv
-            repartition = three_good.repartition
-
-        else:
-            monetary_bhv = four_good.monetary_bhv
-            repartition = four_good.repartition
-
-        formatted_data, labels = analysis.tools.format.for_phase_diagram(
-            monetary_bhv,
-            repartition,
-            n_good
-        )
-
         for col in range(n_good):
 
             _monetary_behavior_phase_diagram(
-                data=formatted_data[col],
+                data=data[row][col],
                 labels=labels,
                 ax=fig.add_subplot(gs[row, col]),
                 col=col,
                 n_good=n_good,
             )
 
+    plt.tight_layout()
+    plt.savefig(f_name)
     plt.show()
+
+
+def main():
+
+    labels = np.arange(10, 200, 20)
+    n_side = len(labels)
+
+    data = [
+        np.random.random(size=(i, n_side, n_side)) for i in (3, 4)
+    ]
+
+    plot(data=data, labels=labels, f_name="../../fig/phase_diagram_example.pdf")
+
+    # three_data =
+    # plot()
+
+
+if __name__ == "__main__":
+
+    main()

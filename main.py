@@ -87,7 +87,9 @@ def bar_plots():
 
     for k, v in data.items():
 
-        analysis.graph.monetary_and_medium.one_condition_money_bar(v['monetary_bhv'], k)
+        title = k
+        means, err = analysis.tools.format.for_monetary_behavior_bar_plot(v['monetary_bhv'])
+        analysis.graph.monetary_and_medium.one_condition_money_bar(means, err, title)
     #
     # --------------- Medium  ------------------------ #
 
@@ -95,9 +97,11 @@ def bar_plots():
 
     for k, v in data.items():
 
-        k = k.replace('_strategy_count_pool', '')
+        title = k.replace('_strategy_count_pool', '')
 
-        analysis.graph.monetary_and_medium.one_condition_medium_bar(v['medium'], k)
+        means, err = analysis.tools.format.for_medium_bar_plot(v['medium'])
+
+        analysis.graph.monetary_and_medium.one_condition_medium_bar(means, err, title)
 
 
 def stats_sim_exp_like():
@@ -126,12 +130,12 @@ def stats_sim_exp_like():
     #
     #     analysis.stats.mean_comparison.medium(medium)
 
-
-def run_experiment():
-    data = analysis.compute.monetary_and_medium.run()
-
-    for label, room_data in data.items():
-        analysis.graph.monetary_and_medium.overall_one_condition(room_data, f_name=f'xp_{label}.pdf')
+#
+# def run_experiment():
+#     data = analysis.compute.monetary_and_medium.run()
+#
+#     for label, room_data in data.items():
+#         analysis.graph.monetary_and_medium.overall_one_condition(room_data, f_name=f'xp_{label}.pdf')
 
 
 def run_simulation():
@@ -164,6 +168,8 @@ def run_simulation():
 
 def phase_diagram():
 
+    # CHANGE THIS!
+
     three_good_file = 'data/phase_3_goods.p'
     four_good_file = 'data/phase_4_goods.p'
 
@@ -188,9 +194,9 @@ if __name__ == '__main__':
 
     # main()
 
-    # bar_plots()
+    bar_plots()
     # phase_diagram()
-    run_experiment()
+    # run_experiment()
     # run_simulations()
     # bar_plots()
     # phase_diagram()
