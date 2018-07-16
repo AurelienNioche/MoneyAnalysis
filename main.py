@@ -153,7 +153,7 @@ def run_simulation():
 
         repartition = analysis.tools.economy.repartitions.get(r_id)
 
-        res = simulation.economy.launch(
+        simulation.economy.launch(
             agent_model='RLAgent',
             repartition=repartition,
             t_max=50,
@@ -161,7 +161,9 @@ def run_simulation():
             cognitive_parameters=cognitive_parameters,
             seed=123
         )
-        res['repartition'] = repartition
+
+        # SOMETHING TO DO HERE
+        # res['repartition'] = repartition
 
         # analysis.graph.monetary_and_medium.one_condition(res, f_name=f"sim_{label}.pdf")
 
