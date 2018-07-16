@@ -4,10 +4,16 @@ from scipy import stats
 from analysis.tools.conversion import Converter
 from analysis.tools import economy
 from game.models import Room, User, Choice
+from backup import backup
+
 import scipy.stats
+import os
 
 
-def run():
+def run(file_name='data/exp_strategy_count_pool.p'):
+
+    if os.path.exists(file_name):
+        return backup.load(file_name)
 
     output_data = {}
 
@@ -24,7 +30,7 @@ def run():
         data_room_mean = np.zeros(n_good)
         data_room_std = np.zeros(n_good)
 
-        medium = np.zeros((n_good, r.n_user))
+        medium = np.ones((n_good, r.n_user)) * -1
 
         for g in range(n_good):
 
@@ -78,5 +84,7 @@ def run():
             'std': data_room_std,
             'medium': medium
         }
+        # print(medium)
+    backup.save(output_data, file_name=file_name)
 
     return output_data

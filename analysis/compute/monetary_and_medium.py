@@ -1,11 +1,17 @@
 import numpy as np
+import os
 
 from game.models import Room, User, Choice
 from analysis.tools import economy
 from analysis.tools.conversion import Converter
 
+import backup.backup as backup
 
-def run():
+
+def run(file_name='data/exp_monetary_and_medium.p'):
+
+    if os.path.exists(file_name):
+        return backup.load(file_name)
 
     rooms = Room.objects.all().order_by('id')
 
@@ -61,5 +67,7 @@ def run():
             'medium': medium,
             'repartition': repartition
         }
+
+    backup.save(data, file_name=file_name)
 
     return data

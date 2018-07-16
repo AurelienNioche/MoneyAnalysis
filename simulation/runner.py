@@ -20,7 +20,7 @@ def get_parameters(
         m=0,
         constant_x_value=np.array([50, ]),
         constant_x_index=np.array([0, ]),
-        t_max=200,
+        t_max=50,
         economy_model='prod: i-1',
         range_repartition=range(10, 200, 20),
         n_cog_value=3):

@@ -32,13 +32,13 @@ class Data:
         # self.m[self.i] = param['m']
         self.economy_model[self.i] = param['economy_model']
 
-        if param.get('constant_x_value'):
+        if param.get('constant_x_value') is not None:
             self.constant_x_value[self.i] = param['constant_x_value']
 
-        if param.get('constant_x_index'):
+        if param.get('constant_x_index') is not None:
             self.constant_x_index[self.i] = param['constant_x_index']
 
-        if param.get('room_id'):
+        if param.get('room_id') is not None:
             self.room_id[self.i] = param['room_id']
 
         self.i += 1

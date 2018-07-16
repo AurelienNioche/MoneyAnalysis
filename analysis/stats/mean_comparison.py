@@ -56,7 +56,23 @@ def pool_monetary_bhv(monetary_bhv):
     return new
 
 
-def monetary_bhv(data):
+def medium_exclude_non_users(medium):
+
+    n_user = len(medium[0, :])
+    n_good = len(medium[:, 0])
+
+    without_non_users = []
+
+    for good in range(n_good):
+
+        new = medium[good, medium[good, :] != -1]
+
+        without_non_users.append(new)
+
+    return without_non_users
+
+
+def monetary_behavior(data):
 
     # If there is only one economy
     # we have one array
@@ -64,25 +80,28 @@ def monetary_bhv(data):
     # we have a list of arrays
     if isinstance(data, list):
 
-        monetary_bhv = pool_monetary_bhv(data)
+        m_bhv = pool_monetary_bhv(data)
 
     else:
 
-        monetary_bhv = monetary_bhv_format(data)
+        m_bhv = monetary_bhv_format(data)
 
-    comparisons = get_comparisons(monetary_bhv)
+    comparisons = get_comparisons(m_bhv)
 
     to_compare = []
 
     for g1, g2 in comparisons:
 
         to_compare.append(
-            {"data": np.array([monetary_bhv[g1, :], monetary_bhv[g2, :]]), "name": f"good_{g1}_vs_good_{g2}"}
+            {
+                "data": np.array([m_bhv[g1, :], m_bhv[g2, :]]),
+                "name": f"good_{g1}_vs_good_{g2}"
+            }
         )
 
     mw(to_compare)
 
-    if len(monetary_bhv) == 3:
+    if len(m_bhv) == 3:
 
         print('*' * 5, 'POST HOC', '*' * 5)
 
@@ -93,7 +112,10 @@ def monetary_bhv(data):
         for g1, g2 in comparisons:
 
             to_compare.append(
-                {"data": np.array([monetary_bhv[g1, :], monetary_bhv[g2, :]]), "name": f"good_{g1}_vs_good_{g2}"}
+                {
+                    "data": np.array([m_bhv[g1, :], m_bhv[g2, :]]),
+                    "name": f"good_{g1}_vs_good_{g2}"
+                }
             )
 
         mw(to_compare)
@@ -101,19 +123,24 @@ def monetary_bhv(data):
 
 def medium(data):
 
-    comparisons = get_comparisons(data)
+    m = medium_exclude_non_users(data)
+
+    comparisons = get_comparisons(m)
 
     to_compare = []
 
     for g1, g2 in comparisons:
 
         to_compare.append(
-            {"data": np.array([data[g1, :], data[g2, :]]), "name": f"good_{g1}_vs_good_{g2}"}
+            {
+                "data": np.array([m[g1], m[g2]]),
+                "name": f"good_{g1}_vs_good_{g2}"
+            }
         )
 
     mw(to_compare)
 
-    if len(data) == 3:
+    if len(m) == 3:
 
         print('*' * 5, 'POST HOC', '*' * 5)
 
@@ -124,7 +151,7 @@ def medium(data):
         for g1, g2 in comparisons:
 
             to_compare.append(
-                {"data": np.array([data[g1, :], data[g2, :]]), "name": f"good_{g1}_vs_good_{g2}"}
+                {"data": np.array([m[g1], m[g2]]), "name": f"good_{g1}_vs_good_{g2}"}
             )
 
         mw(to_compare)

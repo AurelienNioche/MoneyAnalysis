@@ -1,4 +1,5 @@
 import numpy as np
+import scipy.stats
 import simulation.economy
 
 
@@ -49,6 +50,43 @@ def for_monetary_behavior_over_t(monetary_bhv, repartition):
     return y
 
 
+def for_medium_bar_plot(medium):
+
+    n_good = len(medium[:, 0])
+
+    y = np.zeros(n_good)
+    err = np.zeros(n_good)
+
+    for good in range(n_good):
+
+        y[good] = np.mean(medium[good, medium[good, :] != -1])
+        err[good] = scipy.stats.sem(medium[good, medium[good, :] != -1])
+
+    return y, err
+
+
+def for_monetary_behavior_bar_plot(monetary_bhv):
+
+    n_user = len(monetary_bhv[0, :, 0])
+    n_good = len(monetary_bhv[:, 0, 0])
+
+    new = np.zeros((n_good, n_user))
+    y = np.zeros(n_good)
+    err = np.zeros(n_good)
+
+    for i in range(n_user):
+
+        for good in range(n_good):
+            new[good, i] = np.mean(monetary_bhv[good, i, :])
+
+    for good in range(n_good):
+
+        y[good] = np.mean(new[good, :])
+        err[good] = scipy.stats.sem(new[good, :])
+
+    return y, err
+
+
 def for_medium_over_t(medium, repartition, model='prod: i-1'):
 
     n_good = len(repartition)
@@ -79,6 +117,7 @@ def for_phase_diagram(monetary_behavior, repartition, n_good):
 
     unq_repartition = np.unique(repartition, axis=0)
     labels = np.unique([i[-1] for i in unq_repartition])
+
     n_side = len(labels)
 
     phases = []

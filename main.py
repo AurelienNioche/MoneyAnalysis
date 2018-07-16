@@ -24,24 +24,31 @@ application = get_wsgi_application()
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as grd
 import itertools as it
+import numpy as np
 import pickle
 # from analysis import demographics, medium, monetary_behavior, strategy, life_expectancy, \
 #     strategy_count, strategy_count_pool, monetary_behavior_pool
 # import graph.strategy
 # import graph.life_expectancy
 # import graph.strategy_count_pool
+import backup.backup as backup
 
 import simulation.economy
 import simulation.runner
 
 import analysis.fit.RL.optimize
+
 import analysis.tools
 import analysis.tools.format
 import analysis.tools.economy
+
 import analysis.graph
-import analysis.compute.monetary_and_medium
 import analysis.graph.monetary_and_medium
+import analysis.graph.phase_diagram
+
+import analysis.compute.monetary_and_medium
 import analysis.compute.strategy_count_pool
+
 import analysis.stats.mean_comparison
 
 
@@ -57,7 +64,7 @@ def stats_exp():
 
         print('Room: ', k)
 
-        analysis.stats.mean_comparison.monetary_bhv(v['monetary_bhv'])
+        analysis.stats.mean_comparison.monetary_behavior(v['monetary_bhv'])
 
     # --------------- Medium  ------------------------ #
 
@@ -70,6 +77,27 @@ def stats_exp():
         print('Room: ', k.replace('_strategy_count_pool', ''))
 
         analysis.stats.mean_comparison.medium(v['medium'])
+
+
+def bar_plots():
+
+    # --------------- Monetary bhv ------------------------ #
+
+    data = analysis.compute.monetary_and_medium.run()
+
+    for k, v in data.items():
+
+        analysis.graph.monetary_and_medium.one_condition_money_bar(v['monetary_bhv'], k)
+    #
+    # --------------- Medium  ------------------------ #
+
+    data = analysis.compute.strategy_count_pool.run()
+
+    for k, v in data.items():
+
+        k = k.replace('_strategy_count_pool', '')
+
+        analysis.graph.monetary_and_medium.one_condition_medium_bar(v['medium'], k)
 
 
 def stats_sim_exp_like():
@@ -86,7 +114,7 @@ def stats_sim_exp_like():
 
         print('Room: ', label)
 
-        analysis.stats.mean_comparison.monetary_bhv(monetary_bhv)
+        analysis.stats.mean_comparison.monetary_behavior(monetary_bhv)
 
     # print('*' * 5, 'TESTING USED AS MEDIUM', '*' * 5)
     #
@@ -134,11 +162,34 @@ def run_simulation():
         analysis.graph.monetary_and_medium.one_condition(res, f_name=f"sim_{label}.pdf")
 
 
-def main():
+def phase_diagram():
 
-    stats_exp()
+    three_good_file = 'data/phase_3_goods.p'
+    four_good_file = 'data/phase_4_goods.p'
+
+    four_good_data = backup.load(four_good_file)
+    three_good_data = backup.load(three_good_file)
+
+    analysis.graph.phase_diagram.plot(
+        three_good=three_good_data,
+        four_good=four_good_data
+    )
+
+
+def run_simulations():
+    simulation.runner.run(exp_like=False)
+
+
+def main():
+    run_simulations()
 
 
 if __name__ == '__main__':
 
-    main()
+    # main()
+
+    # bar_plots()
+    # phase_diagram()
+    run_simulations()
+    # bar_plots()
+    # phase_diagram()

@@ -10,12 +10,11 @@ def _monetary_behavior_phase_diagram(data, fig, gs, col, row, labels, n_good, ti
 
     ax = fig.add_subplot(gs[row, col])
 
-    im = ax.imshow(data, cmap="binary", origin="lower", vmin=0.0, vmax=1.0, aspect=100)  # , vmin=0.5)
+    im = ax.imshow(data, cmap="binary", origin="lower", vmin=0.0, vmax=1.0)  # , vmin=0.5)
 
     # Create colorbar
     if col == n_good - 1:
 
-        # ax.set_aspect(1)
         cbar = ax.figure.colorbar(im, ax=ax)
 
     step = int(len(labels)/n_ticks)
@@ -32,7 +31,8 @@ def _monetary_behavior_phase_diagram(data, fig, gs, col, row, labels, n_good, ti
     ax.tick_params(labelsize=8)
 
     ax.set_xlabel(f'$x_{n_good-1}$')
-    ax.set_ylabel(f'$x_{n_good}$')
+
+    ax.set_aspect(1)
 
     if title is not None:
         ax.set_title(title)
@@ -45,12 +45,13 @@ def _monetary_behavior_phase_diagram(data, fig, gs, col, row, labels, n_good, ti
 
     if col == 0:
 
+        ax.set_ylabel(f'$x_{n_good}$')
+
         ax.text(
-            s=f'{n_good} goods', x=0, y=0, horizontalalignment='center', verticalalignment='center',
+            s=f'{n_good} goods', x=-0.3, y=0, horizontalalignment='center', verticalalignment='center',
             transform=ax.transAxes,
             fontsize=20
         )
-
 
     # if 'fig' in locals():
     #     print('Saving fig.')
@@ -64,19 +65,22 @@ def _monetary_behavior_phase_diagram(data, fig, gs, col, row, labels, n_good, ti
         # plt.savefig(fig_name)
 
 
-def plot(bkp):
+def plot(three_good, four_good):
 
-    fig = plt.figure()
+    fig = plt.figure(figsize=(15, 10))
 
     gs = grd.GridSpec(ncols=4, nrows=2)
 
     for row, n_good in enumerate((3, 4)):
 
-        monetary_bhv = \
-            [b for i, b in enumerate(bkp.monetary_bhv) if bkp.n_good[i] == n_good]
+        if n_good == 3:
 
-        repartition = \
-            [b for i, b in enumerate(bkp.repartition) if bkp.n_good[i] == n_good]
+            monetary_bhv = [i for i in three_good.monetary_bhv]
+            repartition = [i for i in three_good.repartition]
+
+        else:
+            monetary_bhv = [i for i in four_good.monetary_bhv]
+            repartition = [i for i in four_good.repartition]
 
         formatted_data, labels = analysis.tools.format.for_phase_diagram(
             monetary_bhv,
