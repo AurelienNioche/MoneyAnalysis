@@ -101,5 +101,7 @@ ENV/
 .idea/
 templates/
 game/migrations/
-fig/
 data/
+fig/
+RL/
+WSS/
