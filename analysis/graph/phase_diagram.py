@@ -5,10 +5,8 @@ import analysis.tools.format
 import analysis.compute.monetary_and_medium
 
 
-def _monetary_behavior_phase_diagram(data, fig, gs, col, row, labels, n_good, title=None,
+def _monetary_behavior_phase_diagram(data, ax, col, labels, n_good, title=None,
                                     letter=None, n_ticks=3, fig_name=None):
-
-    ax = fig.add_subplot(gs[row, col])
 
     im = ax.imshow(data, cmap="binary", origin="lower", vmin=0.0, vmax=1.0)  # , vmin=0.5)
 
@@ -32,10 +30,10 @@ def _monetary_behavior_phase_diagram(data, fig, gs, col, row, labels, n_good, ti
 
     ax.set_xlabel(f'$x_{n_good-1}$')
 
-    ax.set_aspect(1)
-
     if title is not None:
         ax.set_title(title)
+
+    ax.set_aspect(1)
 
     if letter:
         ax.text(
@@ -67,7 +65,7 @@ def _monetary_behavior_phase_diagram(data, fig, gs, col, row, labels, n_good, ti
 
 def plot(three_good, four_good):
 
-    fig = plt.figure(figsize=(15, 10))
+    fig = plt.figure(figsize=(15, 15))
 
     gs = grd.GridSpec(ncols=4, nrows=2)
 
@@ -93,10 +91,8 @@ def plot(three_good, four_good):
             _monetary_behavior_phase_diagram(
                 data=formatted_data[col],
                 labels=labels,
-                gs=gs,
+                ax=fig.add_subplot(gs[row, col]),
                 col=col,
-                row=row,
-                fig=fig,
                 n_good=n_good,
             )
 

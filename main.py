@@ -131,7 +131,7 @@ def run_experiment():
     data = analysis.compute.monetary_and_medium.run()
 
     for label, room_data in data.items():
-        analysis.graph.monetary_and_medium.one_condition(room_data, f_name=f'xp_{label}.pdf')
+        analysis.graph.monetary_and_medium.overall_one_condition(room_data, f_name=f'xp_{label}.pdf')
 
 
 def run_simulation():
@@ -189,7 +189,8 @@ if __name__ == '__main__':
     # main()
 
     # bar_plots()
-    phase_diagram()
+    # phase_diagram()
+    run_experiment()
     # run_simulations()
     # bar_plots()
     # phase_diagram()

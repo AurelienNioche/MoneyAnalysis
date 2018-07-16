@@ -216,9 +216,10 @@ def one_condition(data, f_name):
         plt.savefig(f'fig/{f_name}')
 
 
-def one_condition_money_bar(data, title):
+def one_condition_money_bar(data, title, subplot_spec=None, fig=None):
 
-    fig = plt.figure()
+    if not fig:
+        fig = plt.figure()
 
     means, err = analysis.tools.format.for_monetary_behavior_bar_plot(data)
 
@@ -242,7 +243,7 @@ def one_condition_money_bar(data, title):
         labels=[str(i + 1) for i in range(len(means))],
         xlabel='Good',
         ylabel='Monetary behavior',
-        ax=fig.add_subplot(),
+        ax=fig.add_subplot(subplot_spec) if subplot_spec else fig.add_subplot(),
         title=title,
         sig=sig
     )
@@ -250,9 +251,10 @@ def one_condition_money_bar(data, title):
     plt.savefig(f'fig/bar_plot_monetary_bhv_{title}.pdf')
 
 
-def one_condition_medium_bar(data, title):
+def one_condition_medium_bar(data, title, subplot_spec=None, fig=None):
 
-    fig = plt.figure()
+    if not fig:
+        fig = plt.figure()
 
     means, err = analysis.tools.format.for_medium_bar_plot(data)
 
@@ -276,7 +278,7 @@ def one_condition_medium_bar(data, title):
         labels=[str(i + 1) for i in range(len(means))],
         xlabel='Good',
         ylabel='Used as medium',
-        ax=fig.add_subplot(),
+        ax=fig.add_subplot(subplot_spec) if subplot_spec else fig.add_subplot(),
         title=title,
         sig=sig
     )
@@ -284,88 +286,36 @@ def one_condition_medium_bar(data, title):
     plt.savefig(f'fig/bar_plot_medium_{title}.pdf')
 
 
-# def monetary_behavior_all_goods(data):
-#
-#     n_good = len(data[:, 0])
-#
-#     gs = grd.GridSpec(ncols=n_good, nrows=n_good)
-#
-#     for
+def one_condition_monetary_behavior_all_goods(data, fig, subplot_spec):
+
+    n_good = len(data['repartition'])
+
+    coord = it.product(range(n_good), range(n_good))
+    gs = grd.GridSpecFromSubplotSpec(nrows=n_good, ncols=n_good, subplot_spec=subplot_spec)
+
+    for i in range(n_good):
+        data_mbh = analysis.tools.format.for_monetary_behavior_over_t(data['monetary_bhv'][i], data['repartition'])
+
+        monetary_behavior_over_t(data=data_mbh, fig=fig, subplot_spec=gs[next(coord)], title=f'm={i}')
 
 
+def one_condition_medium(data, fig, subplot_spec):
+
+    medium = analysis.tools.format.for_medium_over_t(data['medium'], repartition=data['repartition'])
+
+    medium_over_t(medium, fig=fig, subplot_spec=subplot_spec)
 
 
-# def overall_one_condition():
-#
-#     fig = plt.figure(figsize=(14, 6), dpi=200)
-#     fig.subplots_adjust(left=0.05, bottom=0.1, top=0.94, right=0.98)
-#     gs = grd.GridSpec(ncols=2, nrows=2)#, width_ratios=[1, 1, 1, 1, 0.4], wspace=0.4, hspace=0.3)
-#
-#     # letter = (i.upper() for i in string.ascii_uppercase)
-#
-#     for i, n in enumerate((3, 4)):
-#         col_idx = (i for i in range(4))
-#
-#         monetary_behavior_over_t(
-#             data=data[f'{n}_good_non_uniform_monetary_behavior'],
-#             fig=fig, subplot_spec=gs[i, next(col_idx)], letter=next(letter))
-#
-#         medium_over_t(
-#             data=data[f'{n}_good_non_uniform_medium'],
-#             fig=fig, subplot_spec=gs[i, next(col_idx)], letter=next(letter))
-#
-#         monetary_behavior_over_t(
-#             data=data[f'{n}_good_uniform_monetary_behavior'],
-#             fig=fig, subplot_spec=gs[i, next(col_idx)], letter=next(letter))
-#
-#         medium_over_t(
-#             data=data[f'{n}_good_uniform_medium'],
-#             fig=fig, subplot_spec=gs[i, next(col_idx)], letter=next(letter))
-#
-#     ax = fig.add_subplot(gs[:, 4])
-#
-#     _bar_plots(
-#         [
-#             data['3_good_non_uniform_mean'],
-#             data['3_good_uniform_mean'],
-#             data['4_good_non_uniform_mean'],
-#             data['4_good_uniform_mean']
-#         ],
-#         [
-#             data['3_good_non_uniform_sem'],
-#             data['3_good_uniform_sem'],
-#             data['4_good_non_uniform_sem'],
-#             data['4_good_uniform_sem']
-#         ],
-#         labels=
-#         [
-#             '3 goods - Non-un. rep.',
-#             '3 goods - Un. rep.',
-#             '4 goods - Non-un. rep.',
-#             '4 goods - Un. rep.'
-#         ],
-#         ax=ax, letter=next(letter))
-#
-#     ax.set_aspect(aspect=14.5, anchor='NE')
-#
-#     ax0 = fig.add_subplot(gs[:, :])
-#     ax0.set_axis_off()
-#
-#     ax0.text(
-#         s='Non-uniform repartition', x=0.2, y=1.05, horizontalalignment='center', verticalalignment='center',
-#         transform=ax0.transAxes,
-#         fontsize=15)
-#
-#     ax0.text(
-#         s='Uniform repartition', x=0.65, y=1.05, horizontalalignment='center', verticalalignment='center',
-#         transform=ax0.transAxes,
-#         fontsize=15)
-#
-#     f_name = 'fig/results.pdf'
-#
-#     os.makedirs(os.path.dirname(f_name), exist_ok=True)
-#     plt.savefig(f_name)
-#     plt.show()
+def overall_one_condition(data, f_name):
+
+    fig = plt.figure(figsize=(10, 13)) # fig.subplots_adjust(left=0.05, bottom=0.1, top=0.94, right=0.98)
+    gs = grd.GridSpec(ncols=2, nrows=2, width_ratios=[0.7, 0.3], height_ratios=[0.8, 0.2])
+
+    one_condition_monetary_behavior_all_goods(data, fig=fig, subplot_spec=gs[0, 0])
+    one_condition_money_bar(data['monetary_bhv'], subplot_spec=gs[1, 0], title=f_name, fig=fig)
+    one_condition_medium_bar(data['medium'], subplot_spec=gs[1, 1], title=f_name, fig=fig)
+
+    plt.show()
 
 
 def overall(data):
