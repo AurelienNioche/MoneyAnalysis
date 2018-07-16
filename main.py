@@ -163,7 +163,7 @@ def run_simulation():
         )
         res['repartition'] = repartition
 
-        analysis.graph.monetary_and_medium.one_condition(res, f_name=f"sim_{label}.pdf")
+        # analysis.graph.monetary_and_medium.one_condition(res, f_name=f"sim_{label}.pdf")
 
 
 def phase_diagram():
