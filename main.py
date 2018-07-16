@@ -189,7 +189,7 @@ if __name__ == '__main__':
     # main()
 
     # bar_plots()
-    # phase_diagram()
-    run_simulations()
+    phase_diagram()
+    # run_simulations()
     # bar_plots()
     # phase_diagram()

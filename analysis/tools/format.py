@@ -115,7 +115,7 @@ def for_phase_diagram(monetary_behavior, repartition, n_good):
 
     money = _get_money_array(monetary_behavior, repartition, n_good)
 
-    unq_repartition = np.unique(repartition, axis=0)
+    unq_repartition = np.unique(repartition)
     labels = np.unique([i[-1] for i in unq_repartition])
 
     n_side = len(labels)

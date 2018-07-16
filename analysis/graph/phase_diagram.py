@@ -75,12 +75,12 @@ def plot(three_good, four_good):
 
         if n_good == 3:
 
-            monetary_bhv = [i for i in three_good.monetary_bhv]
-            repartition = [i for i in three_good.repartition]
+            monetary_bhv = three_good.monetary_bhv
+            repartition = three_good.repartition
 
         else:
-            monetary_bhv = [i for i in four_good.monetary_bhv]
-            repartition = [i for i in four_good.repartition]
+            monetary_bhv = four_good.monetary_bhv
+            repartition = four_good.repartition
 
         formatted_data, labels = analysis.tools.format.for_phase_diagram(
             monetary_bhv,
