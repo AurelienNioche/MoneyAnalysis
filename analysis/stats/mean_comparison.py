@@ -99,26 +99,9 @@ def monetary_behavior(data):
             }
         )
 
-    mw(to_compare)
+    valid = mw(to_compare)
 
-    if len(m_bhv) == 3:
-
-        print('*' * 5, 'POST HOC', '*' * 5)
-
-        comparisons = [(1, 2)]
-
-        to_compare = []
-
-        for g1, g2 in comparisons:
-
-            to_compare.append(
-                {
-                    "data": np.array([m_bhv[g1, :], m_bhv[g2, :]]),
-                    "name": f"good_{g1}_vs_good_{g2}"
-                }
-            )
-
-        mw(to_compare)
+    return [c + (v, ) for c, v in zip(comparisons, valid)]
 
 
 def medium(data):
@@ -138,23 +121,9 @@ def medium(data):
             }
         )
 
-    mw(to_compare)
+    valid = mw(to_compare)
 
-    if len(m) == 3:
-
-        print('*' * 5, 'POST HOC', '*' * 5)
-
-        comparisons = [(1, 2)]
-
-        to_compare = []
-
-        for g1, g2 in comparisons:
-
-            to_compare.append(
-                {"data": np.array([m[g1], m[g2]]), "name": f"good_{g1}_vs_good_{g2}"}
-            )
-
-        mw(to_compare)
+    return [c + (v, ) for c, v in zip(comparisons, valid)]
 
 
 def mw(to_compare):
@@ -176,7 +145,7 @@ def mw(to_compare):
               .format(dic["name"], u, p, p_c, v))
         print()
 
-
+    return valid
 
 
 

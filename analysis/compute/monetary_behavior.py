@@ -1,82 +1,72 @@
 import numpy as np
-from scipy import stats
+import os
 
-from analysis.tools.conversion import Converter
-from analysis.tools import economy
 from game.models import Room, User, Choice
+from analysis.tools import economy
+from analysis.tools.conversion import Converter
+
+import backup.backup as backup
 
 
-def run(m=0, room_id=None):
+def run(file_name='data/exp_monetary_behavior.p'):
 
-    output_data = {}
+    if os.path.exists(file_name):
+        return backup.load(file_name)
 
-    # -------------- #
+    rooms = Room.objects.all().order_by('id')
 
-    print("******** Analysis of monetary behavior *************")
-
-    if room_id is None:
-
-        rooms = Room.objects.all().order_by('id')
-    else:
-        rooms = Room.objects.filter(id=room_id)
+    data = {}
 
     for r in rooms:
 
-        print("Room ", r.id)
-
         n_good = r.n_type
-        n_agent = r.n_user
+        print(r.id)
 
-        room_data = np.zeros((n_good, n_agent, r.t_max))
+        users = User.objects.filter(room_id=r.id)
 
-        good_list = [n_good - 1, ] + list(range(n_good - 1))
+        monetary_behavior = np.zeros((n_good, r.n_user, r.t_max))
+        medium = np.zeros((n_good, r.t_max))
 
-        for prod in good_list:
-
-            users = User.objects.filter(
-                    room_id=r.id, production_good=Converter.reverse_value(prod, n_good=n_good))
+        for m in range(n_good):
 
             for t in range(r.t_max):
 
-                monetary_conform_list = []
+                for i, u in enumerate(users):
 
-                choices = Choice.objects.filter(room_id=r.id, t=t, player_id__in=[u.player_id for u in users])
+                    choices = Choice.objects.filter(room_id=r.id, t=t, user_id=u.id)
 
-                assert len(choices) == len(users)
+                    for c in choices:
 
-                for c in choices:
+                        desired = Converter.convert_value(c.desired_good, n_good=n_good)
+                        in_hand = Converter.convert_value(c.good_in_hand, n_good=n_good)
 
-                    desired = Converter.convert_value(c.desired_good, n_good=n_good)
-                    in_hand = Converter.convert_value(c.good_in_hand, n_good=n_good)
+                        prod = Converter.convert_value(
+                            u.production_good,
+                            n_good=n_good)
 
-                    cons = Converter.convert_value(
-                        [u for u in users if u.player_id == c.player_id][0].consumption_good,
-                        n_good=n_good)
+                        cons = Converter.convert_value(
+                            u.consumption_good,
+                            n_good=n_good)
 
-                    if m in (prod, cons):
-                        monetary_conform = (in_hand, desired) == (prod, cons)
+                        if m in (prod, cons):
+                            monetary_conform = (in_hand, desired) == (prod, cons)
 
-                    else:
-                        monetary_conform = (in_hand, desired) in [(prod, m), (m, cons)]
+                        else:
+                            monetary_conform = (in_hand, desired) in [(prod, m), (m, cons)]
 
-                    monetary_conform_list.append(monetary_conform)
+                            medium[m, t] += monetary_conform
 
-                room_data[prod, t] = np.mean(monetary_conform_list)
+                        monetary_behavior[m, i, t] = monetary_conform
+
+        repartition = economy.repartitions.get(r.id)
 
         label = economy.labels.get(r.id)
+        data[label] = {
+            'monetary_bhv': monetary_behavior,
+            'medium': medium,
+            'repartition': repartition
+        }
 
-        mean = np.mean(room_data.flatten())
-        sem = stats.sem(room_data.flatten())
+    backup.save(data, file_name=file_name)
 
-        keys = label + '_mean', label + '_sem', label + '_monetary_behavior'
-        values = mean, sem, room_data
-
-        for k, v in zip(keys, values):
-            output_data[k] = v
-
-    print()
-    return output_data
-
-
-if __name__ == '__main__':
-    run()
+    return data

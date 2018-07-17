@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as grd
 
 import numpy as np
+import os
 
 # import analysis.tools.format
 # import analysis.compute.monetary_and_medium
@@ -57,29 +58,6 @@ def _monetary_behavior_phase_diagram(
         )
 
 
-    # if 'fig' in locals():
-    #     print('Saving fig.')
-    #     #noinspection PyUnboundLocalVariable
-    #     fig.tight_layout()
-    #
-    #     if fig_name is None:
-    #         fig_name = f'fig/phase_{n_good}.pdf'
-    #
-    #     os.makedirs(os.path.dirname(fig_name), exist_ok=True)
-    #     plt.savefig(fig_name)
-
-
-# def pre_processing(three_good, four_good):
-#
-#     formatted_data, labels = analysis.tools.format.for_phase_diagram(
-#         monetary_bhv,
-#         repartition,
-#         n_good
-#     )
-#
-#     return
-
-
 def plot(data, labels, f_name):
 
     fig = plt.figure(figsize=(22, 9))
@@ -99,8 +77,10 @@ def plot(data, labels, f_name):
             )
 
     plt.tight_layout()
+
+    os.makedirs(os.path.dirname(f_name), exist_ok=True)
     plt.savefig(f_name)
-    plt.show()
+    # plt.show()
 
 
 def main():

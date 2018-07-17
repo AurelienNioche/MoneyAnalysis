@@ -46,7 +46,7 @@ def run():
                     if desired == cons:
                         room_data[in_hand, t] += 1
 
-        label = economy.labels.get(r.id) + '_medium'
+        label = economy.labels.get(r.id)
         output_data[label] = room_data / (len(users) / n_good)
 
     return output_data

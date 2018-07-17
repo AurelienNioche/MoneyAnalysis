@@ -78,7 +78,7 @@ def run(file_name='data/exp_strategy_count_pool.p'):
 
             data_room_std[g] = scipy.stats.sem(data_good_mean)
 
-        label = economy.labels.get(r.id) + '_strategy_count_pool'
+        label = economy.labels.get(r.id) #+ '_strategy_count_pool'
         output_data[label] = {
             'mean': data_room_mean,
             'std': data_room_std,

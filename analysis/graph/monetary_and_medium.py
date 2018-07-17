@@ -5,38 +5,10 @@ import os
 import string
 import itertools as it
 
-# import analysis.tools.format
-# import analysis.compute.monetary_and_medium
+import analysis.graph.monetary_and_medium_bar
 
 
-def _bar(means, errors, labels, title, subplot_spec=None, fig=None):
-
-    if subplot_spec:
-        ax = fig.add_subplot(subplot_spec)
-    else:
-        fig, ax = plt.figure()
-
-    # Hide spines
-    ax.spines['top'].set_visible(False)
-    ax.spines['right'].set_visible(False)
-
-    ax.tick_params(length=0)
-    ax.set_title(f"$\{title}$", fontsize=20)
-
-    # print(labels)
-
-    # Set x labels
-    labels_pos = np.arange(len(labels))
-    ax.set_xticklabels(labels)
-    ax.set_xticks(labels_pos)
-
-    ax.set_ylim(0, 1)
-
-    # create
-    ax.bar(labels_pos, means, yerr=errors, edgecolor="white", align="center", color="black")
-
-
-def monetary_behavior_over_t(data, fig, subplot_spec, letter=None, title=None):
+def monetary_behavior_over_t(data, fig, subplot_spec, letter=None, title=None, xlabel=True):
 
     """
     :param data: (array n_good * t_max) data
@@ -72,7 +44,8 @@ def monetary_behavior_over_t(data, fig, subplot_spec, letter=None, title=None):
     ax0 = fig.add_subplot(gs[:, :])
     ax0.set_axis_off()
 
-    ax0.text(s="Monetary behavior", x=-0.15, y=0.5, horizontalalignment='center', verticalalignment='center',
+    if xlabel:
+        ax0.text(s="Monetary behavior", x=-0.15, y=0.5, horizontalalignment='center', verticalalignment='center',
              transform=ax0.transAxes, fontsize=10, rotation='vertical')
 
     if letter:
@@ -132,188 +105,72 @@ def medium_over_t(data, fig, subplot_spec, letter=None):
             fontsize=20)
 
 
-def _bar_plots(means, errors, labels=None,
-               ylabel=None, xlabel=None, ax=None, letter=None, title=None, sig=None):
+def one_condition_monetary_behavior_all_goods(data, fig, subplot_spec):
 
-    if ax is None:
-        print('No ax given, I will create a fig.')
-        fig, ax = plt.subplots()
+    n_good = len(data['repartition'])
 
-    if letter:
-        ax.text(
-            s=letter, x=-0.1, y=-0.68, horizontalalignment='center', verticalalignment='center',
-            transform=ax.transAxes,
-            fontsize=20)
+    coord = it.product(range(n_good), range(n_good))
+    gs = grd.GridSpecFromSubplotSpec(nrows=1, ncols=n_good, subplot_spec=subplot_spec)
 
-    if labels is None:
-        labels = [str(i + 1) for i in range(len(means))]
+    for i in range(n_good):
 
-    # Hide spines
-    ax.spines['top'].set_visible(False)
-    ax.spines['right'].set_visible(False)
-
-    ax.tick_params(axis='y', labelsize=8)
-    ax.tick_params(axis='x', length=0)
-
-    # print(labels)
-
-    # Set x labels
-    labels_pos = np.arange(len(labels))
-    ax.set_xticklabels(labels) #rotation='vertical')
-    ax.set_xticks(labels_pos)
-
-    # For significance bars
-    if sig:
-
-        y_inc_line = 0.08
-        y_inc_text = 0.11
-
-        shift = 0.1
-
-        for idx, (i, j, k) in enumerate(sig):
-
-            x = (i+j)/2
-            y = max(means[i:j+1])
-
-            ax.hlines(y=y + y_inc_line + shift*idx,
-                      xmin=i, xmax=j, color='black')
-
-            ax.text(s='***' if k else 'NS',
-                    x=x,
-                    y=y + y_inc_text + shift*idx,
-                    horizontalalignment='center', verticalalignment='center')
-
-    ax.set_ylim(0, 1)
-
-    ax.set_yticks((0, 0.5, 1))
-
-    ax.set_ylabel(ylabel)
-    ax.set_xlabel(xlabel)
-
-    ax.set_title(title)
-
-    # create
-    ax.bar(labels_pos, means, yerr=errors, edgecolor="white", align="center", color="grey")
-    
-
-# def one_condition(data, f_name):
-#
-#     coord = it.product(range(2), range(3))
-#     gs = grd.GridSpec(nrows=2, ncols=3)
-#
-#     fig = plt.figure(figsize=(14, 14))
-#
-#     for i in range(len(data['repartition'])):
-#         data_mbh = analysis.tools.format.for_monetary_behavior_over_t(data['monetary_bhv'][i], data['repartition'])
-#
-#         monetary_behavior_over_t(data=data_mbh, fig=fig, subplot_spec=gs[next(coord)], title=f'm={i}')
-#
-#     data_m = analysis.tools.format.for_medium_over_t(data['medium'], data['repartition'])
-#     medium_over_t(data=data_m, fig=fig, subplot_spec=gs[next(coord)])
-#
-#     plt.tight_layout()
-#
-#     if f_name is not None:
-#         os.makedirs('fig', exist_ok=True)
-#         plt.savefig(f'fig/{f_name}')
+        monetary_behavior_over_t(
+            data=data['monetary_over_t'][i],
+            fig=fig, subplot_spec=gs[next(coord)],
+            title=f'm={i}',
+            xlabel=i == 0
+        )
 
 
-def one_condition_money_bar(means, err, title=None, subplot_spec=None, fig=None):
+def overall_one_condition(data, title, f_name):
 
-    if not fig:
-        fig = plt.figure()
+    fig = plt.figure(figsize=(10, 10)) # fig.subplots_adjust(left=0.05, bottom=0.1, top=0.94, right=0.98)
+    gs = grd.GridSpec(ncols=2, nrows=2, width_ratios=[3, 1], height_ratios=[5, 1])
 
-    if title == '3_good_non_uniform':
-        sig = [(0, 1, False), (0, 2, False)]
+    one_condition_monetary_behavior_all_goods(data, fig=fig, subplot_spec=gs[0, 0])
 
-    elif title == '3_good_uniform':
-        sig = [(0, 1, True), (0, 2, False)]
+    medium_over_t(data['medium_over_t'], fig=fig, subplot_spec=gs[0, 1])
 
-    elif title == '4_good_non_uniform':
-        sig = [(0, 1, False), (0, 2, True), (0, 3, False)]
-
-    elif title == '4_good_uniform':
-        sig = [(0, 1, False), (0, 2, False), (0, 3, False)]
-    else:
-        sig = None
-
-    _bar_plots(
-        means=means,
-        errors=err,
-        labels=[str(i + 1) for i in range(len(means))],
+    analysis.graph.monetary_and_medium_bar.one_condition_bar(
+        means=data['monetary_bar'][0],
+        err=data['monetary_bar'][1],
+        subplot_spec=gs[1, 0],
+        # title=f_name,
+        title='',
         xlabel='Good',
         ylabel='Monetary behavior',
-        ax=fig.add_subplot(subplot_spec) if subplot_spec else fig.add_subplot(),
-        title=title,
-        sig=sig
+        fig=fig
     )
 
-    plt.savefig(f'fig/bar_plot_monetary_bhv_{title}.pdf')
-
-
-def one_condition_medium_bar(means, err, title, subplot_spec=None, fig=None):
-
-    if not fig:
-        fig = plt.figure()
-
-    if title == '3_good_non_uniform':
-        sig = [(0, 1, False), (0, 2, False)]
-
-    elif title == '3_good_uniform':
-        sig = [(0, 1, False), (0, 2, False)]
-
-    elif title == '4_good_non_uniform':
-        sig = [(0, 1, False), (0, 2, True), (0, 3, True)]
-
-    elif title == '4_good_uniform':
-        sig = [(0, 1, False), (0, 2, False), (0, 3, False)]
-    else:
-        sig = None
-
-    _bar_plots(
-        means=means,
-        errors=err,
-        labels=[str(i + 1) for i in range(len(means))],
+    analysis.graph.monetary_and_medium_bar.one_condition_bar(
+        means=data['medium_bar'][0],
+        err=data['medium_bar'][1],
+        subplot_spec=gs[1, 1],
         xlabel='Good',
         ylabel='Used as medium',
-        ax=fig.add_subplot(subplot_spec) if subplot_spec else fig.add_subplot(),
-        title=title,
-        sig=sig
+        # title=f_name,
+        title='',
+        fig=fig
     )
 
-    plt.savefig(f'fig/bar_plot_medium_{title}.pdf')
+    set_title_with_fake_fig(title=title, subplot_spec=gs[:, :], fig=fig)
+
+    plt.savefig(f_name)
 
 
-# def one_condition_monetary_behavior_all_goods(data, fig, subplot_spec):
-#
-#     n_good = len(data['repartition'])
-#
-#     coord = it.product(range(n_good), range(n_good))
-#     gs = grd.GridSpecFromSubplotSpec(nrows=n_good, ncols=n_good, subplot_spec=subplot_spec)
-#
-#     for i in range(n_good):
-#         data_mbh = analysis.tools.format.for_monetary_behavior_over_t(data['monetary_bhv'][i], data['repartition'])
-#
-#         monetary_behavior_over_t(data=data_mbh, fig=fig, subplot_spec=gs[next(coord)], title=f'm={i}')
-#
-#
-# def one_condition_medium(data, fig, subplot_spec):
-#
-#     medium = analysis.tools.format.for_medium_over_t(data['medium'], repartition=data['repartition'])
-#
-#     medium_over_t(medium, fig=fig, subplot_spec=subplot_spec)
-#
-#
-# def overall_one_condition(data, f_name):
-#
-#     fig = plt.figure(figsize=(10, 13)) # fig.subplots_adjust(left=0.05, bottom=0.1, top=0.94, right=0.98)
-#     gs = grd.GridSpec(ncols=2, nrows=2, width_ratios=[0.7, 0.3], height_ratios=[0.8, 0.2])
-#
-#     one_condition_monetary_behavior_all_goods(data, fig=fig, subplot_spec=gs[0, 0])
-#     one_condition_money_bar(data['monetary_bhv'], subplot_spec=gs[1, 0], title=f_name, fig=fig)
-#     one_condition_medium_bar(data['medium'], subplot_spec=gs[1, 1], title=f_name, fig=fig)
-#
-#     plt.show()
+def set_title_with_fake_fig(title, subplot_spec, fig):
+
+    ax = fig.add_subplot(subplot_spec)
+
+    for k in ax.spines.keys():
+        ax.spines[k].set_visible(False)
+
+    ax.patch.set_alpha(0)
+    ax.set_xticks([])
+    ax.set_yticks([])
+    # ax.set_xtickslabel([])
+
+    ax.text(s=title.replace('_', ' ').capitalize(), x=0.4, y=1.1, fontsize=20)
 
 
 def overall(data):
@@ -345,7 +202,7 @@ def overall(data):
 
     ax = fig.add_subplot(gs[:, 4])
 
-    _bar_plots(
+    analysis.graph.monetary_and_medium_bar.bar_plots(
         [
             data['3_good_non_uniform_mean'],
             data['3_good_uniform_mean'],
@@ -423,17 +280,6 @@ def overall_example():
     overall(example_data)
 
 
-def main():
-
-    np.random.seed(123)
-    means = np.random.random(size=3)
-    errors = np.random.random(size=3) / 100
-    sig = [(0, 1, True), (0, 2, False)]
-    _bar_plots(means=means, errors=errors, sig=sig)
-
-    plt.show()
-
-
 if __name__ == '__main__':
 
-    main()
+    overall_example()

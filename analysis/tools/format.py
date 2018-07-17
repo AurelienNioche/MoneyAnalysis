@@ -37,15 +37,16 @@ def for_fit(data):
 def for_monetary_behavior_over_t(monetary_bhv, repartition):
 
     n_good = len(repartition)
-    t_max = len(monetary_bhv[0, ])
+    t_max = len(monetary_bhv[0, 0, :])
 
     agent_type = np.repeat(np.arange(n_good), repartition)
 
-    y = np.zeros((n_good, t_max))
+    y = np.zeros((n_good, n_good, t_max))
 
     for i in range(n_good):
-        for t in range(t_max):
-            y[i, t] = np.mean(monetary_bhv[agent_type == i, t])
+        for j in range(n_good):
+            for t in range(t_max):
+                y[i, j, t] = np.mean(monetary_bhv[i, agent_type == j, t])
 
     return y
 
@@ -58,7 +59,6 @@ def for_medium_bar_plot(medium):
     err = np.zeros(n_good)
 
     for good in range(n_good):
-
         y[good] = np.mean(medium[good, medium[good, :] != -1])
         err[good] = scipy.stats.sem(medium[good, medium[good, :] != -1])
 
@@ -90,7 +90,7 @@ def for_monetary_behavior_bar_plot(monetary_bhv):
 def for_medium_over_t(medium, repartition, model='prod: i-1'):
 
     n_good = len(repartition)
-    t_max = len(medium[0, ])
+    t_max = len(medium[0, :])
 
     roles = simulation.economy.Economy.get_roles(n_goods=len(repartition), model=model)
 

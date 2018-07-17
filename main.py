@@ -21,16 +21,7 @@ from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 
 
-import matplotlib.pyplot as plt
-import matplotlib.gridspec as grd
-import itertools as it
-import numpy as np
 import pickle
-# from analysis import demographics, medium, monetary_behavior, strategy, life_expectancy, \
-#     strategy_count, strategy_count_pool, monetary_behavior_pool
-# import graph.strategy
-# import graph.life_expectancy
-# import graph.strategy_count_pool
 import backup.backup as backup
 
 import simulation.economy
@@ -44,9 +35,10 @@ import analysis.tools.economy
 
 import analysis.graph
 import analysis.graph.monetary_and_medium
+import analysis.graph.monetary_and_medium_bar
 import analysis.graph.phase_diagram
 
-import analysis.compute.monetary_and_medium
+import analysis.compute.monetary_behavior
 import analysis.compute.strategy_count_pool
 
 import analysis.stats.mean_comparison
@@ -56,7 +48,7 @@ def stats_exp():
 
     # --------------- Monetary bhv ------------------------ #
 
-    data = analysis.compute.monetary_and_medium.run()
+    data = analysis.compute.monetary_behavior.run()
 
     print('*' * 5, 'TESTING MONETARY BHV', '*' * 5)
 
@@ -83,59 +75,52 @@ def bar_plots():
 
     # --------------- Monetary bhv ------------------------ #
 
-    data = analysis.compute.monetary_and_medium.run()
+    data = analysis.compute.monetary_behavior.run()
+
+    xlabel = 'Good'
+    ylabel = 'Monetary behavior'
 
     for k, v in data.items():
 
+        sig = analysis.stats.mean_comparison.monetary_behavior(v['monetary_bhv'])
         title = k
         means, err = analysis.tools.format.for_monetary_behavior_bar_plot(v['monetary_bhv'])
-        analysis.graph.monetary_and_medium.one_condition_money_bar(means, err, title)
-    #
+        f_name = f'fig/monetary_bar_{title}'
+
+        analysis.graph.monetary_and_medium_bar.one_condition_bar(
+            means=means,
+            err=err,
+            title=title,
+            ylabel=ylabel,
+            xlabel=xlabel,
+            sig=sig,
+            f_name=f_name
+        )
+
     # --------------- Medium  ------------------------ #
 
     data = analysis.compute.strategy_count_pool.run()
+
+    xlabel = 'Good'
+    ylabel = 'Used as medium'
 
     for k, v in data.items():
 
         title = k.replace('_strategy_count_pool', '')
 
+        sig = analysis.stats.mean_comparison.medium(v['medium'])
         means, err = analysis.tools.format.for_medium_bar_plot(v['medium'])
+        f_name = f'fig/medium_bar_{title}'
 
-        analysis.graph.monetary_and_medium.one_condition_medium_bar(means, err, title)
-
-
-def stats_sim_exp_like():
-
-    data = simulation.runner.run(exp_like=True)
-
-    cond = analysis.tools.economy.labels.copy().items()
-
-    print('*' * 5, 'TESTING MONETARY BHV', '*' * 5)
-
-    for i, (room_id, label) in enumerate(sorted(cond)):
-
-        monetary_bhv = [b for i, b in enumerate(data.monetary_bhv) if data.room_id[i] == room_id]
-
-        print('Room: ', label)
-
-        analysis.stats.mean_comparison.monetary_behavior(monetary_bhv)
-
-    # print('*' * 5, 'TESTING USED AS MEDIUM', '*' * 5)
-    #
-    # for i, (room_id, label) in enumerate(sorted(cond)):
-    #
-    #     medium = [b for i, b in enumerate(data.medium) if data.room_id[i] == room_id]
-    #
-    #     print('Room: ', label)
-    #
-    #     analysis.stats.mean_comparison.medium(medium)
-
-#
-# def run_experiment():
-#     data = analysis.compute.monetary_and_medium.run()
-#
-#     for label, room_data in data.items():
-#         analysis.graph.monetary_and_medium.overall_one_condition(room_data, f_name=f'xp_{label}.pdf')
+        analysis.graph.monetary_and_medium_bar.one_condition_bar(
+            means=means,
+            err=err,
+            title=title,
+            ylabel=ylabel,
+            xlabel=xlabel,
+            sig=sig,
+            f_name=f_name
+        )
 
 
 def run_simulation():
@@ -170,22 +155,90 @@ def run_simulation():
 
 def phase_diagram():
 
-    # CHANGE THIS!
+    """
+    plot phase diagrams
+    with 3 and 4 goods
+    """
 
     three_good_file = 'data/phase_3_goods.p'
     four_good_file = 'data/phase_4_goods.p'
+    f_name = 'fig/phase.pdf'
 
-    four_good_data = backup.load(four_good_file)
-    three_good_data = backup.load(three_good_file)
+    if not os.path.exists(three_good_file):
+        three_good_data = simulation.runner.run(phase=True, n_good=3)
+    else:
+        three_good_data = backup.load(three_good_file)
+
+    if not os.path.exists(four_good_file):
+        four_good_data = simulation.runner.run(phase=True, n_good=4)
+    else:
+        four_good_data = backup.load(four_good_file)
+
+    data = []
+
+    for d in (three_good_data, four_good_data):
+
+        formatted_data, labels = analysis.tools.format.for_phase_diagram(
+            monetary_behavior=d.monetary_bhv,
+            repartition=d.repartition,
+            n_good=len(d.repartition[0])
+        )
+
+        data.append(formatted_data)
 
     analysis.graph.phase_diagram.plot(
-        three_good=three_good_data,
-        four_good=four_good_data
+        data=data,
+        labels=labels,
+        f_name=f_name
     )
 
 
+def exp_overall():
+
+    monetary = analysis.compute.monetary_behavior.run()
+    medium = analysis.compute.strategy_count_pool.run()
+
+    # monetary_over_t = analysis.compute.monetary_behavior.run()
+
+    keys = monetary.keys()
+
+    for k in keys:
+
+        med_t = monetary[k]['medium']
+        med_bar = medium[k]['medium']
+        m_bhv = monetary[k]['monetary_bhv']
+        repartition = monetary[k]['repartition']
+
+        monetary_means, monetary_err = analysis.tools.format.for_monetary_behavior_bar_plot(m_bhv)
+        monetary_over_t = analysis.tools.format.for_monetary_behavior_over_t(m_bhv, repartition)
+
+        medium_means, medium_err = analysis.tools.format.for_medium_bar_plot(med_bar)
+        medium_over_t = analysis.tools.format.for_medium_over_t(med_t, repartition)
+
+        data = {
+            'monetary_bar': (monetary_means, monetary_err),
+            'monetary_over_t': monetary_over_t,
+            'medium_bar': (medium_means, medium_err),
+            'medium_over_t': medium_over_t,
+            'repartition': repartition
+        }
+
+        analysis.graph.monetary_and_medium.overall_one_condition(data=data, title=k, f_name=f'fig/overall_exp_{k}.pdf')
+
+
+def sim_overall():
+
+    data = backup.load('data/exp_like.p')
+
+
 def run_simulations():
-    simulation.runner.run(exp_like=False)
+
+    """
+    runs simulations with
+    command line arguments
+    """
+
+    simulation.runner.run()
 
 
 def main():
@@ -196,8 +249,11 @@ if __name__ == '__main__':
 
     # main()
 
-    bar_plots()
+    # bar_plots()
     # phase_diagram()
+    # sim_overall()
+
+    exp_overall()
     # run_experiment()
     # run_simulations()
     # bar_plots()

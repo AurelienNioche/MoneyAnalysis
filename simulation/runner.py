@@ -135,15 +135,11 @@ def _run(param):
     return param, e.run()
 
 
-def _produce_data(exp, n_good):
+def _produce_data(phase, n_good):
 
     tqdm.write("Run simulations.")
 
-    if exp:
-
-        params = get_experiment_like_parameters()
-
-    else:
+    if phase:
 
         params = get_parameters(
             n_good=n_good,
@@ -151,6 +147,10 @@ def _produce_data(exp, n_good):
             constant_x_index=np.array([0, ]) if n_good == 3 else np.array([0, 1]),
             constant_x_value=np.array([50, ]) if n_good == 3 else np.array([50, 50])
         )
+
+    else:
+
+        params = get_experiment_like_parameters()
 
     max_ = len(params)
 
@@ -166,17 +166,17 @@ def _produce_data(exp, n_good):
     return data
 
 
-def get_pool_data(force=False, exp_like=False, n_good=3):
+def get_pool_data(force=False, phase=False, n_good=3):
 
-    if exp_like:
-        data_file = 'data/exp_like.p'
+    if phase:
+        data_file = f'data/phase_{n_good}_goods.p'
 
     else:
-        data_file = f'data/phase_{n_good}_goods.p'
+        data_file = f'data/exp_like.p'
 
     if force or not os.path.exists(data_file):
 
-        bkp = _produce_data(exp_like, n_good)
+        bkp = _produce_data(phase, n_good)
 
         backup.backup.save(obj=bkp, file_name=data_file)
 
@@ -186,25 +186,34 @@ def get_pool_data(force=False, exp_like=False, n_good=3):
     return bkp
 
 
-def run(exp_like=False):
+def run(phase=None, n_good=None):
 
     parser = argparse.ArgumentParser(description='Run money simulations.')
 
     parser.add_argument('-f', '--force', action="store_true", default=False,
                         help="Force creation of new data.")
 
-    parser.add_argument('-e', '--exp', action="store_true", default=False,
-                        help="Experiment like simulations")
+    parser.add_argument('-p', '--phase', action="store_true", default=False,
+                        help="Simulations intended to plot phase diagrams")
 
     parser.add_argument('-n', '--n_good', type=int, help="number of goods", default=3)
 
     args = parser.parse_args()
 
-    if not exp_like:
-        bkp = get_pool_data(force=args.force, exp_like=args.exp, n_good=args.n_good)
+    if not phase:
+        bkp = get_pool_data(
+            force=args.force,
+            phase=args.phase,
+            n_good=args.n_good if not n_good else n_good
+        )
+
     else:
 
-        bkp = get_pool_data(force=args.force, exp_like=exp_like, n_good=args.n_good)
+        bkp = get_pool_data(
+            force=args.force,
+            phase=phase,
+            n_good=args.n_good if not n_good else n_good
+        )
 
     return bkp
 
