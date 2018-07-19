@@ -119,6 +119,8 @@ def sim_medium_over_user_test(medium):
     for_medium_bar_plot_from_simulation function
     """
 
+    # print(len(medium.flatten() == -1))
+
     n_user = len(medium[0, :, 0])
     n_good = len(medium[:, 0, 0])
 
@@ -127,9 +129,14 @@ def sim_medium_over_user_test(medium):
     for i in range(n_user):
 
         for good in range(n_good):
-            new[good, i] = np.mean(medium[good, i, medium[good, i, :] != -1])
+            if -1 in medium[good, i, :]:
+                v = np.nan
+            else:
+                a = medium[good, i, :]
+                v = np.mean(a)
 
-    print(new.shape)
+            new[good, i] = v
+
     return new
 
 
@@ -144,13 +151,12 @@ def sim_medium_over_time_test(medium):
 
     new = np.zeros((n_good, n_t))
 
-    for i in range(n_t):
+    for t in range(n_t):
 
         for good in range(n_good):
-            cond = medium[good, :, i] != -1
-            new[good, i] = np.mean(medium[good, cond, i])
+            cond = medium[good, :, t] != -1
+            new[good, t] = np.mean(medium[good, cond, t])
 
-    print(new.shape)
     return new
 
 
@@ -207,26 +213,23 @@ def sim_monetary_behavior_mean_over_t(economies):
     return y
 
 
-def sim_mean_over_user(economies):
-
-    """
-    Take any variable in input
-    :param economies:
-    :return:
-    """
-
-    n_user = len(economies[0][0, :])
-    n_good = len(economies[0][:, 0])
-
-    y = np.zeros((n_good, n_user))
-
-    for i in range(n_good):
-
-        for t in range(n_user):
-
-            y[i, t] = np.mean([eco[i, t] for eco in economies])
-
-    return y
+# def sim_medium_mean_over_user(list_medium_over_user):
+#
+#     n_eco = len(list_medium_over_user)
+#     n_user = len(list_medium_over_user[0][0, :])
+#     n_good = len(list_medium_over_user[0][:, 0])
+#
+#     y = np.zeros((n_good, n_user))
+#
+#     for g in range(n_good):
+#
+#         for i in range(n_user):
+#
+#             for e in range(n_eco)
+#
+#             y[g, i] = np.mean([eco[g, i] for eco in economies])
+#
+#     return y
 
 
 def phase_diagram(monetary_behavior, distribution, n_good):

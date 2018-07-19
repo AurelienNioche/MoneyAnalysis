@@ -63,13 +63,13 @@ def run(file_name='data/exp_monetary_behavior.p'):
 
                         monetary_behavior[m, i, t] = monetary_conform
 
-        repartition = economy.distributions.get(r.id)
+        distribution = economy.distributions.get(r.id)
 
         label = economy.labels.get(r.id)
         data[label] = {
             'monetary_bhv': monetary_behavior,
             'medium': medium,
-            'repartition': repartition
+            'distribution': distribution
         }
 
     backup.save(data, file_name=file_name)

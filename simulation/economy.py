@@ -27,7 +27,7 @@ class Economy(object):
         self.exchange_types = list(it.combinations(range(self.n_goods), r=2))
 
         # ---- For backup ----- #
-        self.bkp_medium = np.zeros((self.n_goods, self.n_agent, self.t_max))
+        self.bkp_medium = np.ones((self.n_goods, self.n_agent, self.t_max)) * -1
         # self.bkp_medium_over_time = np.zeros((self.n_goods, self.t_max))
         self.bkp_monetary_bhv = \
             np.ones((self.n_goods, self.n_agent, self.t_max)) * -1
@@ -128,15 +128,15 @@ class Economy(object):
 
             # ---- For backup ----- #
 
-            ind_first_part = \
-                agent_choice[0] == agent.P and agent_choice[1] != agent.C
-            ind_second_part = \
-                agent_choice[0] != agent.P and agent_choice[1] == agent.C
+            for g in range(self.n_goods):
 
-            if ind_first_part:
-                self.bkp_medium[agent_choice[1], agent.idx, self.t] = ind_first_part
-            if ind_second_part:
-                self.bkp_medium[agent_choice[0], agent.idx, self.t] = ind_second_part
+                if g not in (agent.P, agent.C):
+                    ind_first_part = \
+                        agent_choice[0] == agent.P and agent_choice[1] != agent.C
+                    ind_second_part = \
+                        agent_choice[0] != agent.P and agent_choice[1] == agent.C
+
+                    self.bkp_medium[g, agent.idx, self.t] = int(ind_first_part + ind_second_part)
 
             # ----------- #
 

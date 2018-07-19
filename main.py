@@ -194,7 +194,7 @@ def exp_overall():
             # Used as medium pooled over agents is computed in strategy_count_pool script
             med_bar = medium[k]['medium']
 
-            repartition = monetary[k]['repartition']
+            distribution = monetary[k]['distribution']
 
             # Do stats
             money_sig = analysis.stats.mean_comparison.monetary_behavior(m_bhv)
@@ -202,19 +202,19 @@ def exp_overall():
 
             # Format data for Monetary bhv graph
             monetary_means, monetary_err = analysis.tools.format.exp_monetary_bhv_bar_plot(m_bhv)
-            monetary_over_t = analysis.tools.format.exp_monetary_bhv_over_t(m_bhv, repartition)
+            monetary_over_t = analysis.tools.format.exp_monetary_bhv_over_t(m_bhv, distribution)
 
             # Format data for Used as medium graph
             medium_means, medium_err = analysis.tools.format.exp_medium_bar_plot(med_bar)
 
-            medium_over_t = analysis.tools.format.exp_medium_over_t(med_t, repartition)
+            medium_over_t = analysis.tools.format.exp_medium_over_t(med_t, distribution)
 
             d = {
                 'monetary_bar': (monetary_means, monetary_err, money_sig),
                 'monetary_over_t': monetary_over_t,
                 'medium_bar': (medium_means, medium_err, med_sig),
                 'medium_over_t': medium_over_t,
-                'repartition': repartition
+                'distribution': distribution
             }
 
             data.append(d)
@@ -244,6 +244,9 @@ def sim_overall():
         titles = [analysis.tools.economy.labels.get(r_id) for r_id in room_id[n_good]]
 
         for r_id in room_id[n_good]:
+
+            print(analysis.tools.economy.labels.get(r_id))
+            print(analysis.tools.economy.distributions.get(r_id))
 
             # ------------------------- Get data --------------------- #
 
@@ -308,7 +311,7 @@ def sim_overall():
 
             # average all that
             medium_over_user_mean = \
-                analysis.tools.format.sim_mean_over_user(medium_over_user)
+                analysis.tools.format.sim_medium_mean_over_user(medium_over_user)
 
             # Now we can do stats
             med_sig = analysis.stats.mean_comparison.medium(medium_over_user_mean)
@@ -353,11 +356,11 @@ if __name__ == '__main__':
     # main()
 
     # # Uncomment for experiment analysis and experiment-like simulations
-    # exp_overall()
+    exp_overall()
     # sim_overall()
 
     # # Uncomment for producing stats
-    stats_sim()
+    # stats_sim()
     # stats_exp()
 
     # # Uncomment for running simulations used for phase diagram
