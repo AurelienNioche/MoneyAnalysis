@@ -23,21 +23,6 @@ def get_comparisons(data):
     return comparisons
 
 
-def medium_exclude_non_users(medium):
-
-    n_good = len(medium[:, 0])
-
-    without_non_users = []
-
-    for good in range(n_good):
-
-        new = medium[good, medium[good, :] != -1]
-
-        without_non_users.append(new)
-
-    return without_non_users
-
-
 def monetary_behavior(m_bhv):
 
     comparisons = get_comparisons(m_bhv)
@@ -58,9 +43,7 @@ def monetary_behavior(m_bhv):
     return [c + (v, ) for c, v in zip(comparisons, valid)]
 
 
-def medium(data):
-
-    m = medium_exclude_non_users(data)
+def medium(m):
 
     comparisons = get_comparisons(m)
 

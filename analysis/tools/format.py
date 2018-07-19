@@ -68,8 +68,8 @@ def exp_medium_bar_plot(medium):
     err = np.zeros(n_good)
 
     for good in range(n_good):
-        y[good] = np.mean(medium[good, medium[good, :] != -1])
-        err[good] = scipy.stats.sem(medium[good, medium[good, :] != -1])
+        y[good] = np.mean(medium[good])
+        err[good] = scipy.stats.sem(medium[good])
 
     return y, err
 
@@ -137,7 +137,12 @@ def sim_medium_over_user_test(medium):
 
             new[good, i] = v
 
-    return new
+    without_nan = [
+        [i for i in new[good, :] if not np.isnan(i)]
+        for good in range(n_good)
+    ]
+
+    return without_nan
 
 
 def sim_medium_over_time_test(medium):
@@ -213,24 +218,24 @@ def sim_monetary_behavior_mean_over_t(economies):
     return y
 
 
-# def sim_medium_mean_over_user(list_medium_over_user):
-#
-#     n_eco = len(list_medium_over_user)
-#     n_user = len(list_medium_over_user[0][0, :])
-#     n_good = len(list_medium_over_user[0][:, 0])
-#
-#     y = np.zeros((n_good, n_user))
-#
-#     for g in range(n_good):
-#
-#         for i in range(n_user):
-#
-#             for e in range(n_eco)
-#
-#             y[g, i] = np.mean([eco[g, i] for eco in economies])
-#
-#     return y
+def sim_medium_mean_over_user(list_medium_over_user):
 
+    n_eco = len(list_medium_over_user)
+    n_user = len(list_medium_over_user[0][0, :])
+    n_good = len(list_medium_over_user[0][:, 0])
+
+    y = np.zeros((n_good, n_user))
+
+    for g in range(n_good):
+
+        for i in range(n_user):
+
+            for e in range(n_eco):
+
+                y[g, i] = np.mean([eco[g, i] for eco in economies])
+
+    return y
+#
 
 def phase_diagram(monetary_behavior, distribution, n_good):
 
