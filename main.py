@@ -1,4 +1,4 @@
-# DuopolyAnalysis
+# MoneyAnalysis
 # Copyright (C) 2018  Aurélien Nioche, Basile Garcia & Nicolas Rougier
 #
 # This program is free software: you can redistribute it and/or modify
