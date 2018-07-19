@@ -38,8 +38,8 @@ class RLAgent(StupidAgent):
 
         exchanges, values = self.get_exchanges_and_values(in_hand=self.H)
 
-        #p = self.softmax(np.asarray(values), temp=self.gamma)
-        #{idx_ex = np.random.choice(np.arange(len(exchanges)), p=p)
+        # p = self.softmax(np.asarray(values), temp=self.gamma)
+        # {idx_ex = np.random.choice(np.arange(len(exchanges)), p=p)
 
         return self.epsilon_rule(values, exchanges)
 

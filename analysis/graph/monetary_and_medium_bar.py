@@ -76,6 +76,7 @@ def bar_plots(means, errors, labels=None,
 
         for idx, (i, j, k) in enumerate(sig):
 
+            print(i, j, k)
             x = (i+j)/2
             y = max(means[i:j+1])
 

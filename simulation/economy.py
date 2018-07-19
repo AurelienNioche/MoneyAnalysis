@@ -28,9 +28,10 @@ class Economy(object):
         self.exchange_types = list(it.combinations(range(self.n_goods), r=2))
 
         # ---- For backup ----- #
-        self.bkp_medium = np.zeros((self.n_goods, self.t_max))
+        self.bkp_medium_over_agents = np.zeros((self.n_goods, self.n_agent, self.t_max))
+        self.bkp_medium_over_time = np.zeros((self.n_goods, self.t_max))
         self.bkp_monetary_bhv = \
-            np.zeros((self.n_goods, self.n_agent, self.t_max))
+            np.ones((self.n_goods, self.n_agent, self.t_max)) * -1
 
     @staticmethod
     def get_markets(n_goods):
@@ -85,7 +86,11 @@ class Economy(object):
         for t in range(self.t_max):
             self.time_step(t)
 
-        return {'medium': self.bkp_medium, 'monetary_bhv': self.bkp_monetary_bhv}
+        return {
+            'medium_over_agents': self.bkp_medium_over_agents,
+            'medium_over_time': self.bkp_medium_over_time,
+            'monetary_bhv': self.bkp_monetary_bhv
+        }
 
     def time_step(self, t):
 
@@ -117,7 +122,23 @@ class Economy(object):
                 else:
                     monetary_conform = agent_choice in [(agent.P, m), (m, agent.C)]
 
-                self.bkp_monetary_bhv[m, agent.idx, self.t] = int(monetary_conform)
+                    if monetary_conform:
+
+                        self.bkp_medium_over_time[m, self.t] += 1
+
+                self.bkp_monetary_bhv[m, agent.idx, self.t] = monetary_conform
+
+            # ---- For backup ----- #
+
+            ind_first_part = \
+                agent_choice[0] == agent.P and agent_choice[1] != agent.C
+            ind_second_part = \
+                agent_choice[0] != agent.P and agent_choice[1] == agent.C
+
+            if ind_first_part:
+                self.bkp_medium_over_agents[agent_choice[1], agent.idx, self.t] = ind_first_part
+            if ind_second_part:
+                self.bkp_medium_over_agents[agent_choice[0], agent.idx, self.t] = ind_second_part
 
             # ----------- #
 
@@ -143,19 +164,6 @@ class Economy(object):
 
             agent = self.agents[idx]
             agent.proceed_to_exchange()
-
-            # ---- For backup ----- #
-
-            ind_first_part = \
-                agent.attempted_exchange[0] == agent.P and agent.attempted_exchange[1] != agent.C
-            ind_second_part = \
-                agent.attempted_exchange[0] != agent.P and agent.attempted_exchange[1] == agent.C
-
-            if ind_first_part:
-                self.bkp_medium[agent.attempted_exchange[1], self.t] += 1
-
-            elif ind_second_part:
-                self.bkp_medium[agent.attempted_exchange[0], self.t] += 1
 
 
 def launch(**kwargs):

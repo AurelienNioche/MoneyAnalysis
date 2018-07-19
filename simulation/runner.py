@@ -20,7 +20,7 @@ def get_parameters(
         m=0,
         constant_x_value=np.array([50, ]),
         constant_x_index=np.array([0, ]),
-        t_max=50,
+        t_max=100,
         economy_model='prod: i-1',
         range_repartition=range(10, 200, 20),
         n_cog_value=3):
@@ -31,9 +31,9 @@ def get_parameters(
     assert economy_model in ('prod: i-1', 'prod: i+1'), 'Bad argument for "economy_model"!'
 
     if agent_model == 'RLAgent':
-        first_cog_range = np.linspace(0.1, 0.5, n_cog_value)
-        second_cog_range = np.linspace(0.75, 1.5, n_cog_value)
-        third_cog_range = np.linspace(0.01, 0.15, n_cog_value)
+        first_cog_range = np.linspace(0.1, 0.25, n_cog_value)
+        second_cog_range = np.linspace(0.8, 1.2, n_cog_value)
+        third_cog_range = np.linspace(0.1, 0.15, n_cog_value)
 
     else:
         first_cog_range = np.linspace(0.1, 0.5, n_cog_value)
@@ -88,15 +88,15 @@ def get_experiment_like_parameters():
     rooms = (414, 415, 416, 417)
     n_sim = 20
 
-    t_max = 50
+    t_max = 100
     economy_model = 'prod: i-1'
 
     repartitions = [analysis.tools.economy.repartitions.get(i) for i in rooms]
 
     n_cog_value = 3
-    first_cog_range = np.linspace(0.1, 0.5, n_cog_value)
-    second_cog_range = np.linspace(0.75, 1.5, n_cog_value)
-    third_cog_range = np.linspace(0.01, 0.15, n_cog_value)
+    first_cog_range = np.linspace(0.1, 0.25, n_cog_value)
+    second_cog_range = np.linspace(0.80, 1.2, n_cog_value)
+    third_cog_range = np.linspace(0.1, 0.15, n_cog_value)
 
     for i in range(len(rooms)):
 
@@ -108,11 +108,7 @@ def get_experiment_like_parameters():
                 np.random.choice(first_cog_range),\
                 np.random.choice(second_cog_range),\
                 np.random.choice(third_cog_range)
-
-            alpha = 0.1
-            beta = 1
-            gamma = 0.01
-
+            
             param = {
                 'cognitive_parameters': (alpha, beta, gamma),
                 'repartition': repartitions[i],
@@ -120,7 +116,7 @@ def get_experiment_like_parameters():
                 'economy_model': economy_model,
                 'agent_model': 'RLAgent',
                 'n_good': n_good,
-                'seed': np.random.randint(2**32-1),
+                'seed': 123,  # np.random.randint(2**32-1),
                 'room_id': rooms[i]
             }
 

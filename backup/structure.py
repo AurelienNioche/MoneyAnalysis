@@ -17,12 +17,16 @@ class Data:
         self.constant_x_index = np.zeros(n, dtype=object)
         self.n_good = np.zeros(n, dtype=object)
         self.room_id = np.zeros(n, dtype=object)
+        self.medium_over_agents = np.zeros(n, dtype=object)
+        self.medium_over_time = np.zeros(n, dtype=object)
 
         self.i = 0
 
     def append(self, backup, param):
 
-        self.medium[self.i] = backup['medium']
+        self.medium_over_time[self.i] = backup['medium_over_time']
+        self.medium_over_agents[self.i] = backup['medium_over_agents']
+
         self.monetary_bhv[self.i] = backup['monetary_bhv']
         self.n_good[self.i] = param['n_good']
 

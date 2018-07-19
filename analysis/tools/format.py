@@ -51,7 +51,7 @@ def for_monetary_behavior_over_t(monetary_bhv, repartition):
     return y
 
 
-def for_medium_bar_plot(medium):
+def for_medium_bar_plot_from_experiment(medium):
 
     n_good = len(medium[:, 0])
 
@@ -65,7 +65,40 @@ def for_medium_bar_plot(medium):
     return y, err
 
 
-def for_monetary_behavior_bar_plot(monetary_bhv):
+def for_medium_bar_plot_from_simulation(medium):
+
+    n_good = len(medium[:, 0])
+
+    y = np.zeros(n_good)
+    err = np.zeros(n_good)
+
+    for good in range(n_good):
+        y[good] = np.mean(medium[good, :])
+        err[good] = scipy.stats.sem(medium[good, :])
+
+    return y, err
+
+
+def for_medium_bar_plot_from_simulation_pool(medium):
+    """
+    returns an array with format compatible with
+    for_medium_bar_plot_from_simulation function
+    """
+
+    n_user = len(medium[0, :, 0])
+    n_good = len(medium[:, 0, 0])
+
+    new = np.zeros((n_good, n_user))
+
+    for i in range(n_user):
+
+        for good in range(n_good):
+            new[good, i] = np.mean(medium[good, i, medium[good, i, :] != -1])
+
+    return new
+
+
+def for_monetary_behavior_bar_plot_from_experiment(monetary_bhv):
 
     n_user = len(monetary_bhv[0, :, 0])
     n_good = len(monetary_bhv[:, 0, 0])
@@ -85,6 +118,91 @@ def for_monetary_behavior_bar_plot(monetary_bhv):
         err[good] = scipy.stats.sem(new[good, :])
 
     return y, err
+
+
+def for_monetary_bar_plot_from_simulation(monetary_bhv):
+
+    n_good = len(monetary_bhv[:, 0])
+
+    y = np.zeros(n_good)
+    err = np.zeros(n_good)
+
+    for good in range(n_good):
+
+        y[good] = np.mean(monetary_bhv[good, :])
+        err[good] = scipy.stats.sem(monetary_bhv[good, :])
+
+    return y, err
+
+
+def for_monetary_behavior_bar_plot_from_simulation_pool(monetary_bhv):
+
+    """
+    returns an array with format compatible with
+    for_monetary_behavior_bar_plot_from_simulation function
+    """
+
+    n_user = len(monetary_bhv[0, :, 0])
+    n_good = len(monetary_bhv[:, 0, 0])
+
+    new = np.zeros((n_good, n_user))
+
+    for i in range(n_user):
+
+        for good in range(n_good):
+            new[good, i] = np.mean(monetary_bhv[good, i, :])
+
+    return new
+
+
+def for_monetary_behavior_over_time_mean(economies):
+
+    t_max = len(economies[0][0, 0, :])
+    n_good = len(economies[0][0, :, 0])
+
+    y = np.zeros((n_good, n_good, t_max))
+
+    for i in range(n_good):
+
+        for j in range(n_good):
+
+            for t in range(t_max):
+
+                y[i, j, t] = np.mean([e[i, j, t] for e in economies])
+
+    return y
+
+
+def for_variable_over_user_mean(economies):
+
+    n_user = len(economies[0][0, :])
+    n_good = len(economies[0][:, 0])
+
+    y = np.zeros((n_good, n_user))
+
+    for i in range(n_good):
+
+        for t in range(n_user):
+
+            y[i, t] = np.mean([eco[i, t] for eco in economies])
+
+    return y
+
+
+def for_medium_over_time_mean(economies):
+
+    n_user = len(economies[0][0, :])
+    n_good = len(economies[0][:, 0])
+
+    y = np.zeros((n_good, n_user))
+
+    for i in range(n_good):
+
+        for t in range(n_user):
+
+            y[i, t] = np.mean([eco[i, t] for eco in economies])
+
+    return y
 
 
 def for_medium_over_t(medium, repartition, model='prod: i-1'):
