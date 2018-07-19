@@ -21,7 +21,6 @@ from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 
 
-import pickle
 import backup.backup as backup
 
 import simulation.economy
@@ -134,99 +133,6 @@ def stats_sim():
 
         # Now we can do stats
         analysis.stats.mean_comparison.medium(medium_over_user_mean)
-
-
-def bar_plots():
-
-    """
-    plots bar for each condition from experimental data
-    all plots are computed from two dimensions: n_good, n_agents
-    """
-
-    # --------------- Monetary bhv ------------------------ #
-
-    data = analysis.compute.monetary_and_medium.run()
-
-    xlabel = 'Good'
-    ylabel = 'Monetary behavior'
-
-    for k, v in data.items():
-
-        sig = analysis.stats.mean_comparison.monetary_behavior(v['monetary_bhv'])
-        title = k
-        means, err = analysis.tools.format.for_monetary_behavior_bar_plot_from_experiment(v['monetary_bhv'])
-        f_name = f'fig/monetary_bar_{title}'
-
-        analysis.graph.monetary_and_medium_bar.one_condition_bar(
-            means=means,
-            err=err,
-            title=title,
-            ylabel=ylabel,
-            xlabel=xlabel,
-            sig=sig,
-            f_name=f_name
-        )
-
-    # --------------- Medium  ------------------------ #
-
-    data = analysis.compute.medium_over_individuals.run()
-
-    xlabel = 'Good'
-    ylabel = 'Used as medium'
-
-    for k, v in data.items():
-
-        title = k.replace('_strategy_count_pool', '')
-
-        sig = analysis.stats.mean_comparison.medium(v['medium'])
-        means, err = analysis.tools.format.for_medium_bar_plot_from_experiment(v['medium'])
-        f_name = f'fig/medium_bar_{title}'
-
-        analysis.graph.monetary_and_medium_bar.one_condition_bar(
-            means=means,
-            err=err,
-            title=title,
-            ylabel=ylabel,
-            xlabel=xlabel,
-            sig=sig,
-            f_name=f_name
-        )
-
-
-def run_fit_simulation():
-
-    """
-    fit model on experimental data
-    TODO: Does it still work?
-
-    """
-
-    data = pickle.load(open('data/fit.p', 'rb'))
-
-    for r_id in analysis.tools.economy.labels.keys():
-
-        # after reformatting
-        data_fit = analysis.tools.format.for_fit(data)
-
-        label = analysis.tools.economy.labels.get(r_id)
-
-        cognitive_parameters = data_fit[label]
-
-        repartition = analysis.tools.economy.distributions.get(r_id)
-
-        simulation.economy.launch(
-            agent_model='RLAgent',
-            repartition=repartition,
-            t_max=50,
-            economy_model='prod: i-1',
-            cognitive_parameters=cognitive_parameters,
-            seed=123
-        )
-
-        # SOMETHING TO DO HERE
-        # res['repartition'] = repartition
-        #
-        # analysis.graph.monetary_and_medium.one_condition(res, f_name=f"sim_{label}.pdf")
 
 
 def phase_diagram():
@@ -466,24 +372,16 @@ if __name__ == '__main__':
 
     # main()
 
+    # # Uncomment for experiment analysis and experiment-like simulations
     # exp_overall()
-    # analysis.graph.monetary_and_medium.overall_one_condition_example()
     # sim_overall()
-    # bar_plots()
-    # phase_diagram()
-    # sim_overall()
-    # exp_overall()
-    # phase_diagram()
-    # sim_overall()
-    stats_sim()
+
+    # # Uncomment for producing stats
+    # stats_sim()
     # stats_exp()
-    # analysis.compute.demographics.run()
-    # analysis.graph.monetary_and_medium.overall_one_condition_example()
-    # sim_overall()
-    # exp_overall()
-    # run_simulations()
-    # run_experiment()
-    # bar_plots()
-    # run_simulations()
-    # bar_plots()
+
+    # # Uncomment for running simulations used for phase diagram
     # phase_diagram()
+
+    run_simulations()
+    pass
