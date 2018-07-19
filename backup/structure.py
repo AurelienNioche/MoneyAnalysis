@@ -1,49 +1,67 @@
-import numpy as np
+import os
+
+from backup import backup
 
 
 class Data:
 
-    def __init__(self, n):
+    def __init__(self):
 
-        self.medium = np.zeros(n, dtype=object)
-        self.monetary_bhv = np.zeros(n, dtype=object)
+        self.medium = []
+        self.monetary_bhv = []
 
-        self.repartition = np.zeros(n, dtype=object)
-        self.cognitive_parameters = np.zeros(n, dtype=object)
-        self.agent_model = np.zeros(n, dtype=object)
-        # self.m = np.zeros(n, dtype=object)
-        self.economy_model = np.zeros(n, dtype=object)
-        self.constant_x_value = np.zeros(n, dtype=object)
-        self.constant_x_index = np.zeros(n, dtype=object)
-        self.n_good = np.zeros(n, dtype=object)
-        self.room_id = np.zeros(n, dtype=object)
-        self.medium_over_agents = np.zeros(n, dtype=object)
-        self.medium_over_time = np.zeros(n, dtype=object)
+        self.distribution = []
+        self.cognitive_parameters = []
 
-        self.i = 0
+        self.n_good = []
+        self.room_id = []
+        self.seed = []
 
-    def append(self, backup, param):
+        # self.medium_over_agents = np.zeros(n, dtype=object)
+        # self.constant_x_value = np.zeros(n, dtype=object)
+        # self.constant_x_index = np.zeros(n, dtype=object)
+        # self.agent_model = np.zeros(n, dtype=object)
+        # self.economy_model = np.zeros(n, dtype=object)
+        # self.medium_over_time = np.zeros(n, dtype=object)
 
-        self.medium_over_time[self.i] = backup['medium_over_time']
-        self.medium_over_agents[self.i] = backup['medium_over_agents']
+    def append(self, bkp, param):
 
-        self.monetary_bhv[self.i] = backup['monetary_bhv']
-        self.n_good[self.i] = param['n_good']
+        self.medium.append(bkp['medium'])  # n_good, agent, time
 
-        self.repartition[self.i] = param['repartition']
-        self.cognitive_parameters[self.i] = param['cognitive_parameters']
-        self.agent_model[self.i] = param['agent_model']
-        # self.m[self.i] = param['m']
-        self.economy_model[self.i] = param['economy_model']
+        self.monetary_bhv.append(bkp['monetary_bhv'])  # n_good, agent, time
+        self.n_good.append(param['n_good'])
 
-        if param.get('constant_x_value') is not None:
-            self.constant_x_value[self.i] = param['constant_x_value']
+        self.distribution.append(param['distribution'])
+        self.cognitive_parameters.append(param['cognitive_parameters'])
 
-        if param.get('constant_x_index') is not None:
-            self.constant_x_index[self.i] = param['constant_x_index']
+        self.seed.append(param['seed'])
+
+        # self.medium_over_time.append(backup['medium_over_time']   # n_good, time
+
+        # self.agent_model.append(param['agent_model']
+        # self.economy_model.append(param['economy_model']
+
+        # if param.get('constant_x_value') is not None:
+        #     self.constant_x_value.append(param['constant_x_value']
+        #
+        # if param.get('constant_x_index') is not None:
+        #     self.constant_x_index.append(param['constant_x_index']
 
         if param.get('room_id') is not None:
-            self.room_id[self.i] = param['room_id']
+            self.room_id.append(param['room_id'])
 
-        self.i += 1
+    def _files_mapping(self, data_folder):
 
+        return {f'{data_folder}/{v}.p': v for v in vars(self) if not v.startswith("_")}
+
+    def save(self, data_folder):
+
+        os.makedirs(data_folder, exist_ok=True)
+
+        for k, v in self._files_mapping(data_folder).items():
+            backup.save(obj=getattr(self, v), file_name=k)
+
+    def load(self, data_folder):
+
+        for k, v in self._files_mapping(data_folder).items():
+            setattr(self, v, backup.load(file_name=k))

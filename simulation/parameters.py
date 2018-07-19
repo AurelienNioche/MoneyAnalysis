@@ -1,3 +1,4 @@
+# Parameters for experiment-like
 parameters = {
     'alpha': (0.1, 0.25),
     'beta': (0.8, 1.2),

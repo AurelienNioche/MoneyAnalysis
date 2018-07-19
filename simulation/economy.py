@@ -6,17 +6,16 @@ from simulation.model.RL.rl_agent import RLAgent
 
 class Economy(object):
 
-    def __init__(self, repartition, t_max, agent_model, economy_model, cognitive_parameters=None, seed=None,
-                 **kwargs):  # Args for analysis
+    def __init__(self, **kwargs):
 
-        np.random.seed(seed)
-        self.t_max = t_max
-        self.cognitive_parameters = cognitive_parameters
-        self.agent_model = agent_model
-        self.repartition = np.asarray(repartition)
+        np.random.seed(kwargs.get('seed'))
+        self.t_max = kwargs.get('t_max')
+        self.cognitive_parameters = kwargs.get('cognitive_parameters')
+        self.agent_model = kwargs.get('agent_model')
+        self.repartition = np.asarray(kwargs.get('distribution'))
 
         self.n_goods = len(self.repartition)
-        self.roles = self.get_roles(self.n_goods, economy_model)
+        self.roles = self.get_roles(self.n_goods, kwargs.get('economy_model'))
 
         self.n_agent = sum(self.repartition)
 
@@ -28,8 +27,8 @@ class Economy(object):
         self.exchange_types = list(it.combinations(range(self.n_goods), r=2))
 
         # ---- For backup ----- #
-        self.bkp_medium_over_agents = np.zeros((self.n_goods, self.n_agent, self.t_max))
-        self.bkp_medium_over_time = np.zeros((self.n_goods, self.t_max))
+        self.bkp_medium = np.zeros((self.n_goods, self.n_agent, self.t_max))
+        # self.bkp_medium_over_time = np.zeros((self.n_goods, self.t_max))
         self.bkp_monetary_bhv = \
             np.ones((self.n_goods, self.n_agent, self.t_max)) * -1
 
@@ -87,8 +86,7 @@ class Economy(object):
             self.time_step(t)
 
         return {
-            'medium_over_agents': self.bkp_medium_over_agents,
-            'medium_over_time': self.bkp_medium_over_time,
+            'medium': self.bkp_medium,
             'monetary_bhv': self.bkp_monetary_bhv
         }
 
@@ -122,9 +120,9 @@ class Economy(object):
                 else:
                     monetary_conform = agent_choice in [(agent.P, m), (m, agent.C)]
 
-                    if monetary_conform:
-
-                        self.bkp_medium_over_time[m, self.t] += 1
+                    # if monetary_conform:
+                    #
+                    #     self.bkp_medium_over_time[m, self.t] += 1
 
                 self.bkp_monetary_bhv[m, agent.idx, self.t] = monetary_conform
 
@@ -136,9 +134,9 @@ class Economy(object):
                 agent_choice[0] != agent.P and agent_choice[1] == agent.C
 
             if ind_first_part:
-                self.bkp_medium_over_agents[agent_choice[1], agent.idx, self.t] = ind_first_part
+                self.bkp_medium[agent_choice[1], agent.idx, self.t] = ind_first_part
             if ind_second_part:
-                self.bkp_medium_over_agents[agent_choice[0], agent.idx, self.t] = ind_second_part
+                self.bkp_medium[agent_choice[0], agent.idx, self.t] = ind_second_part
 
             # ----------- #
 

@@ -101,6 +101,9 @@ ENV/
 .idea/
 templates/
 game/migrations/
-data/
+data/phase_3_goods/
+data/phase_4_goods/
 fig/
 __old__/
+__test__/main.py
+
