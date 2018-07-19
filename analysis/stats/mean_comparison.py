@@ -23,21 +23,6 @@ def get_comparisons(data):
     return comparisons
 
 
-def monetary_bhv_format(monetary_bhv):
-
-    n_user = len(monetary_bhv[0, :, 0])
-    n_good = len(monetary_bhv[:, 0, 0])
-
-    new = np.zeros((n_good, n_user))
-
-    for i in range(n_user):
-
-        for good in range(n_good):
-            new[good, i] = np.mean(monetary_bhv[good, i, :])
-
-    return new
-
-
 def medium_exclude_non_users(medium):
 
     n_good = len(medium[:, 0])
@@ -53,9 +38,7 @@ def medium_exclude_non_users(medium):
     return without_non_users
 
 
-def monetary_behavior(data):
-
-    m_bhv = monetary_bhv_format(data)
+def monetary_behavior(m_bhv):
 
     comparisons = get_comparisons(m_bhv)
 

@@ -34,6 +34,21 @@ def for_fit(data):
     return formatted_data
 
 
+def for_monetary_behavior_over_user_from_experiment(monetary_bhv):
+
+    n_user = len(monetary_bhv[0, :, 0])
+    n_good = len(monetary_bhv[:, 0, 0])
+
+    new = np.zeros((n_good, n_user))
+
+    for i in range(n_user):
+
+        for good in range(n_good):
+            new[good, i] = np.mean(monetary_bhv[good, i, :])
+
+    return new
+
+
 def for_monetary_behavior_over_t(monetary_bhv, repartition):
 
     n_good = len(repartition)

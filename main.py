@@ -49,27 +49,36 @@ def stats_exp():
 
     # --------------- Monetary bhv ------------------------ #
 
-    data = analysis.compute.monetary_and_medium.run()
+    monetary_bhv = analysis.compute.monetary_and_medium.run()
+    medium = analysis.compute.strategy_count_pool.run()
 
-    print('*' * 5, 'TESTING MONETARY BHV', '*' * 5)
+    room_ids = (414, 415, 416, 417)
 
-    for k, v in data.items():
+    for r_id in room_ids:
 
-        print('Room: ', k)
+        print('*' * 5, 'Room', r_id, '*' * 5)
 
-        analysis.stats.mean_comparison.monetary_behavior(v['monetary_bhv'])
+        label = analysis.tools.economy.labels.get(r_id)
 
-    # --------------- Medium  ------------------------ #
+        print(label)
 
-    print('*' * 5, 'TESTING USED AS MEDIUM', '*' * 5)
+        # --------------- Monetary bhv  ------------------------ #
 
-    data = analysis.compute.strategy_count_pool.run()
+        print('Testing monetary behavior')
 
-    for k, v in data.items():
+        data = analysis.tools.format.for_monetary_behavior_over_user_from_experiment(
+            monetary_bhv[label]['monetary_bhv']
+        )
 
-        print('Room: ', k.replace('_strategy_count_pool', ''))
+        analysis.stats.mean_comparison.monetary_behavior(data)
 
-        analysis.stats.mean_comparison.medium(v['medium'])
+        # --------------- Medium  ------------------------ #
+
+        print('Testing medium')
+
+        data = medium[label]['medium']
+
+        analysis.stats.mean_comparison.medium(data)
 
 
 def stats_sim():
@@ -110,7 +119,7 @@ def stats_sim():
             analysis.tools.format.for_variable_over_user_mean(monetary_over_user)
 
         # Now we can do stats
-        analysis.stats.mean_comparison.medium(monetary_over_user_mean)
+        analysis.stats.mean_comparison.monetary_behavior(monetary_over_user_mean)
 
         # ---------------------- format for medium -------------- #
 
@@ -469,6 +478,7 @@ if __name__ == '__main__':
     # phase_diagram()
     # sim_overall()
     stats_sim()
+    # stats_exp()
     # analysis.compute.demographics.run()
     # analysis.graph.monetary_and_medium.overall_one_condition_example()
     # sim_overall()
