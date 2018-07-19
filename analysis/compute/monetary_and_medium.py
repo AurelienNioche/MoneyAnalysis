@@ -30,7 +30,7 @@ def run(file_name='data/exp_monetary_behavior.p'):
         users = User.objects.filter(room_id=r.id)
 
         monetary_behavior = np.zeros((n_good, r.n_user, r.t_max))
-        medium = np.zeros((n_good, r.t_max))
+        medium = np.ones((n_good, r.n_user, r.t_max)) * -1
 
         for m in range(n_good):
 
@@ -55,11 +55,11 @@ def run(file_name='data/exp_monetary_behavior.p'):
 
                         if m in (prod, cons):
                             monetary_conform = (in_hand, desired) == (prod, cons)
+                            medium[m, i, t] = - 1
 
                         else:
                             monetary_conform = (in_hand, desired) in [(prod, m), (m, cons)]
-
-                            medium[m, t] += monetary_conform
+                            medium[m, i, t] = monetary_conform
 
                         monetary_behavior[m, i, t] = monetary_conform
 

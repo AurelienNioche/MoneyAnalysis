@@ -33,7 +33,6 @@ import analysis.graph.overall
 import analysis.graph.phase_diagram
 
 import analysis.compute.monetary_and_medium
-import analysis.compute.medium_over_individuals
 import analysis.compute.demographics
 
 import analysis.stats.mean_comparison
@@ -43,8 +42,7 @@ def stats_exp():
 
     # --------------- Monetary bhv ------------------------ #
 
-    monetary_bhv = analysis.compute.monetary_and_medium.run()
-    medium = analysis.compute.medium_over_individuals.run()
+    results = analysis.compute.monetary_and_medium.run()
 
     room_ids = (414, 415, 416, 417)
 
@@ -61,7 +59,7 @@ def stats_exp():
         print('Testing monetary behavior')
 
         data = analysis.tools.format.exp_monetary_bhv_over_user(
-            monetary_bhv[label]['monetary_bhv']
+            results[label]['monetary_bhv']
         )
 
         analysis.stats.mean_comparison.monetary_behavior(data)
@@ -70,7 +68,7 @@ def stats_exp():
 
         print('Testing medium')
 
-        data = medium[label]['medium']
+        data = results[label]['medium']
 
         analysis.stats.mean_comparison.medium(data)
 
@@ -121,7 +119,7 @@ def stats_sim():
 
         # reformat each economies to compress on agents
         medium_over_user = [
-            analysis.tools.format.sim_medium_over_user_test(m) for m in medium_over_agents
+            analysis.tools.format.medium_over_user(m) for m in medium_over_agents
         ]
 
         # average all that
@@ -176,8 +174,7 @@ def exp_overall():
 
     """
 
-    monetary = analysis.compute.monetary_and_medium.run()
-    medium = analysis.compute.medium_over_individuals.run()
+    results = analysis.compute.monetary_and_medium.run()
 
     for good in (3, 4):
 
@@ -186,28 +183,25 @@ def exp_overall():
 
         for k in titles:
 
-            # Used as medium over t is computed in monetary_behavior script
-            med_t = monetary[k]['medium']
+            medium = results[k]['medium']
 
-            m_bhv = monetary[k]['monetary_bhv']
+            m_bhv = results[k]['monetary_bhv']
 
-            # Used as medium pooled over agents is computed in strategy_count_pool script
-            med_bar = medium[k]['medium']
-
-            distribution = monetary[k]['distribution']
+            distribution = results[k]['distribution']
 
             # Do stats
             money_sig = analysis.stats.mean_comparison.monetary_behavior(m_bhv)
-            med_sig = analysis.stats.mean_comparison.medium(med_bar)
+            medium_over_user = analysis.tools.format.medium_over_user(medium)
+            med_sig = analysis.stats.mean_comparison.medium(medium_over_user)
 
             # Format data for Monetary bhv graph
             monetary_means, monetary_err = analysis.tools.format.exp_monetary_bhv_bar_plot(m_bhv)
             monetary_over_t = analysis.tools.format.exp_monetary_bhv_over_t(m_bhv, distribution)
 
             # Format data for Used as medium graph
-            medium_means, medium_err = analysis.tools.format.exp_medium_bar_plot(med_bar)
+            medium_means, medium_err = analysis.tools.format.exp_medium_bar_plot(medium_over_user)
 
-            medium_over_t = analysis.tools.format.exp_medium_over_t(med_t, distribution)
+            medium_over_t = analysis.tools.format.medium_over_t(medium)
 
             d = {
                 'monetary_bar': (monetary_means, monetary_err, money_sig),
@@ -305,7 +299,7 @@ def sim_overall():
             # BAR PLOTS
             # reformat each economies to compress on agents
             medium_over_user = [
-                analysis.tools.format.sim_medium_over_user_test(m)
+                analysis.tools.format.medium_over_user(m)
                 for m in medium
             ]
 
@@ -323,7 +317,7 @@ def sim_overall():
             # CURVE PLOTS     !!!!!!!!!!!!!!!!! TODO: TO CHECK
             # compress each economies on time
             medium_over_t = [
-                analysis.tools.format.sim_medium_over_time_test(m)
+                analysis.tools.format.medium_over_t(m)
                 for m in medium
             ]
 

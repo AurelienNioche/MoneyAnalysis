@@ -38,31 +38,31 @@ def exp_monetary_bhv_over_t(monetary_bhv, repartition):
     return y
 
 
-def exp_medium_over_t(medium, repartition, model='prod: i-1'):
-
-    n_good = len(repartition)
-    t_max = len(medium[0, :])
-
-    roles = simulation.economy.Economy.get_roles(n_goods=len(repartition), model=model)
-
-    y = np.zeros((n_good, t_max))
-
-    for i in range(n_good):
-
-        n = 0
-
-        for idx, (j, k) in enumerate(roles):
-            if j != i and k != i:
-                n += repartition[idx]
-
-        y[i] = medium[i] / n
-
-    return y
+# def exp_medium_over_t(medium, repartition, model='prod: i-1'):
+#
+#     n_good = len(repartition)
+#     t_max = len(medium[0, :])
+#
+#     roles = simulation.economy.Economy.get_roles(n_goods=len(repartition), model=model)
+#
+#     y = np.zeros((n_good, t_max))
+#
+#     for i in range(n_good):
+#
+#         n = 0
+#
+#         for idx, (j, k) in enumerate(roles):
+#             if j != i and k != i:
+#                 n += repartition[idx]
+#
+#         y[i] = medium[i] / n
+#
+#     return y
 
 
 def exp_medium_bar_plot(medium):
 
-    n_good = len(medium[:, 0])
+    n_good = len(medium)
 
     y = np.zeros(n_good)
     err = np.zeros(n_good)
@@ -113,7 +113,7 @@ def sim_medium_bar_plot(medium):
     return y, err
 
 
-def sim_medium_over_user_test(medium):
+def medium_over_user(medium):
     """
     returns an array with format compatible with
     for_medium_bar_plot_from_simulation function
@@ -145,7 +145,7 @@ def sim_medium_over_user_test(medium):
     return without_nan
 
 
-def sim_medium_over_time_test(medium):
+def medium_over_t(medium):
     """
     returns an array with format compatible with
     for_medium_bar_plot_from_simulation function
