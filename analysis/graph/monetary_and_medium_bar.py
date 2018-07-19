@@ -76,7 +76,6 @@ def bar_plots(means, errors, labels=None,
 
         for idx, (i, j, k) in enumerate(sig):
 
-            print(i, j, k)
             x = (i+j)/2
             y = max(means[i:j+1])
 
@@ -102,8 +101,8 @@ def bar_plots(means, errors, labels=None,
     
 
 def one_condition_bar(means, err, title,
-                             xlabel=None, ylabel=None, sig=None,
-                             subplot_spec=None, fig=None, f_name='fig/random_bar_plot.pdf'):
+                      xlabel=None, ylabel=None, sig=None,
+                      subplot_spec=None, fig=None, f_name=None):
 
     if not fig:
         fig = plt.figure()
@@ -115,10 +114,11 @@ def one_condition_bar(means, err, title,
         ylabel=ylabel,
         ax=fig.add_subplot(subplot_spec) if subplot_spec else fig.add_subplot(),
         title=title,
-        sig=sig
+        sig=sig,
     )
 
-    plt.savefig(f_name)
+    if f_name:
+        plt.savefig(f_name)
 
 
 def main():

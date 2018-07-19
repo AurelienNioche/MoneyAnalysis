@@ -38,7 +38,7 @@ import analysis.graph.monetary_and_medium
 import analysis.graph.monetary_and_medium_bar
 import analysis.graph.phase_diagram
 
-import analysis.compute.monetary_behavior
+import analysis.compute.monetary_and_medium
 import analysis.compute.strategy_count_pool
 import analysis.compute.demographics
 
@@ -49,7 +49,7 @@ def stats_exp():
 
     # --------------- Monetary bhv ------------------------ #
 
-    data = analysis.compute.monetary_behavior.run()
+    data = analysis.compute.monetary_and_medium.run()
 
     print('*' * 5, 'TESTING MONETARY BHV', '*' * 5)
 
@@ -74,9 +74,14 @@ def stats_exp():
 
 def bar_plots():
 
+    """
+    plots bar for each condition from experimental data
+    all plots are computed from two dimensions: n_good, n_agents
+    """
+
     # --------------- Monetary bhv ------------------------ #
 
-    data = analysis.compute.monetary_behavior.run()
+    data = analysis.compute.monetary_and_medium.run()
 
     xlabel = 'Good'
     ylabel = 'Monetary behavior'
@@ -124,7 +129,13 @@ def bar_plots():
         )
 
 
-def run_simulation():
+def run_fit_simulation():
+
+    """
+    fit model on experimental data
+    TODO: Does it still work?
+
+    """
 
     data = pickle.load(open('data/fit.p', 'rb'))
 
@@ -165,6 +176,10 @@ def phase_diagram():
     four_good_file = 'data/phase_4_goods.p'
     f_name = 'fig/phase.pdf'
 
+    # Number of column
+    # (Plot for each good considered as money if max_col == None)
+    max_col = 1
+
     if not os.path.exists(three_good_file):
         three_good_data = simulation.runner.run(phase=True, n_good=3)
     else:
@@ -191,52 +206,70 @@ def phase_diagram():
         data=data,
         labels=labels,
         f_name=f_name,
-        max_col=1
+        max_col=max_col
     )
 
 
 def exp_overall():
 
-    monetary = analysis.compute.monetary_behavior.run()
+    """
+    plots each experimental condition
+    from experimental data
+
+    """
+
+    monetary = analysis.compute.monetary_and_medium.run()
     medium = analysis.compute.strategy_count_pool.run()
 
-    # monetary_over_t = analysis.compute.monetary_behavior.run()
+    for good in (3, 4):
 
-    keys = monetary.keys()
+        data = []
+        titles = (f'{good}_good_non_uniform', f'{good}_good_uniform')
 
-    for k in keys:
+        for k in titles:
 
-        med_t = monetary[k]['medium']
-        med_bar = medium[k]['medium']
-        m_bhv = monetary[k]['monetary_bhv']
-        repartition = monetary[k]['repartition']
+            # Used as medium over t is computed in monetary_behavior script
+            med_t = monetary[k]['medium']
 
-        # Monetary bhv
-        monetary_means, monetary_err = analysis.tools.format.for_monetary_behavior_bar_plot_from_experiment(m_bhv)
-        money_sig = analysis.stats.mean_comparison.monetary_behavior(m_bhv)
+            m_bhv = monetary[k]['monetary_bhv']
 
-        monetary_over_t = analysis.tools.format.for_monetary_behavior_over_t(m_bhv, repartition)
+            # Used as medium pooled over agents is computed in strategy_count_pool script
+            med_bar = medium[k]['medium']
 
-        # Medium
-        medium_means, medium_err = analysis.tools.format.for_medium_bar_plot_from_experiment(med_bar)
-        med_sig = analysis.stats.mean_comparison.medium(med_bar)
+            repartition = monetary[k]['repartition']
 
-        medium_over_t = analysis.tools.format.for_medium_over_t(med_t, repartition)
+            # Format data for Monetary bhv graph
+            monetary_means, monetary_err = analysis.tools.format.for_monetary_behavior_bar_plot_from_experiment(m_bhv)
+            money_sig = analysis.stats.mean_comparison.monetary_behavior(m_bhv)
 
-        data = {
-            'monetary_bar': (monetary_means, monetary_err, money_sig),
-            'monetary_over_t': monetary_over_t,
-            'medium_bar': (medium_means, medium_err, med_sig),
-            'medium_over_t': medium_over_t,
-            'repartition': repartition
-        }
+            monetary_over_t = analysis.tools.format.for_monetary_behavior_over_t(m_bhv, repartition)
 
-        analysis.graph.monetary_and_medium.overall_one_condition(
-            data=data, title=k, f_name=f'fig/overall_exp_{k}.pdf', exp=True
-        )
+            # Format data for Used as medium graph
+            medium_means, medium_err = analysis.tools.format.for_medium_bar_plot_from_experiment(med_bar)
+            med_sig = analysis.stats.mean_comparison.medium(med_bar)
+
+            medium_over_t = analysis.tools.format.for_medium_over_t(med_t, repartition)
+
+            d = {
+                'monetary_bar': (monetary_means, monetary_err, money_sig),
+                'monetary_over_t': monetary_over_t,
+                'medium_bar': (medium_means, medium_err, med_sig),
+                'medium_over_t': medium_over_t,
+                'repartition': repartition
+            }
+
+            data.append(d)
+
+        analysis.graph.monetary_and_medium.overall_one_good(data, titles, f_name=f'fig/xp_{good}.pdf', exp=True)
 
 
 def sim_overall():
+
+    """
+    plots each experimental condition
+    from simulation data
+
+    """
 
     bkp = simulation.runner.run(phase=False)
 
@@ -324,7 +357,7 @@ def sim_overall():
         title = analysis.tools.economy.labels.get(r_id)
 
         analysis.graph.monetary_and_medium.overall_one_condition(
-            data=data, title=title, f_name=f'fig/overall_sim_{title}.pdf', exp=False
+            data=data, title=title, f_name=f'fig/sim_{title}.pdf', exp=False
         )
 
 
@@ -339,18 +372,20 @@ def run_simulations():
 
 
 def main():
-    run_simulations()
+    pass
 
 
 if __name__ == '__main__':
 
     # main()
 
-    exp_overall()
+    # exp_overall()
+    # analysis.graph.monetary_and_medium.overall_one_condition_example()
     # sim_overall()
     # bar_plots()
     # phase_diagram()
     # sim_overall()
+    exp_overall()
     # phase_diagram()
 
     # analysis.compute.demographics.run()
