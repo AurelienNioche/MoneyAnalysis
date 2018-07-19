@@ -27,41 +27,46 @@ def run(file_name='data/exp_monetary_behavior.p'):
         n_good = r.n_type
         print(r.id)
 
-        users = User.objects.filter(room_id=r.id)
-
         monetary_behavior = np.zeros((n_good, r.n_user, r.t_max))
         medium = np.ones((n_good, r.n_user, r.t_max)) * -1
 
         for m in range(n_good):
 
-            for t in range(r.t_max):
+            agent_type = np.repeat(np.arange(n_good), distribution)
 
-                for i, u in enumerate(users):
+            for g in agent_type:
 
-                    choices = Choice.objects.filter(room_id=r.id, t=t, user_id=u.id)
+                users = User.objects.filter(
+                    room_id=r.id, production_good=Converter.reverse_value(g, n_good))
 
-                    for c in choices:
+                for t in range(r.t_max):
 
-                        desired = Converter.convert_value(c.desired_good, n_good=n_good)
-                        in_hand = Converter.convert_value(c.good_in_hand, n_good=n_good)
+                    for u in users:
 
-                        prod = Converter.convert_value(
-                            u.production_good,
-                            n_good=n_good)
+                        choices = Choice.objects.filter(room_id=r.id, t=t, user_id=u.id)
 
-                        cons = Converter.convert_value(
-                            u.consumption_good,
-                            n_good=n_good)
+                        for c in choices:
 
-                        if m in (prod, cons):
-                            monetary_conform = (in_hand, desired) == (prod, cons)
-                            medium[m, i, t] = - 1
+                            desired = Converter.convert_value(c.desired_good, n_good=n_good)
+                            in_hand = Converter.convert_value(c.good_in_hand, n_good=n_good)
 
-                        else:
-                            monetary_conform = (in_hand, desired) in [(prod, m), (m, cons)]
-                            medium[m, i, t] = monetary_conform
+                            prod = Converter.convert_value(
+                                u.production_good,
+                                n_good=n_good)
 
-                        monetary_behavior[m, i, t] = monetary_conform
+                            cons = Converter.convert_value(
+                                u.consumption_good,
+                                n_good=n_good)
+
+                            if m in (prod, cons):
+                                monetary_conform = (in_hand, desired) == (prod, cons)
+                                medium[m, i, t] = - 1
+
+                            else:
+                                monetary_conform = (in_hand, desired) in [(prod, m), (m, cons)]
+                                medium[m, i, t] = monetary_conform
+
+                            monetary_behavior[m, i, t] = monetary_conform
 
         distribution = economy.distributions.get(r.id)
 
