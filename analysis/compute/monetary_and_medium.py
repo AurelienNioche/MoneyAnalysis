@@ -7,6 +7,11 @@ from analysis.tools.conversion import Converter
 
 import backup.backup as backup
 
+"""
+Medium matrices: n_good, time
+Monetary behavior matrices: n_good, agent, time  
+"""
+
 
 def run(file_name='data/exp_monetary_behavior.p'):
 
@@ -58,7 +63,7 @@ def run(file_name='data/exp_monetary_behavior.p'):
 
                         monetary_behavior[m, i, t] = monetary_conform
 
-        repartition = economy.repartitions.get(r.id)
+        repartition = economy.distributions.get(r.id)
 
         label = economy.labels.get(r.id)
         data[label] = {

@@ -10,6 +10,11 @@ import scipy.stats
 import os
 
 
+"""
+Medium matrices: n_good, agent
+"""
+
+
 def run(file_name='data/exp_strategy_count_pool.p'):
 
     if os.path.exists(file_name):

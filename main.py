@@ -27,19 +27,17 @@ import backup.backup as backup
 import simulation.economy
 import simulation.runner
 
-import analysis.fit.RL.optimize
-
 import analysis.tools
 import analysis.tools.format
 import analysis.tools.economy
 
 import analysis.graph
-import analysis.graph.monetary_and_medium
+import analysis.graph.monetary_and_medium_over_time
 import analysis.graph.monetary_and_medium_bar
 import analysis.graph.phase_diagram
 
 import analysis.compute.monetary_and_medium
-import analysis.compute.strategy_count_pool
+import analysis.compute.medium_over_individuals
 import analysis.compute.demographics
 
 import analysis.stats.mean_comparison
@@ -50,7 +48,7 @@ def stats_exp():
     # --------------- Monetary bhv ------------------------ #
 
     monetary_bhv = analysis.compute.monetary_and_medium.run()
-    medium = analysis.compute.strategy_count_pool.run()
+    medium = analysis.compute.medium_over_individuals.run()
 
     room_ids = (414, 415, 416, 417)
 
@@ -171,7 +169,7 @@ def bar_plots():
 
     # --------------- Medium  ------------------------ #
 
-    data = analysis.compute.strategy_count_pool.run()
+    data = analysis.compute.medium_over_individuals.run()
 
     xlabel = 'Good'
     ylabel = 'Used as medium'
@@ -214,7 +212,7 @@ def run_fit_simulation():
 
         cognitive_parameters = data_fit[label]
 
-        repartition = analysis.tools.economy.repartitions.get(r_id)
+        repartition = analysis.tools.economy.distributions.get(r_id)
 
         simulation.economy.launch(
             agent_model='RLAgent',
@@ -285,7 +283,7 @@ def exp_overall():
     """
 
     monetary = analysis.compute.monetary_and_medium.run()
-    medium = analysis.compute.strategy_count_pool.run()
+    medium = analysis.compute.medium_over_individuals.run()
 
     for good in (3, 4):
 
@@ -326,7 +324,7 @@ def exp_overall():
 
             data.append(d)
 
-        analysis.graph.monetary_and_medium.overall_one_good(data, titles, f_name=f'fig/xp_{good}.pdf', exp=True)
+        analysis.graph.monetary_and_medium_over_time.overall_one_good(data, titles, f_name=f'fig/xp_{good}.pdf', exp=True)
 
 
 def sim_overall():
@@ -445,7 +443,7 @@ def sim_overall():
 
             data.append(d)
 
-        analysis.graph.monetary_and_medium.overall_one_good(
+        analysis.graph.monetary_and_medium_over_time.overall_one_good(
             data, titles, f_name=f'fig/sim_{n_good}.pdf', exp=False
         )
 

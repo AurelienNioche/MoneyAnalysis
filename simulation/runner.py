@@ -17,7 +17,6 @@ import analysis.graph.phase_diagram
 def get_parameters(
         n_good=3,
         agent_model='RLAgent',
-        m=0,
         constant_x_value=np.array([50, ]),
         constant_x_index=np.array([0, ]),
         t_max=100,
@@ -91,7 +90,7 @@ def get_experiment_like_parameters():
     t_max = 100
     economy_model = 'prod: i-1'
 
-    repartitions = [analysis.tools.economy.repartitions.get(i) for i in rooms]
+    repartitions = [analysis.tools.economy.distributions.get(i) for i in rooms]
 
     n_cog_value = 3
     first_cog_range = np.linspace(0.1, 0.25, n_cog_value)

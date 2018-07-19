@@ -8,7 +8,7 @@ labels = {
     417: "4_good_non_uniform"
 }
 
-repartitions = {
+distributions = {
     414: np.array([9, 9, 18]),
     415: np.array([10, 10, 10, 10]),
     416: np.array([10, 10, 10]),

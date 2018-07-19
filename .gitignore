@@ -103,6 +103,4 @@ templates/
 game/migrations/
 data/
 fig/
-RL/
-WSS/
 __old__/
