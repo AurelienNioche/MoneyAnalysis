@@ -72,6 +72,63 @@ def stats_exp():
         analysis.stats.mean_comparison.medium(v['medium'])
 
 
+def stats_sim():
+
+    bkp = simulation.runner.run(phase=False)
+
+    room_ids = (414, 415, 416, 417)
+
+    for r_id in room_ids:
+
+        print('*' * 5, 'Room', r_id, '*' * 5)
+        print(analysis.tools.economy.labels.get(r_id))
+
+        # ------------------------- Get data --------------------- #
+
+        monetary_bhv = [
+            d for i, d in enumerate(bkp.monetary_bhv)
+            if bkp.room_id[i] == r_id
+        ]
+
+        medium_over_agents = [
+            d for i, d in enumerate(bkp.medium_over_agents)
+            if bkp.room_id[i] == r_id
+        ]
+
+        # ---------------------- format for monetary -------------- #
+
+        print('Testing monetary behavior')
+
+        # reformat each economies to compress on agents
+        monetary_over_user = [
+            analysis.tools.format.for_monetary_behavior_bar_plot_from_simulation_pool(m)
+            for m in monetary_bhv
+        ]
+
+        # average all that
+        monetary_over_user_mean = \
+            analysis.tools.format.for_variable_over_user_mean(monetary_over_user)
+
+        # Now we can do stats
+        analysis.stats.mean_comparison.medium(monetary_over_user_mean)
+
+        # ---------------------- format for medium -------------- #
+
+        print('Testing medium')
+
+        # reformat each economies to compress on agents
+        medium_over_user = [
+            analysis.tools.format.for_medium_bar_plot_from_simulation_pool(m) for m in medium_over_agents
+        ]
+
+        # average all that
+        medium_over_user_mean = \
+            analysis.tools.format.for_variable_over_user_mean(medium_over_user)
+
+        # Now we can do stats
+        analysis.stats.mean_comparison.medium(medium_over_user_mean)
+
+
 def bar_plots():
 
     """
@@ -273,91 +330,114 @@ def sim_overall():
 
     bkp = simulation.runner.run(phase=False)
 
-    room_ids = (414, 415, 416, 417)
+    room_id = {
+        3: (414, 416),
+        4: (415, 417)
+    }
 
-    for r_id in room_ids:
+    for n_good in (3, 4):
 
-        # ------------------------- Get data --------------------- #
+        data = []
 
-        monetary_bhv = [d for i, d in enumerate(bkp.monetary_bhv) if bkp.room_id[i] == r_id]
-        medium_over_time = [d for i, d in enumerate(bkp.medium_over_time) if bkp.room_id[i] == r_id]
-        medium_over_agents = [d for i, d in enumerate(bkp.medium_over_agents) if bkp.room_id[i] == r_id]
+        titles = [analysis.tools.economy.labels.get(r_id) for r_id in room_id[n_good]]
 
-        # repartition is common
-        repartition = [d for i, d in enumerate(bkp.repartition) if bkp.room_id[i] == r_id][0]
+        for r_id in room_id[n_good]:
 
-        # ------------------------- Monetary bhv ------------------------------- #
+            # ------------------------- Get data --------------------- #
 
-        # BAR PLOTS
-        # reformat each economies to compress on agents
-        monetary_over_user = [
-            analysis.tools.format.for_monetary_behavior_bar_plot_from_simulation_pool(m)
-            for m in monetary_bhv
-        ]
+            monetary_bhv = [
+                d for i, d in enumerate(bkp.monetary_bhv)
+                if bkp.room_id[i] == r_id
+            ]
 
-        # average all that
-        monetary_over_user_mean = \
-            analysis.tools.format.for_variable_over_user_mean(monetary_over_user)
+            medium_over_time = [
+                d for i, d in enumerate(bkp.medium_over_time)
+                if bkp.room_id[i] == r_id
+            ]
 
-        # Now we can do stats
-        money_sig = analysis.stats.mean_comparison.medium(monetary_over_user_mean)
+            medium_over_agents = [
+                d for i, d in enumerate(bkp.medium_over_agents)
+                if bkp.room_id[i] == r_id
+            ]
 
-        # reformat for bar plots
-        monetary_means, monetary_err = \
-            analysis.tools.format.for_monetary_bar_plot_from_simulation(monetary_over_user_mean)
+            # repartition is common
+            repartition = [
+                d for i, d in enumerate(bkp.repartition)
+                if bkp.room_id[i] == r_id
+            ][0]
 
-        # CURVE PLOTS
-        monetary_over_t = [
-            analysis.tools.format.for_monetary_behavior_over_t(m, repartition)
-            for m in monetary_bhv
-        ]
+            # ------------------------- Monetary bhv ------------------------------- #
 
-        # Average all that
-        monetary_over_t_means = analysis.tools.format.for_monetary_behavior_over_time_mean(monetary_over_t)
+            # BAR PLOTS
+            # reformat each economies to compress on agents
+            monetary_over_user = [
+                analysis.tools.format.for_monetary_behavior_bar_plot_from_simulation_pool(m)
+                for m in monetary_bhv
+            ]
 
-        # ------------------------- Medium ------------------------------- #
+            # average all that
+            monetary_over_user_mean = \
+                analysis.tools.format.for_variable_over_user_mean(monetary_over_user)
 
-        # BAR PLOTS
-        # reformat each economies to compress on agents
-        medium_over_user = [
-            analysis.tools.format.for_medium_bar_plot_from_simulation_pool(m) for m in medium_over_agents
-        ]
+            # Now we can do stats
+            money_sig = analysis.stats.mean_comparison.medium(monetary_over_user_mean)
 
-        # average all that
-        medium_over_user_mean = \
-            analysis.tools.format.for_variable_over_user_mean(medium_over_user)
+            # reformat for bar plots
+            monetary_means, monetary_err = \
+                analysis.tools.format.for_monetary_bar_plot_from_simulation(monetary_over_user_mean)
 
-        # Now we can do stats
-        med_sig = analysis.stats.mean_comparison.medium(medium_over_user_mean)
+            # CURVE PLOTS
+            monetary_over_t = [
+                analysis.tools.format.for_monetary_behavior_over_t(m, repartition)
+                for m in monetary_bhv
+            ]
 
-        # reformat for bar plots
-        medium_means, medium_err = \
-            analysis.tools.format.for_medium_bar_plot_from_simulation(medium_over_user_mean)
+            # Average all that
+            monetary_over_t_means = analysis.tools.format.for_monetary_behavior_over_time_mean(monetary_over_t)
 
-        # CURVE PLOTS
-        # compress each economies on time
-        medium_over_t = [
-            analysis.tools.format.for_medium_over_t(m, repartition)
-            for m in medium_over_time
-        ]
+            # ------------------------- Medium ------------------------------- #
 
-        # average all that
-        medium_over_t_means = analysis.tools.format.for_medium_over_time_mean(medium_over_t)
+            # BAR PLOTS
+            # reformat each economies to compress on agents
+            medium_over_user = [
+                analysis.tools.format.for_medium_bar_plot_from_simulation_pool(m) for m in medium_over_agents
+            ]
 
-        data = {
-            'monetary_bar': (monetary_means, monetary_err, money_sig),
-            'monetary_over_t': monetary_over_t,
-            'monetary_over_t_means': monetary_over_t_means,
-            'medium_bar': (medium_means, medium_err, med_sig),
-            'medium_over_t': medium_over_t,
-            'medium_over_t_means': medium_over_t_means,
-            'repartition': repartition
-        }
+            # average all that
+            medium_over_user_mean = \
+                analysis.tools.format.for_variable_over_user_mean(medium_over_user)
 
-        title = analysis.tools.economy.labels.get(r_id)
+            # Now we can do stats
+            med_sig = analysis.stats.mean_comparison.medium(medium_over_user_mean)
 
-        analysis.graph.monetary_and_medium.overall_one_condition(
-            data=data, title=title, f_name=f'fig/sim_{title}.pdf', exp=False
+            # reformat for bar plots
+            medium_means, medium_err = \
+                analysis.tools.format.for_medium_bar_plot_from_simulation(medium_over_user_mean)
+
+            # CURVE PLOTS
+            # compress each economies on time
+            medium_over_t = [
+                analysis.tools.format.for_medium_over_t(m, repartition)
+                for m in medium_over_time
+            ]
+
+            # average all that
+            medium_over_t_means = analysis.tools.format.for_medium_over_time_mean(medium_over_t)
+
+            d = {
+                'monetary_bar': (monetary_means, monetary_err, money_sig),
+                'monetary_over_t': monetary_over_t,
+                'monetary_over_t_means': monetary_over_t_means,
+                'medium_bar': (medium_means, medium_err, med_sig),
+                'medium_over_t': medium_over_t,
+                'medium_over_t_means': medium_over_t_means,
+                'repartition': repartition
+            }
+
+            data.append(d)
+
+        analysis.graph.monetary_and_medium.overall_one_good(
+            data, titles, f_name=f'fig/sim_{n_good}.pdf', exp=False
         )
 
 
@@ -385,9 +465,10 @@ if __name__ == '__main__':
     # bar_plots()
     # phase_diagram()
     # sim_overall()
-    exp_overall()
+    # exp_overall()
     # phase_diagram()
-
+    # sim_overall()
+    stats_sim()
     # analysis.compute.demographics.run()
     # analysis.graph.monetary_and_medium.overall_one_condition_example()
     # sim_overall()

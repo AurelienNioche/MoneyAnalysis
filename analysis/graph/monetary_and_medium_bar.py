@@ -5,9 +5,6 @@ import os
 import string
 import itertools as it
 
-# import analysis.tools.format
-# import analysis.compute.monetary_and_medium
-
 
 def _bar(means, errors, labels, title, subplot_spec=None, fig=None):
 
@@ -63,7 +60,7 @@ def bar_plots(means, errors, labels=None,
 
     # Set x labels
     labels_pos = np.arange(len(labels))
-    ax.set_xticklabels(labels) #rotation='vertical')
+    ax.set_xticklabels(labels)
     ax.set_xticks(labels_pos)
 
     # For significance bars

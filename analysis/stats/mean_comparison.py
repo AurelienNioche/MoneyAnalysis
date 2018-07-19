@@ -40,7 +40,6 @@ def monetary_bhv_format(monetary_bhv):
 
 def medium_exclude_non_users(medium):
 
-    n_user = len(medium[0, :])
     n_good = len(medium[:, 0])
 
     without_non_users = []
@@ -67,7 +66,7 @@ def monetary_behavior(data):
         to_compare.append(
             {
                 "data": np.array([m_bhv[g1, :], m_bhv[g2, :]]),
-                "name": f"good_{g1}_vs_good_{g2}"
+                "name": f"good_{g1 + 1}_vs_good_{g2 +1}"
             }
         )
 
@@ -89,7 +88,7 @@ def medium(data):
         to_compare.append(
             {
                 "data": np.array([m[g1], m[g2]]),
-                "name": f"good_{g1}_vs_good_{g2}"
+                "name": f"good_{g1 + 1}_vs_good_{g2 + 1}"
             }
         )
 
@@ -113,8 +112,8 @@ def mw(to_compare):
 
     for p, u, p_c, v, dic in zip(ps, us, p_corr, valid, to_compare):
         print("[Test diff {}] "
-              "Mann-Whitney rank test: u {}, p {:.3f}, p corr {:.3f}, significant: {}"
-              .format(dic["name"], u, p, p_c, v))
+              "Mann-Whitney rank test: $u={}$, $p={:.3f}$, p raw {:.3f}, significant: {}"
+              .format(dic["name"], u, p_c, p, v))
         print()
 
     return valid
