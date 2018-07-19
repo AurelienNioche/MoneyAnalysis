@@ -85,7 +85,7 @@ def bar_plots():
 
         sig = analysis.stats.mean_comparison.monetary_behavior(v['monetary_bhv'])
         title = k
-        means, err = analysis.tools.format.for_monetary_behavior_bar_plot(v['monetary_bhv'])
+        means, err = analysis.tools.format.for_monetary_behavior_bar_plot_from_experiment(v['monetary_bhv'])
         f_name = f'fig/monetary_bar_{title}'
 
         analysis.graph.monetary_and_medium_bar.one_condition_bar(
@@ -110,7 +110,7 @@ def bar_plots():
         title = k.replace('_strategy_count_pool', '')
 
         sig = analysis.stats.mean_comparison.medium(v['medium'])
-        means, err = analysis.tools.format.for_medium_bar_plot(v['medium'])
+        means, err = analysis.tools.format.for_medium_bar_plot_from_experiment(v['medium'])
         f_name = f'fig/medium_bar_{title}'
 
         analysis.graph.monetary_and_medium_bar.one_condition_bar(
