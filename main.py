@@ -85,7 +85,7 @@ def bar_plots():
 
         sig = analysis.stats.mean_comparison.monetary_behavior(v['monetary_bhv'])
         title = k
-        means, err = analysis.tools.format.for_monetary_behavior_bar_plot(v['monetary_bhv'])
+        means, err = analysis.tools.format.for_monetary_behavior_bar_plot_from_experiment(v['monetary_bhv'])
         f_name = f'fig/monetary_bar_{title}'
 
         analysis.graph.monetary_and_medium_bar.one_condition_bar(
@@ -110,7 +110,7 @@ def bar_plots():
         title = k.replace('_strategy_count_pool', '')
 
         sig = analysis.stats.mean_comparison.medium(v['medium'])
-        means, err = analysis.tools.format.for_medium_bar_plot(v['medium'])
+        means, err = analysis.tools.format.for_medium_bar_plot_from_experiment(v['medium'])
         f_name = f'fig/medium_bar_{title}'
 
         analysis.graph.monetary_and_medium_bar.one_condition_bar(
@@ -273,7 +273,7 @@ def sim_overall():
         monetary_means, monetary_err = \
             analysis.tools.format.for_monetary_bar_plot_from_simulation(monetary_over_user_mean)
 
-        # ClASSIC PLOTS
+        # CURVE PLOTS
         monetary_over_t = [
             analysis.tools.format.for_monetary_behavior_over_t(m, repartition)
             for m in monetary_bhv
@@ -301,7 +301,7 @@ def sim_overall():
         medium_means, medium_err = \
             analysis.tools.format.for_medium_bar_plot_from_simulation(medium_over_user_mean)
 
-        # CLASSIC PLOTS
+        # CURVE PLOTS
         # compress each economies on time
         medium_over_t = [
             analysis.tools.format.for_medium_over_t(m, repartition)
@@ -346,7 +346,7 @@ if __name__ == '__main__':
 
     # main()
 
-    # exp_overall()
+    exp_overall()
     # sim_overall()
     # bar_plots()
     # phase_diagram()
@@ -357,7 +357,7 @@ if __name__ == '__main__':
     # analysis.graph.monetary_and_medium.overall_one_condition_example()
     # sim_overall()
     # exp_overall()
-    run_simulations()
+    # run_simulations()
     # run_experiment()
     # bar_plots()
     # run_simulations()

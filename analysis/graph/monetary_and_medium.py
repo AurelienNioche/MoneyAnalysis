@@ -158,6 +158,11 @@ def one_condition_monetary_behavior_all_goods(data, fig, subplot_spec, exp):
     for i in range(n_good):
 
         monetary_behavior_over_t(
+            # If the graph is generated from experiment data, each column (the good considered as money) is one 'i'.
+            # If the graph is generated from simulation data, 'i' stills represents one column
+            # (the good considered as money),
+            # but there are multiple economies so multiple curves (each curves representing
+            # one simulated economy and the mean plot is the mean computed from these economies)
             data=data['monetary_over_t'][i] if exp else [j[i] for j in data['monetary_over_t']],
             mean_plot=mean_plot[i] if mean_plot is not None else None,
             fig=fig, subplot_spec=gs[next(coord)],

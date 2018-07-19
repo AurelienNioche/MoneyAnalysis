@@ -38,24 +38,6 @@ def monetary_bhv_format(monetary_bhv):
     return new
 
 
-def pool_monetary_bhv(monetary_bhv):
-
-    economies = [monetary_bhv_format(d) for d in monetary_bhv]
-
-    n_user = len(economies[0][0, :])
-    n_good = len(economies[0][:, 0])
-
-    new = np.zeros((n_good, n_user))
-
-    for i in range(n_user):
-
-        for good in range(n_good):
-
-            new[good, i] = np.mean([e[good, i] for e in economies])
-
-    return new
-
-
 def medium_exclude_non_users(medium):
 
     n_user = len(medium[0, :])
@@ -74,17 +56,7 @@ def medium_exclude_non_users(medium):
 
 def monetary_behavior(data):
 
-    # If there is only one economy
-    # we have one array
-    # else if we have many economies
-    # we have a list of arrays
-    if isinstance(data, list):
-
-        m_bhv = pool_monetary_bhv(data)
-
-    else:
-
-        m_bhv = monetary_bhv_format(data)
+    m_bhv = monetary_bhv_format(data)
 
     comparisons = get_comparisons(m_bhv)
 
