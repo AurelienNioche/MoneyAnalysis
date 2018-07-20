@@ -38,6 +38,55 @@ import analysis.compute.demographics
 import analysis.stats.mean_comparison
 
 
+def exp_overall():
+
+    """
+    plots each experimental condition
+    from experimental data
+
+    """
+
+    results = analysis.compute.monetary_and_medium.run()
+
+    for good in (3, 4):
+
+        data = []
+        titles = (f'{good}_good_non_uniform', f'{good}_good_uniform')
+
+        for k in titles:
+
+            # Get data
+            medium = results[k]['medium']
+            m_bhv = results[k]['monetary_bhv']
+            distribution = results[k]['distribution']
+
+            # Do stats
+            monetary_over_user = analysis.tools.format.exp_monetary_bhv_over_user(m_bhv)
+            money_sig = analysis.stats.mean_comparison.monetary_behavior(monetary_over_user)
+            medium_over_user = analysis.tools.format.medium_over_user(medium)
+            med_sig = analysis.stats.mean_comparison.medium(medium_over_user)
+
+            # Format data for Monetary bhv graph
+            monetary_means, monetary_err = analysis.tools.format.exp_monetary_bhv_bar_plot(m_bhv)
+            monetary_over_t = analysis.tools.format.exp_monetary_bhv_over_t(m_bhv, distribution)
+
+            # Format data for Used as medium graph
+            medium_means, medium_err = analysis.tools.format.exp_medium_bar_plot(medium_over_user)
+            medium_over_t = analysis.tools.format.medium_over_t(medium)
+
+            d = {
+                'monetary_bar': (monetary_means, monetary_err, money_sig),
+                'monetary_over_t': monetary_over_t,
+                'medium_bar': (medium_means, medium_err, med_sig),
+                'medium_over_t': medium_over_t,
+                'distribution': distribution
+            }
+
+            data.append(d)
+
+        analysis.graph.overall.overall_one_good(data, titles, f_name=f'fig/xp_{good}.pdf', exp=True)
+
+
 def stats_exp():
 
     # --------------- Monetary bhv ------------------------ #
@@ -57,20 +106,18 @@ def stats_exp():
         # --------------- Monetary bhv  ------------------------ #
 
         print('Testing monetary behavior')
+        m_bhv = results[label]['monetary_bhv']
 
-        data = analysis.tools.format.exp_monetary_bhv_over_user(
-            results[label]['monetary_bhv']
-        )
-
-        analysis.stats.mean_comparison.monetary_behavior(data)
+        monetary_over_user = analysis.tools.format.exp_monetary_bhv_over_user(m_bhv)
+        analysis.stats.mean_comparison.monetary_behavior(monetary_over_user)
 
         # --------------- Medium  ------------------------ #
 
         print('Testing medium')
 
-        data = results[label]['medium']
-
-        analysis.stats.mean_comparison.medium(data)
+        medium = results[label]['medium']
+        medium_over_user = analysis.tools.format.medium_over_user(medium)
+        analysis.stats.mean_comparison.medium(medium_over_user)
 
 
 def stats_sim():
@@ -164,56 +211,6 @@ def phase_diagram():
         f_name=f_name,
         max_col=max_col
     )
-
-
-def exp_overall():
-
-    """
-    plots each experimental condition
-    from experimental data
-
-    """
-
-    results = analysis.compute.monetary_and_medium.run()
-
-    for good in (3, 4):
-
-        data = []
-        titles = (f'{good}_good_non_uniform', f'{good}_good_uniform')
-
-        for k in titles:
-
-            medium = results[k]['medium']
-
-            m_bhv = results[k]['monetary_bhv']
-
-            distribution = results[k]['distribution']
-
-            # Do stats
-            money_sig = analysis.stats.mean_comparison.monetary_behavior(m_bhv)
-            medium_over_user = analysis.tools.format.medium_over_user(medium)
-            med_sig = analysis.stats.mean_comparison.medium(medium_over_user)
-
-            # Format data for Monetary bhv graph
-            monetary_means, monetary_err = analysis.tools.format.exp_monetary_bhv_bar_plot(m_bhv)
-            monetary_over_t = analysis.tools.format.exp_monetary_bhv_over_t(m_bhv, distribution)
-
-            # Format data for Used as medium graph
-            medium_means, medium_err = analysis.tools.format.exp_medium_bar_plot(medium_over_user)
-
-            medium_over_t = analysis.tools.format.medium_over_t(medium)
-
-            d = {
-                'monetary_bar': (monetary_means, monetary_err, money_sig),
-                'monetary_over_t': monetary_over_t,
-                'medium_bar': (medium_means, medium_err, med_sig),
-                'medium_over_t': medium_over_t,
-                'distribution': distribution
-            }
-
-            data.append(d)
-
-        analysis.graph.overall.overall_one_good(data, titles, f_name=f'fig/xp_{good}.pdf', exp=True)
 
 
 def sim_overall():

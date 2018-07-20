@@ -6,31 +6,31 @@ import string
 import itertools as it
 
 
-def _bar(means, errors, labels, title, subplot_spec=None, fig=None):
-
-    if subplot_spec:
-        ax = fig.add_subplot(subplot_spec)
-    else:
-        fig, ax = plt.figure()
-
-    # Hide spines
-    ax.spines['top'].set_visible(False)
-    ax.spines['right'].set_visible(False)
-
-    ax.tick_params(length=0)
-    ax.set_title(f"$\{title}$", fontsize=20)
-
-    # print(labels)
-
-    # Set x labels
-    labels_pos = np.arange(len(labels))
-    ax.set_xticklabels(labels)
-    ax.set_xticks(labels_pos)
-
-    ax.set_ylim(0, 1)
-
-    # create
-    ax.bar(labels_pos, means, yerr=errors, edgecolor="white", align="center", color="black")
+# def _bar(means, errors, labels, title, subplot_spec=None, fig=None):
+#
+#     if subplot_spec:
+#         ax = fig.add_subplot(subplot_spec)
+#     else:
+#         fig, ax = plt.figure()
+#
+#     # Hide spines
+#     ax.spines['top'].set_visible(False)
+#     ax.spines['right'].set_visible(False)
+#
+#     ax.tick_params(length=0)
+#     ax.set_title(f"$\{title}$", fontsize=20)
+#
+#     # print(labels)
+#
+#     # Set x labels
+#     labels_pos = np.arange(len(labels))
+#     ax.set_xticklabels(labels)
+#     ax.set_xticks(labels_pos)
+#
+#     ax.set_ylim(0, 1)
+#
+#     # create
+#     ax.bar(labels_pos, means, yerr=errors, edgecolor="white", align="center", color="black")
 
 
 def bar_plots(means, errors, labels=None,
@@ -79,7 +79,16 @@ def bar_plots(means, errors, labels=None,
             ax.hlines(y=y + y_inc_line + shift*idx,
                       xmin=i, xmax=j, color='black')
 
-            ax.text(s='***' if k else 'NS',
+            if k < 0.001:
+                s = '***'
+            elif k < 0.01:
+                s = '**'
+            elif k < 0.05:
+                s = '*'
+            else:
+                s = 'NS'
+
+            ax.text(s=s,
                     x=x,
                     y=y + y_inc_text + shift*idx,
                     horizontalalignment='center', verticalalignment='center')

@@ -58,9 +58,9 @@ def medium(m):
             }
         )
 
-    valid = mw(to_compare)
+    p = mw(to_compare)
 
-    return [c + (v, ) for c, v in zip(comparisons, valid)]
+    return [c + (v, ) for c, v in zip(comparisons, p)]
 
 
 def mw(to_compare):
@@ -74,15 +74,15 @@ def mw(to_compare):
         us.append(u)
 
     valid, p_corr, alpha_c_sidak, alpha_c_bonf = \
-        statsmodels.stats.multitest.multipletests(pvals=ps, alpha=0.01, method="b")
+        statsmodels.stats.multitest.multipletests(pvals=ps, alpha=0.05, method="b")
 
     for p, u, p_c, v, dic in zip(ps, us, p_corr, valid, to_compare):
-        print("[Test diff {}] "
+        print("[{}] "
               "Mann-Whitney rank test: $u={}$, $p={:.3f}$, p raw {:.3f}, significant: {}"
               .format(dic["name"], u, p_c, p, v))
         print()
 
-    return valid
+    return p_corr
 
 
 

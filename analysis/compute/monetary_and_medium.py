@@ -8,12 +8,12 @@ from analysis.tools.conversion import Converter
 import backup.backup as backup
 
 """
-Medium matrices: n_good, time
+Medium matrices: n_good, agent, time
 Monetary behavior matrices: n_good, agent, time  
 """
 
 
-def run(file_name='data/exp_monetary_behavior.p'):
+def run(file_name='data/exp.p'):
 
     if os.path.exists(file_name):
         return backup.load(file_name)
@@ -30,16 +30,22 @@ def run(file_name='data/exp_monetary_behavior.p'):
         monetary_behavior = np.zeros((n_good, r.n_user, r.t_max))
         medium = np.ones((n_good, r.n_user, r.t_max)) * -1
 
+        ordered_goods = [n_good-1, ] + list(range(n_good-1))
+
+        group_users = [
+            User.objects.filter(
+                room_id=r.id, production_good=Converter.reverse_value(g, n_good)).order_by('id')
+            for g in ordered_goods
+        ]
+
         for m in range(n_good):
 
-            agent_type = np.repeat(np.arange(n_good), distribution)
+            # agent_type = np.repeat(np.arange(n_good), distribution)
 
-            for g in agent_type:
+            for t in range(r.t_max):
 
-                users = User.objects.filter(
-                    room_id=r.id, production_good=Converter.reverse_value(g, n_good))
-
-                for t in range(r.t_max):
+                i = 0
+                for users in group_users:
 
                     for u in users:
 
@@ -67,6 +73,8 @@ def run(file_name='data/exp_monetary_behavior.p'):
                                 medium[m, i, t] = monetary_conform
 
                             monetary_behavior[m, i, t] = monetary_conform
+
+                        i += 1
 
         distribution = economy.distributions.get(r.id)
 

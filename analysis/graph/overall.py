@@ -7,6 +7,7 @@ import string
 import analysis.graph.monetary_and_medium_bar
 import analysis.graph.monetary_and_medium_over_time
 
+
 def _one_condition_monetary_behavior_all_goods(data, mean_plot, n_side, fig, subplot_spec, exp):
 
     coord = it.product(range(n_side), range(n_side))
