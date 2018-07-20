@@ -101,14 +101,14 @@ def exp_monetary_bhv_bar_plot(monetary_bhv):
 
 def sim_medium_bar_plot(medium):
 
-    n_good = len(medium[:, 0])
+    n_good = len(medium)
 
     y = np.zeros(n_good)
     err = np.zeros(n_good)
 
     for good in range(n_good):
-        y[good] = np.mean(medium[good, :])
-        err[good] = scipy.stats.sem(medium[good, :])
+        y[good] = np.mean(medium[good])
+        err[good] = scipy.stats.sem(medium[good])
 
     return y, err
 
@@ -167,16 +167,16 @@ def medium_over_t(medium):
 
 def sim_medium_over_t_mean(list_medium):
 
-    n_eco = len(list_medium)
-    n_good = len(list_medium[0])
+    t_max = len(list_medium[0][0, :])
+    n_good = len(list_medium[0][:, 0])
 
-    y = np.zeros((n_good, n_eco))
+    y = np.zeros((n_good, t_max))
 
-    for g in range(n_good):
+    for i in range(n_good):
 
-        for i in range(n_eco):
+        for t in range(t_max):
 
-            y[g, i] = np.mean(list_medium[i][g])
+            y[i, t] = np.mean([l[i, t] for l in list_medium])
 
     return y
 
@@ -231,29 +231,70 @@ def monetary_over_user(monetary_bhv):
 #
 #     return y
 
-def sim_monetary_mean_over_user(list_monetary_bhv):
-
-    n_good = len(list_monetary_bhv[0][:, ])
-
-    n_total_user = 0
-
-    for l in list_monetary_bhv:
-        n_total_user += len(l[0])
-
-    # print(n_total_user)
-
+# def sim_monetary_mean_over_user(list_monetary_bhv):
+#
+#     n_good = len(list_monetary_bhv[0][:, ])
+#
+#     n_total_user = 0
+#
+#     for l in list_monetary_bhv:
+#         n_total_user += len(l[0])
+#
+#     print(n_total_user)
+    #
     # y = np.zeros((n_good, n_total_user))
-
-    one_good_all_agents = [[] for _ in range(n_good)]
-
-    for eco in list_monetary_bhv:
-
-        for good in range(n_good):
-            one_good_all_agents[good] += list(eco[good])
-
+    #
+    # one_good_all_agents = [[] for _ in range(n_good)]
+    #
+    # for eco in list_monetary_bhv:
+    #
+    #     for good in range(n_good):
+    #         one_good_all_agents[good] += list(eco[good])
+    #
     # print(len(one_good_all_agents[0]))
+    #
+    # return np.asarray(one_good_all_agents)
 
-    return np.asarray(one_good_all_agents)
+
+def sim_monetary_mean_over_user(list_monetary):
+
+    n_user = len(list_monetary[0][0, :])
+    n_good = len(list_monetary[0][:, 0])
+
+    y = np.zeros((n_good, n_user))
+
+    for i in range(n_good):
+
+        for n in range(n_user):
+
+            y[i, n] = np.mean([l[i, n] for l in list_monetary])
+
+    return y
+
+
+def sim_medium_mean_over_user(list_medium):
+
+    n_good = len(list_medium[0])
+
+    y = [[] for _ in range(n_good)]
+
+    for i in range(n_good):
+
+        for j in range(len(list_medium[0][i])):
+
+            a = []
+
+            for l in list_medium:
+
+                a.append(l[i][j])
+
+            y[i].append(np.mean(a))
+
+        # y[i].append(
+        #     np.mean([l[j] for l in list_medium for j in range(len(l[i]))])
+        # )
+
+    return np.asarray(y)
 
 
 def sim_monetary_behavior_mean_over_t(economies):
@@ -274,21 +315,22 @@ def sim_monetary_behavior_mean_over_t(economies):
     return y
 
 
-def sim_medium_mean_over_user(list_medium_over_user):
-
-    n_eco = len(list_medium_over_user)
-    n_good = len(list_medium_over_user[0])
-
-    y = np.zeros((n_good, n_eco))
-
-    for g in range(n_good):
-
-        for i in range(n_eco):
-
-            y[g, i] = np.mean(list_medium_over_user[i][g])
-
-    return y
-
+# def sim_medium_mean_over_user(list_medium_over_user):
+#       """compare economies"""
+#
+#     n_eco = len(list_medium_over_user)
+#     n_good = len(list_medium_over_user[0])
+#
+#     y = np.zeros((n_good, n_eco))
+#
+#     for g in range(n_good):
+#
+#         for i in range(n_eco):
+#
+#             y[g, i] = np.mean(list_medium_over_user[i][g])
+#
+#     return y
+#
 
 def phase_diagram(monetary_behavior, distribution, n_good):
 

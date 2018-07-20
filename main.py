@@ -225,7 +225,7 @@ def sim_overall():
 
     room_id = {
         3: (414, 416),
-        4: (415, 417)
+        4: (417, 415)
     }
 
     for n_good in (3, 4):
@@ -311,7 +311,7 @@ def sim_overall():
             medium_means, medium_err = \
                 analysis.tools.format.sim_medium_bar_plot(medium_over_user_mean)
 
-            # CURVE PLOTS     !!!!!!!!!!!!!!!!! TODO: TO CHECK
+            # CURVE PLOTS
             # compress each economies on time
             medium_over_t = [
                 analysis.tools.format.medium_over_t(m)
