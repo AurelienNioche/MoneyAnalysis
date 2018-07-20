@@ -276,7 +276,7 @@ def sim_overall():
 
             # average all that
             monetary_over_user_mean = \
-                analysis.tools.format.sim_mean_over_user(monetary_over_user)
+                analysis.tools.format.sim_monetary_mean_over_user(monetary_over_user)
 
             # Now we can do stats
             money_sig = analysis.stats.mean_comparison.medium(monetary_over_user_mean)
@@ -322,7 +322,7 @@ def sim_overall():
             ]
 
             # average all that
-            medium_over_t_means = analysis.tools.format.sim_mean_over_user(medium_over_t)
+            medium_over_t_means = analysis.tools.format.sim_medium_over_t_mean(medium_over_t)
 
             d = {
                 'monetary_bar': (monetary_means, monetary_err, money_sig),
