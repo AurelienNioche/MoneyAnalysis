@@ -149,13 +149,13 @@ def stats_sim():
 
         # reformat each economies to compress on agents
         monetary_over_user = [
-            analysis.tools.format.sim_monetary_bhv_test(m)
+            analysis.tools.format.monetary_over_user(m)
             for m in monetary_bhv
         ]
 
         # average all that
         monetary_over_user_mean = \
-            analysis.tools.format.sim_mean_over_user(monetary_over_user)
+            analysis.tools.format.sim_monetary_mean_over_user(monetary_over_user)
 
         # Now we can do stats
         analysis.stats.mean_comparison.monetary_behavior(monetary_over_user_mean)
@@ -171,7 +171,7 @@ def stats_sim():
 
         # average all that
         medium_over_user_mean = \
-            analysis.tools.format.sim_mean_over_user(medium_over_user)
+            analysis.tools.format.sim_medium_mean_over_user(medium_over_user)
 
         # Now we can do stats
         analysis.stats.mean_comparison.medium(medium_over_user_mean)
@@ -267,7 +267,7 @@ def sim_overall():
             # BAR PLOTS
             # reformat each economies to compress on agents
             monetary_over_user = [
-                analysis.tools.format.sim_monetary_bhv_test(m)
+                analysis.tools.format.monetary_over_user(m)
                 for m in monetary_bhv
             ]
 
@@ -276,8 +276,11 @@ def sim_overall():
                 analysis.tools.format.sim_monetary_mean_over_user(monetary_over_user)
 
             # Now we can do stats
-            money_sig = analysis.stats.mean_comparison.medium(monetary_over_user_mean)
+            money_sig = analysis.stats.mean_comparison.monetary_behavior(monetary_over_user_mean)
 
+            if r_id == 415:
+                print(monetary_over_user_mean)
+                quit()
             # reformat for bar plots
             monetary_means, monetary_err = \
                 analysis.tools.format.sim_monetary_bhv_bar_plot(monetary_over_user_mean)
@@ -347,8 +350,8 @@ if __name__ == '__main__':
     # main()
 
     # # Uncomment for experiment analysis and experiment-like simulations
-    exp_overall()
-    # sim_overall()
+    # exp_overall()
+    sim_overall()
 
     # # Uncomment for producing stats
     # stats_sim()

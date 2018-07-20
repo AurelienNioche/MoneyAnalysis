@@ -165,6 +165,22 @@ def medium_over_t(medium):
     return new
 
 
+def sim_medium_over_t_mean(list_medium):
+
+    n_eco = len(list_medium)
+    n_good = len(list_medium[0])
+
+    y = np.zeros((n_good, n_eco))
+
+    for g in range(n_good):
+
+        for i in range(n_eco):
+
+            y[g, i] = np.mean(list_medium[i][g])
+
+    return y
+
+
 def sim_monetary_bhv_bar_plot(monetary_bhv):
 
     n_good = len(monetary_bhv[:, 0])
@@ -180,7 +196,7 @@ def sim_monetary_bhv_bar_plot(monetary_bhv):
     return y, err
 
 
-def sim_monetary_bhv_test(monetary_bhv):
+def monetary_over_user(monetary_bhv):
 
     """
     returns an array with format compatible with
@@ -200,18 +216,41 @@ def sim_monetary_bhv_test(monetary_bhv):
     return new
 
 
+# def sim_monetary_mean_over_user(list_monetary_bhv):
+#
+#     n_eco = len(list_monetary_bhv)
+#     n_good = len(list_monetary_bhv[0][:, ])
+#
+#     y = np.zeros((n_good, n_eco))
+#
+#     for g in range(n_good):
+#
+#         for i in range(n_eco):
+#
+#             y[g, i] = np.mean(list_monetary_bhv[i][g])
+#
+#     return y
+
 def sim_monetary_mean_over_user(list_monetary_bhv):
 
-    n_eco = len(list_monetary_bhv)
-    n_good = len(list_monetary_bhv[0][0])
+    n_good = len(list_monetary_bhv[0][:, ])
 
-    y = np.zeros((n_good, n_eco))
+    n_total_user = 0
 
-    for g in range(n_good):
+    for l in list_monetary_bhv:
+        n_total_user += len(l[0])
 
-        for i in range(n_eco):
+    y = np.zeros((n_good, n_total_user))
 
-            y[g, i] = np.mean(list_monetary_bhv[i][g])
+    one_good_all_agents = [[], ] * n_good
+
+    for eco in list_monetary_bhv:
+
+        for good in range(n_good):
+            one_good_all_agents[good] += list(eco[good])
+
+    print(len(one_good_all_agents[0]))
+    quit()
 
     return y
 
@@ -237,7 +276,7 @@ def sim_monetary_behavior_mean_over_t(economies):
 def sim_medium_mean_over_user(list_medium_over_user):
 
     n_eco = len(list_medium_over_user)
-    n_good = len(list_medium_over_user[0][0])
+    n_good = len(list_medium_over_user[0])
 
     y = np.zeros((n_good, n_eco))
 

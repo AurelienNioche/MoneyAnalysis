@@ -31,6 +31,8 @@ def monetary_behavior(m_bhv):
 
     for g1, g2 in comparisons:
 
+        print(len(m_bhv[g1]))
+        print(len(m_bhv[g2]))
         to_compare.append(
             {
                 "data": np.array([m_bhv[g1, :], m_bhv[g2, :]]),
