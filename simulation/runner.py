@@ -114,7 +114,7 @@ def get_experiment_like_parameters():
                 'economy_model': economy_model,
                 'agent_model': 'RLAgent',
                 'n_good': n_good,
-                'seed': 123,  # np.random.randint(2**32-1),
+                'seed': np.random.randint(2**32-1),
                 'room_id': rooms[i]
             }
 

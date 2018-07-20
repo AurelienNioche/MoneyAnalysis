@@ -66,10 +66,10 @@ def bar_plots(means, errors, labels=None,
     # For significance bars
     if sig:
 
-        y_inc_line = 0.1
-        y_inc_text = 0.15
+        y_inc_line = 0.05
+        y_inc_text = 0.07
 
-        shift = 0.2
+        shift = 0.11
 
         for idx, (i, j, k) in enumerate(sig):
 
@@ -86,7 +86,7 @@ def bar_plots(means, errors, labels=None,
             elif k < 0.05:
                 s = '*'
             else:
-                s = 'ns'
+                s = '$^{ns}$'
 
             ax.text(s=s,
                     x=x,

@@ -347,8 +347,8 @@ if __name__ == '__main__':
     # main()
 
     # # Uncomment for experiment analysis and experiment-like simulations
-    # exp_overall()
-    sim_overall()
+    exp_overall()
+    # sim_overall()
 
     # # Uncomment for producing stats
     # stats_sim()
