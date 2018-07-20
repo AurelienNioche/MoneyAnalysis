@@ -103,6 +103,8 @@ templates/
 game/migrations/
 data/phase_3_goods/
 data/phase_4_goods/
+data/exp.p
+data/exp_like/
 fig/
 __old__/
 __test__/main.py
