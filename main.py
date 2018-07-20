@@ -348,10 +348,10 @@ if __name__ == '__main__':
 
     # # Uncomment for experiment analysis and experiment-like simulations
     # exp_overall()
-    sim_overall()
+    # sim_overall()
 
     # # Uncomment for producing stats
-    # stats_sim()
+    stats_sim()
     # stats_exp()
 
     # # Uncomment for running simulations used for phase diagram
