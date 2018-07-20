@@ -119,24 +119,9 @@ class Economy(object):
 
                 else:
                     monetary_conform = agent_choice in [(agent.P, m), (m, agent.C)]
-
-                    # if monetary_conform:
-                    #
-                    #     self.bkp_medium_over_time[m, self.t] += 1
+                    self.bkp_medium[m, agent.idx, self.t] = monetary_conform
 
                 self.bkp_monetary_bhv[m, agent.idx, self.t] = monetary_conform
-
-            # ---- For backup ----- #
-
-            for g in range(self.n_goods):
-
-                if g not in (agent.P, agent.C):
-                    ind_first_part = \
-                        agent_choice[0] == agent.P and agent_choice[1] != agent.C
-                    ind_second_part = \
-                        agent_choice[0] != agent.P and agent_choice[1] == agent.C
-
-                    self.bkp_medium[g, agent.idx, self.t] = int(ind_first_part + ind_second_part)
 
             # ----------- #
 

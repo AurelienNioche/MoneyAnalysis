@@ -152,7 +152,7 @@ def medium_over_t(medium):
     """
 
     n_t = len(medium[0, 0, :])
-    n_good = len(medium[:, 0, 0])
+    n_good = len(medium[:])
 
     new = np.zeros((n_good, n_t))
 
@@ -160,7 +160,8 @@ def medium_over_t(medium):
 
         for good in range(n_good):
             cond = medium[good, :, t] != -1
-            new[good, t] = np.mean(medium[good, cond, t])
+            a = medium[good, cond, t]
+            new[good, t] = np.mean(a)
 
     return new
 
