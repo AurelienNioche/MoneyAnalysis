@@ -25,13 +25,13 @@ def _one_condition_monetary_behavior_all_goods(data, mean_plot, n_side, fig, sub
             mean_plot=mean_plot[i] if mean_plot is not None else None,
             fig=fig, subplot_spec=gs[next(coord)],
             title=f'm={i+1}',
-            xlabel=i == 0
+            ylabel=i == 0
         )
 
 
 def overall_one_good(data, titles, f_name, exp=True):
 
-    fig = plt.figure(figsize=(10, 7), dpi=200)
+    fig = plt.figure(figsize=(15, 9), dpi=200)
     gs = grd.GridSpec(ncols=2, nrows=1)
 
     subplot_specs = (gs[x, y] for x, y in ((0, 0), (0, 1)))
@@ -42,6 +42,7 @@ def overall_one_good(data, titles, f_name, exp=True):
                               f_name=f_name, letter=next(letters), exp=exp,
                               subplot_spec=next(subplot_specs), fig=fig)
 
+    plt.subplots_adjust(bottom=0.1, right=0.98, top=0.9, left=0.04)
     # plt.tight_layout()
     plt.savefig(f_name)
 
@@ -67,7 +68,8 @@ def overall_one_condition(data, title, f_name, exp=True, letter=None,
 
     # --------------------- #
 
-    analysis.graph.monetary_and_medium_over_time.medium_over_t(data['medium_over_t'],
+    analysis.graph.monetary_and_medium_over_time.medium_over_t(
+        data['medium_over_t'],
         fig=fig, subplot_spec=gs[0, 1], mean_plot=data.get('medium_over_t_means'))
 
     # --------------------- #
@@ -110,10 +112,9 @@ def _set_title_using_fake_fig(title, subplot_spec, fig, letter):
     ax.patch.set_alpha(0)
     ax.set_xticks([])
     ax.set_yticks([])
-    # ax.set_xtickslabel([])
 
-    ax.text(s=title.replace('_', ' ').capitalize(), x=0.4, y=1.1, fontsize=10)
-    ax.text(s=letter, x=0.05, y=0.05, fontsize=10)
+    ax.text(s=title.replace('_', ' ').replace('good', 'goods').upper(), x=0.4, y=1.07, fontsize=10)
+    ax.text(s=letter, x=-0.05, y=-0.1, fontsize=20)
 
 
 # ---------------------------------------------------- EXAMPLES ----------------------------------------------- #
@@ -129,7 +130,7 @@ def overall_one_condition_example():
         np.ones((3, 3, 50)) * 0.8
     ]
 
-    monetary_over_t_means = np.ones((3, 3, 50)) * 0.5
+    monetary_over_t_means = np.random.random((3, 3, 50))
 
     medium_means, medium_err = np.random.random((2, 3))
     med_sig = [(0, 1, False), (0, 2, True)]
@@ -139,7 +140,7 @@ def overall_one_condition_example():
         np.ones((3, 50)) * 0.8
     ]
 
-    medium_over_t_means = np.ones((3, 50)) * 0.5
+    medium_over_t_means = np.random.random((3, 50))
 
     distribution = [10, 10, 10]
 
@@ -158,7 +159,7 @@ def overall_one_condition_example():
 
 def overall_one_good_example():
 
-    for good in (3, 4):
+    for good in (3, ): # 4):
 
         data = []
         titles = ('tamere', 'tonpere')
@@ -169,21 +170,21 @@ def overall_one_good_example():
             money_sig = [(0, i+1, np.random.choice([False, True])) for i in range(good)]
 
             monetary_over_t = [
-                np.ones((good, good, 50)) * 0.1,
-                np.ones((good, good, 50)) * 0.8
+                np.random.random((good, good, 50)),
+                np.random.random((good, good, 50))
             ]
 
-            monetary_over_t_means = np.ones((good, good, 50)) * 0.5
+            monetary_over_t_means = np.random.random((good, good, 50))
 
             medium_means, medium_err = np.random.random((2, good))
             med_sig = [(0, i+1, np.random.choice([False, True])) for i in range(good)]
 
             med_over_t = [
-                np.ones((good, 50)) * 0.1,
-                np.ones((good, 50)) * 0.8
+                np.random.random((good, 50)),
+                np.random.random((good, 50))
             ]
 
-            medium_over_t_means = np.ones((good, 50)) * 0.5
+            medium_over_t_means = np.random.random((good, 50)) * 0.5
 
             distribution = [10, ] * good
 
@@ -199,9 +200,9 @@ def overall_one_good_example():
 
             data.append(example_data)
 
-        overall_one_good(data=data, titles=titles, f_name=f'fig/tonpere{good}.pdf', exp=False)
+        overall_one_good(data=data, titles=titles, f_name=f'../../fig/tonpere{good}.pdf', exp=False)
 
 
 if __name__ == '__main__':
 
-    overall_one_condition_example()
+    overall_one_good_example()

@@ -8,7 +8,7 @@ import analysis.graph.monetary_and_medium_bar
 
 
 def monetary_behavior_over_t(data, fig, subplot_spec,
-                             letter=None, title=None, xlabel=True,
+                             letter=None, title=None, ylabel=True,
                              mean_plot=None, thick_linewidth=2, thin_linewidth=0.5,
                              alpha=0.3):
     """
@@ -43,7 +43,11 @@ def monetary_behavior_over_t(data, fig, subplot_spec,
         else:
             ax.plot(data[i], color=colors[i], linewidth=thick_linewidth)
 
-        ax.set_yticks([0, 1])
+        if ylabel:
+            ax.set_yticks([0, 1])
+        else:
+            ax.set_yticks([])
+
         ax.set_ylim(-0.1, 1.1)
 
         if mean_plot is not None:
@@ -66,13 +70,15 @@ def monetary_behavior_over_t(data, fig, subplot_spec,
             ax.set_xticks([])
 
         ax.tick_params(labelsize=8)
+        # ax.set_aspect(0.75)
 
     ax0 = fig.add_subplot(gs[:, :])
     ax0.set_axis_off()
 
-    if xlabel:
-        ax0.text(s="Monetary behavior", x=-0.15, y=0.5, horizontalalignment='center', verticalalignment='center',
-             transform=ax0.transAxes, fontsize=10, rotation='vertical')
+    if ylabel:
+        ax0.text(
+            s="Monetary behavior", x=-0.3, y=0.5, horizontalalignment='center', verticalalignment='center',
+            transform=ax0.transAxes, fontsize=10, rotation='vertical')
 
     if letter:
         ax0.text(
