@@ -240,19 +240,20 @@ def sim_monetary_mean_over_user(list_monetary_bhv):
     for l in list_monetary_bhv:
         n_total_user += len(l[0])
 
-    y = np.zeros((n_good, n_total_user))
+    # print(n_total_user)
 
-    one_good_all_agents = [[], ] * n_good
+    # y = np.zeros((n_good, n_total_user))
+
+    one_good_all_agents = [[] for _ in range(n_good)]
 
     for eco in list_monetary_bhv:
 
         for good in range(n_good):
             one_good_all_agents[good] += list(eco[good])
 
-    print(len(one_good_all_agents[0]))
-    quit()
+    # print(len(one_good_all_agents[0]))
 
-    return y
+    return np.asarray(one_good_all_agents)
 
 
 def sim_monetary_behavior_mean_over_t(economies):

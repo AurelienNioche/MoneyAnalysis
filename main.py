@@ -278,9 +278,6 @@ def sim_overall():
             # Now we can do stats
             money_sig = analysis.stats.mean_comparison.monetary_behavior(monetary_over_user_mean)
 
-            if r_id == 415:
-                print(monetary_over_user_mean)
-                quit()
             # reformat for bar plots
             monetary_means, monetary_err = \
                 analysis.tools.format.sim_monetary_bhv_bar_plot(monetary_over_user_mean)
