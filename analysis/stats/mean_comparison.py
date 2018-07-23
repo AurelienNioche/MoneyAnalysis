@@ -23,7 +23,7 @@ def get_comparisons(data):
     return comparisons
 
 
-i = 0
+# i = 0
 
 
 def monetary_behavior(m_bhv):
@@ -43,9 +43,9 @@ def monetary_behavior(m_bhv):
             }
         )
 
-        global i
-        print(i, np.array([m_bhv[g1, :], m_bhv[g2, :]]))
-        i += 1
+        # global i
+        # print(i, np.array([m_bhv[g1, :], m_bhv[g2, :]]))
+        # i += 1
 
     valid = mw(to_compare)
 
