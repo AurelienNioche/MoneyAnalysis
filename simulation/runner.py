@@ -10,6 +10,7 @@ import backup.backup
 import backup.structure
 
 import simulation.economy
+import simulation.parameters
 import analysis.tools.economy
 import analysis.graph.phase_diagram
 
@@ -84,41 +85,30 @@ def get_experiment_like_parameters():
     parameters = []
 
     rooms = (414, 415, 416, 417)
-    n_sim = 20
-
-    t_max = 100
-    economy_model = 'prod: i-1'
 
     distributions = [analysis.tools.economy.distributions.get(i) for i in rooms]
 
-    n_cog_value = 3
-    first_cog_range = np.linspace(0.1, 0.25, n_cog_value)
-    second_cog_range = np.linspace(0.80, 1.2, n_cog_value)
-    third_cog_range = np.linspace(0.1, 0.15, n_cog_value)
+    i = 0
+    for i_r in range(len(rooms)):
 
-    for i in range(len(rooms)):
+        for _ in range(simulation.parameters.n_sim):
 
-        for n in range(n_sim):
-
-            n_good = len(distributions[i])
-
-            alpha, beta, gamma = \
-                np.random.choice(first_cog_range),\
-                np.random.choice(second_cog_range),\
-                np.random.choice(third_cog_range)
+            n_good = len(distributions[i_r])
             
             param = {
-                'cognitive_parameters': (alpha, beta, gamma),
-                'distribution': distributions[i],
-                't_max': t_max,
-                'economy_model': economy_model,
-                'agent_model': 'RLAgent',
+                'cognitive_parameters': simulation.parameters.cognitive_parameters[i],
+                'seed': simulation.parameters.seeds[i],
+                't_max': simulation.parameters.t_max,
+                'economy_model': simulation.parameters.economy_model,
+                'agent_model': simulation.parameters.agent_model,
                 'n_good': n_good,
-                'seed': np.random.randint(2**32-1),
-                'room_id': rooms[i]
+                'distribution': distributions[i_r],
+                'room_id': rooms[i_r]
             }
 
             parameters.append(param)
+
+            i += 1
 
     return parameters
 
@@ -172,7 +162,6 @@ def get_pool_data(force=False, phase=False, n_good=3):
 
         bkp = _produce_data(phase, n_good)
         bkp.save(data_folder)
-        # backup.backup.save(obj=bkp, file_name=data_file)
 
     else:
         bkp = backup.structure.Data()
@@ -184,31 +173,15 @@ def get_pool_data(force=False, phase=False, n_good=3):
 def run(phase=None, n_good=None):
 
     parser = argparse.ArgumentParser(description='Run money simulations.')
-
     parser.add_argument('-f', '--force', action="store_true", default=False,
                         help="Force creation of new data.")
-
-    # parser.add_argument('-p', '--phase', action="store_true", default=False,
-    #                     help="Simulations intended to plot phase diagrams")
-    #
-    # parser.add_argument('-n', '--n_good', type=int, help="number of goods", default=3)
-
     args = parser.parse_args()
 
-    # if not phase:
     bkp = get_pool_data(
         force=args.force,
         phase=phase,
-        n_good=n_good  # if not n_good else n_good
+        n_good=n_good
     )
-
-    # else:
-    #
-    #     bkp = get_pool_data(
-    #         force=args.force,
-    #         phase=phase,
-    #         n_good=args.n_good if not n_good else n_good
-    #     )
 
     return bkp
 
