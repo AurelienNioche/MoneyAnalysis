@@ -32,8 +32,8 @@ import analysis.graph
 import analysis.graph.overall
 import analysis.graph.phase_diagram
 
-import analysis.compute.monetary_and_medium
-import analysis.compute.demographics
+import analysis.experiment.monetary_and_medium
+import analysis.experiment.demographics
 
 import analysis.stats.mean_comparison
 
@@ -46,7 +46,7 @@ def exp_overall():
 
     """
 
-    results = analysis.compute.monetary_and_medium.run()
+    results = analysis.experiment.monetary_and_medium.run()
 
     for good in (3, 4):
 
@@ -61,14 +61,14 @@ def exp_overall():
             distribution = results[k]['distribution']
 
             # Do stats
-            monetary_over_user = analysis.tools.format.exp_monetary_bhv_over_user(m_bhv)
-            money_sig = analysis.stats.mean_comparison.monetary_behavior(monetary_over_user)
+            monetary_over_user = analysis.tools.format.monetary_bhv_over_user(m_bhv)
+            money_sig = analysis.stats.mean_comparison.run(monetary_over_user)
             medium_over_user = analysis.tools.format.medium_over_user(medium)
-            med_sig = analysis.stats.mean_comparison.medium(medium_over_user)
+            med_sig = analysis.stats.mean_comparison.run(medium_over_user)
 
             # Format data for Monetary bhv graph
             monetary_means, monetary_err = analysis.tools.format.exp_monetary_bhv_bar_plot(m_bhv)
-            monetary_over_t = analysis.tools.format.exp_monetary_bhv_over_t(m_bhv, distribution)
+            monetary_over_t = analysis.tools.format.monetary_bhv_over_t(m_bhv, distribution)
 
             # Format data for Used as medium graph
             medium_means, medium_err = analysis.tools.format.exp_medium_bar_plot(medium_over_user)
@@ -84,14 +84,14 @@ def exp_overall():
 
             data.append(d)
 
-        analysis.graph.overall.overall_one_good(data, titles, f_name=f'fig/xp_{good}.pdf', exp=True)
+        analysis.graph.overall.experiment(data, titles, f_name=f'fig/xp_{good}.pdf', exp=True)
 
 
 def stats_exp():
 
     # --------------- Monetary bhv ------------------------ #
 
-    results = analysis.compute.monetary_and_medium.run()
+    results = analysis.experiment.monetary_and_medium.run()
 
     room_ids = (414, 415, 416, 417)
 
@@ -108,8 +108,8 @@ def stats_exp():
         print('Testing monetary behavior')
         m_bhv = results[label]['monetary_bhv']
 
-        monetary_over_user = analysis.tools.format.exp_monetary_bhv_over_user(m_bhv)
-        analysis.stats.mean_comparison.monetary_behavior(monetary_over_user)
+        monetary_over_user = analysis.tools.format.monetary_bhv_over_user(m_bhv)
+        analysis.stats.mean_comparison.run(monetary_over_user)
 
         # --------------- Medium  ------------------------ #
 
@@ -117,7 +117,7 @@ def stats_exp():
 
         medium = results[label]['medium']
         medium_over_user = analysis.tools.format.medium_over_user(medium)
-        analysis.stats.mean_comparison.medium(medium_over_user)
+        analysis.stats.mean_comparison.run(medium_over_user)
 
 
 def stats_sim():
@@ -149,7 +149,7 @@ def stats_sim():
 
         # reformat each economies to compress on agents
         monetary_over_user = [
-            analysis.tools.format.monetary_over_user(m)
+            analysis.tools.format.monetary_bhv_over_user(m)
             for m in monetary_bhv
         ]
 
@@ -158,7 +158,7 @@ def stats_sim():
             analysis.tools.format.sim_monetary_mean_over_user(monetary_over_user)
 
         # Now we can do stats
-        analysis.stats.mean_comparison.monetary_behavior(monetary_over_user_mean)
+        analysis.stats.mean_comparison.run(monetary_over_user_mean)
 
         # ---------------------- format for medium -------------- #
 
@@ -174,7 +174,7 @@ def stats_sim():
             analysis.tools.format.sim_medium_mean_over_user(medium_over_user)
 
         # Now we can do stats
-        analysis.stats.mean_comparison.medium(medium_over_user_mean)
+        analysis.stats.mean_comparison.run(medium_over_user_mean)
 
 
 def phase_diagram():
@@ -267,7 +267,7 @@ def sim_overall():
             # BAR PLOTS
             # reformat each economies to compress on agents
             monetary_over_user = [
-                analysis.tools.format.monetary_over_user(m)
+                analysis.tools.format.monetary_bhv_over_user(m)
                 for m in monetary_bhv
             ]
 
@@ -276,7 +276,7 @@ def sim_overall():
                 analysis.tools.format.sim_monetary_mean_over_user(monetary_over_user)
 
             # Now we can do stats
-            money_sig = analysis.stats.mean_comparison.monetary_behavior(monetary_over_user_mean)
+            money_sig = analysis.stats.mean_comparison.run(monetary_over_user_mean)
 
             # reformat for bar plots
             monetary_means, monetary_err = \
@@ -284,7 +284,7 @@ def sim_overall():
 
             # CURVE PLOTS
             monetary_over_t = [
-                analysis.tools.format.exp_monetary_bhv_over_t(m, distribution)
+                analysis.tools.format.monetary_bhv_over_t(m, distribution)
                 for m in monetary_bhv
             ]
 
@@ -305,7 +305,7 @@ def sim_overall():
                 analysis.tools.format.sim_medium_mean_over_user(medium_over_user)
 
             # Now we can do stats
-            med_sig = analysis.stats.mean_comparison.medium(medium_over_user_mean)
+            med_sig = analysis.stats.mean_comparison.run(medium_over_user_mean)
 
             # reformat for bar plots
             medium_means, medium_err = \
@@ -319,7 +319,7 @@ def sim_overall():
             ]
 
             # average all that
-            medium_over_t_means = analysis.tools.format.sim_medium_over_t_mean(medium_over_t)
+            medium_over_t_means = analysis.tools.format.sim_medium_mean_over_t(medium_over_t)
 
             d = {
                 'monetary_bar': (monetary_means, monetary_err, money_sig),
@@ -333,7 +333,7 @@ def sim_overall():
 
             data.append(d)
 
-        analysis.graph.overall.overall_one_good(
+        analysis.graph.overall.experiment(
             data, titles, f_name=f'fig/sim_{n_good}.pdf', exp=False
         )
 

@@ -40,8 +40,6 @@ def run(file_name='data/exp.p'):
 
         for m in range(n_good):
 
-            # agent_type = np.repeat(np.arange(n_good), distribution)
-
             for t in range(r.t_max):
 
                 i = 0

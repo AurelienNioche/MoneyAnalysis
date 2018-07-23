@@ -1,35 +1,22 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib.gridspec as grd
-import itertools as it
 import string
 
 import analysis.graph.monetary_and_medium_bar
 import analysis.graph.monetary_and_medium_over_time
 
 
-def _one_condition_monetary_behavior_all_goods(data, mean_plot, n_side, fig, subplot_spec, exp):
+def experiment(data, titles, f_name, exp=True):
 
-    coord = it.product(range(n_side), range(n_side))
-    gs = grd.GridSpecFromSubplotSpec(nrows=1, ncols=n_side, subplot_spec=subplot_spec)
-
-    for i in range(n_side):
-
-        analysis.graph.monetary_and_medium_over_time.monetary_behavior_over_t(
-            # If the graph is generated from experiment data, each column (the good considered as money) is one 'i'.
-            # If the graph is generated from simulation data, 'i' stills represents one column
-            # (the good considered as money),
-            # but there are multiple economies so multiple curves (each curves representing
-            # one simulated economy and the mean plot is the mean computed from these economies)
-            data=data[i] if exp else [j[i] for j in data],
-            mean_plot=mean_plot[i] if mean_plot is not None else None,
-            fig=fig, subplot_spec=gs[next(coord)],
-            title=f'm={i+1}',
-            ylabel=i == 0
-        )
-
-
-def overall_one_good(data, titles, f_name, exp=True):
+    """
+    Conditions uniform and non-uniform for a specific number of goods (3 or 4)
+    :param data:
+    :param titles:
+    :param f_name:
+    :param exp:
+    :return:
+    """
 
     fig = plt.figure(figsize=(15, 9), dpi=200)
     gs = grd.GridSpec(ncols=2, nrows=1)
@@ -38,17 +25,17 @@ def overall_one_good(data, titles, f_name, exp=True):
     letters = (s.capitalize() for s in string.ascii_letters)
 
     for d, t in zip(data, titles):
-        overall_one_condition(d, t,
-                              f_name=f_name, letter=next(letters), exp=exp,
-                              subplot_spec=next(subplot_specs), fig=fig)
+        experiment_subplot(d, t,
+                           f_name=f_name, letter=next(letters), exp=exp,
+                           subplot_spec=next(subplot_specs), fig=fig)
 
     plt.subplots_adjust(bottom=0.1, right=0.98, top=0.9, left=0.04)
     # plt.tight_layout()
     plt.savefig(f_name)
 
 
-def overall_one_condition(data, title, f_name, exp=True, letter=None,
-                          subplot_spec=None, fig=None):
+def experiment_subplot(data, title, f_name, exp=True, letter=None,
+                       subplot_spec=None, fig=None):
 
     if subplot_spec:
         gs = grd.GridSpecFromSubplotSpec(ncols=2, nrows=2,
@@ -61,10 +48,11 @@ def overall_one_condition(data, title, f_name, exp=True, letter=None,
 
     # --------------------- #
 
-    _one_condition_monetary_behavior_all_goods(data['monetary_over_t'],
-                                               n_side=len(data['distribution']),
-                                               mean_plot=data.get('monetary_over_t_means'),
-                                               fig=fig, subplot_spec=gs[0, 0], exp=exp)
+    analysis.graph.monetary_and_medium_over_time.monetary_bhv_over_t(
+        data['monetary_over_t'],
+        n_side=len(data['distribution']),
+        mean_plot=data.get('monetary_over_t_means'),
+        fig=fig, subplot_spec=gs[0, 0], exp=exp)
 
     # --------------------- #
 
@@ -74,9 +62,9 @@ def overall_one_condition(data, title, f_name, exp=True, letter=None,
 
     # --------------------- #
 
-    analysis.graph.monetary_and_medium_bar.one_condition_bar(
+    analysis.graph.monetary_and_medium_bar.plot(
         means=data['monetary_bar'][0],
-        err=data['monetary_bar'][1],
+        errors=data['monetary_bar'][1],
         sig=data['monetary_bar'][2],
         subplot_spec=gs[1, 0],
         title='',
@@ -85,9 +73,9 @@ def overall_one_condition(data, title, f_name, exp=True, letter=None,
         fig=fig,
     )
 
-    analysis.graph.monetary_and_medium_bar.one_condition_bar(
+    analysis.graph.monetary_and_medium_bar.plot(
         means=data['medium_bar'][0],
-        err=data['medium_bar'][1],
+        errrors=data['medium_bar'][1],
         sig=data['medium_bar'][2],
         subplot_spec=gs[1, 1],
         xlabel='Good',
@@ -117,92 +105,53 @@ def _set_title_using_fake_fig(title, subplot_spec, fig, letter):
     ax.text(s=letter, x=-0.05, y=-0.1, fontsize=20)
 
 
-# ---------------------------------------------------- EXAMPLES ----------------------------------------------- #
+# ---------------------------------------------------- EXAMPLE ----------------------------------------------- #
 
 
-def overall_one_condition_example():
+def experiment_example(n_good=3):
 
-    monetary_means, monetary_err = np.random.random((2, 3))
-    money_sig = [(0, 1, False), (0, 2, True)]
+    data = []
+    titles = ('Uniform', 'Non uniform')
 
-    monetary_over_t = [
-        np.ones((3, 3, 50)) * 0.1,
-        np.ones((3, 3, 50)) * 0.8
-    ]
+    for _ in titles:
 
-    monetary_over_t_means = np.random.random((3, 3, 50))
+        monetary_means, monetary_err = np.random.random((2, n_good))
+        money_sig = [(0, i+1, np.random.choice([False, True])) for i in range(n_good)]
 
-    medium_means, medium_err = np.random.random((2, 3))
-    med_sig = [(0, 1, False), (0, 2, True)]
+        monetary_over_t = [
+            np.random.random((n_good, n_good, 50)),
+            np.random.random((n_good, n_good, 50))
+        ]
 
-    med_over_t = [
-        np.ones((3, 50)) * 0.1,
-        np.ones((3, 50)) * 0.8
-    ]
+        monetary_over_t_means = np.random.random((n_good, n_good, 50))
 
-    medium_over_t_means = np.random.random((3, 50))
+        medium_means, medium_err = np.random.random((2, n_good))
+        med_sig = [(0, i+1, np.random.choice([False, True])) for i in range(n_good)]
 
-    distribution = [10, 10, 10]
+        med_over_t = [
+            np.random.random((n_good, 50)),
+            np.random.random((n_good, 50))
+        ]
 
-    example_data = {
-        'monetary_bar': (monetary_means, monetary_err, money_sig),
-        'monetary_over_t': monetary_over_t,
-        'monetary_over_t_means': monetary_over_t_means,
-        'medium_bar': (medium_means, medium_err, med_sig),
-        'medium_over_t': med_over_t,
-        'medium_over_t_means': medium_over_t_means,
-        'distribution': distribution
-    }
+        medium_over_t_means = np.random.random((n_good, 50)) * 0.5
 
-    overall_one_condition(data=example_data, title='tamere', f_name='fig/tonpere.pdf', exp=False)
+        distribution = [10, ] * n_good
 
+        example_data = {
+            'monetary_bar': (monetary_means, monetary_err, money_sig),
+            'monetary_over_t': monetary_over_t,
+            'monetary_over_t_means': monetary_over_t_means,
+            'medium_bar': (medium_means, medium_err, med_sig),
+            'medium_over_t': med_over_t,
+            'medium_over_t_means': medium_over_t_means,
+            'distribution': distribution
+        }
 
-def overall_one_good_example():
+        data.append(example_data)
 
-    for good in (3, ): # 4):
-
-        data = []
-        titles = ('tamere', 'tonpere')
-
-        for t in titles:
-
-            monetary_means, monetary_err = np.random.random((2, good))
-            money_sig = [(0, i+1, np.random.choice([False, True])) for i in range(good)]
-
-            monetary_over_t = [
-                np.random.random((good, good, 50)),
-                np.random.random((good, good, 50))
-            ]
-
-            monetary_over_t_means = np.random.random((good, good, 50))
-
-            medium_means, medium_err = np.random.random((2, good))
-            med_sig = [(0, i+1, np.random.choice([False, True])) for i in range(good)]
-
-            med_over_t = [
-                np.random.random((good, 50)),
-                np.random.random((good, 50))
-            ]
-
-            medium_over_t_means = np.random.random((good, 50)) * 0.5
-
-            distribution = [10, ] * good
-
-            example_data = {
-                'monetary_bar': (monetary_means, monetary_err, money_sig),
-                'monetary_over_t': monetary_over_t,
-                'monetary_over_t_means': monetary_over_t_means,
-                'medium_bar': (medium_means, medium_err, med_sig),
-                'medium_over_t': med_over_t,
-                'medium_over_t_means': medium_over_t_means,
-                'distribution': distribution
-            }
-
-            data.append(example_data)
-
-        overall_one_good(data=data, titles=titles, f_name=f'../../fig/tonpere{good}.pdf', exp=False)
+    experiment(data=data, titles=titles, f_name=f'../../fig/exp_{n_good}_example.pdf', exp=False)
 
 
 if __name__ == '__main__':
 
-    overall_one_good_example()
+    experiment_example()

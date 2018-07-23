@@ -3,76 +3,22 @@ import scipy.stats
 import statsmodels.stats.multitest
 
 
-def get_comparisons(data):
-
-    if len(data) == 3:
-
-        comparisons = [
+comparisons = {
+    3: [
             (0, 1),
             (0, 2),
-        ]
-
-    else:
-
-        comparisons = [
-            (0, 1),
-            (0, 2),
-            (0, 3)
-        ]
-
-    return comparisons
+    ],
+    4: [
+        (0, 1),
+        (0, 2),
+        (0, 3)
+    ]
 
 
-# i = 0
+}
 
 
-def monetary_behavior(m_bhv):
-
-    comparisons = get_comparisons(m_bhv)
-
-    to_compare = []
-
-    for g1, g2 in comparisons:
-
-        # print(len(m_bhv[g1]))
-        # print(len(m_bhv[g2]))
-        to_compare.append(
-            {
-                "data": np.array([m_bhv[g1, :], m_bhv[g2, :]]),
-                "name": f"good_{g1 + 1}_vs_good_{g2 +1}"
-            }
-        )
-
-        # global i
-        # print(i, np.array([m_bhv[g1, :], m_bhv[g2, :]]))
-        # i += 1
-
-    valid = mw(to_compare)
-
-    return [c + (v, ) for c, v in zip(comparisons, valid)]
-
-
-def medium(m):
-
-    comparisons = get_comparisons(m)
-
-    to_compare = []
-
-    for g1, g2 in comparisons:
-
-        to_compare.append(
-            {
-                "data": np.array([m[g1], m[g2]]),
-                "name": f"good_{g1 + 1}_vs_good_{g2 + 1}"
-            }
-        )
-
-    p = mw(to_compare)
-
-    return [c + (v, ) for c, v in zip(comparisons, p)]
-
-
-def mw(to_compare):
+def _mw(to_compare):
 
     ps = []
     us = []
@@ -94,9 +40,21 @@ def mw(to_compare):
     return p_corr
 
 
+def run(data):
 
+    cp = comparisons[len(data)]
 
+    to_compare = []
 
+    for g1, g2 in cp:
 
+        to_compare.append(
+            {
+                "data": np.array([data[g1], data[g2]]),
+                "name": f"good_{g1 + 1}_vs_good_{g2 + 1}"
+            }
+        )
 
+    p = _mw(to_compare)
 
+    return [c + (v, ) for c, v in zip(cp, p)]

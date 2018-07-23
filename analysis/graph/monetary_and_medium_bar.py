@@ -1,44 +1,17 @@
 import matplotlib.pyplot as plt
 import numpy as np
-import matplotlib.gridspec as grd
-import os
-import string
-import itertools as it
 
 
-# def _bar(means, errors, labels, title, subplot_spec=None, fig=None):
-#
-#     if subplot_spec:
-#         ax = fig.add_subplot(subplot_spec)
-#     else:
-#         fig, ax = plt.figure()
-#
-#     # Hide spines
-#     ax.spines['top'].set_visible(False)
-#     ax.spines['right'].set_visible(False)
-#
-#     ax.tick_params(length=0)
-#     ax.set_title(f"$\{title}$", fontsize=20)
-#
-#     # print(labels)
-#
-#     # Set x labels
-#     labels_pos = np.arange(len(labels))
-#     ax.set_xticklabels(labels)
-#     ax.set_xticks(labels_pos)
-#
-#     ax.set_ylim(0, 1)
-#
-#     # create
-#     ax.bar(labels_pos, means, yerr=errors, edgecolor="white", align="center", color="black")
+def plot(
+        means, errors, sig=None,
+        title=None,
+        xlabel=None, ylabel=None,
+        subplot_spec=None, fig=None, f_name=None, letter=None, labels=None):
 
+    if fig is None:
+        fig = plt.figure()
 
-def bar_plots(means, errors, labels=None,
-               ylabel=None, xlabel=None, ax=None, letter=None, title=None, sig=None):
-
-    if ax is None:
-        # print('No ax given, I will create a fig.')
-        fig, ax = plt.subplots()
+    ax = fig.add_subplot(subplot_spec) if subplot_spec else fig.add_subplot()
 
     if letter:
         ax.text(
@@ -55,8 +28,6 @@ def bar_plots(means, errors, labels=None,
 
     ax.tick_params(axis='y', labelsize=8)
     ax.tick_params(axis='x', length=0)
-
-    # print(labels)
 
     # Set x labels
     labels_pos = np.arange(len(labels))
@@ -102,42 +73,23 @@ def bar_plots(means, errors, labels=None,
 
     ax.set_title(title)
 
-    # create
+    # Create
     ax.bar(labels_pos, means, yerr=errors, edgecolor="white", align="center", color="grey")
-    
 
-def one_condition_bar(means, err, title,
-                      xlabel=None, ylabel=None, sig=None,
-                      subplot_spec=None, fig=None, f_name=None):
-
-    if not fig:
-        fig = plt.figure()
-
-    bar_plots(
-        means=means,
-        errors=err,
-        xlabel=xlabel,
-        ylabel=ylabel,
-        ax=fig.add_subplot(subplot_spec) if subplot_spec else fig.add_subplot(),
-        title=title,
-        sig=sig,
-    )
-
-    if f_name:
+    if f_name is not None:
         plt.savefig(f_name)
 
 
-def main():
+def plot_example():
 
     np.random.seed(123)
     means = np.random.random(size=3)
     errors = np.random.random(size=3) / 100
     sig = [(0, 1, True), (0, 2, False)]
-    bar_plots(means=means, errors=errors, sig=sig)
+    plot(means=means, errors=errors, sig=sig)
 
     plt.show()
 
 
 if __name__ == '__main__':
-
-    main()
+    plot_example()

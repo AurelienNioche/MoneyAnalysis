@@ -1,23 +1,19 @@
-import matplotlib.pyplot as plt
-import numpy as np
 import matplotlib.gridspec as grd
 import itertools as it
-import string
-
-import analysis.graph.monetary_and_medium_bar
 
 
-def monetary_behavior_over_t(data, fig, subplot_spec,
-                             letter=None, title=None, ylabel=True,
-                             mean_plot=None, thick_linewidth=2, thin_linewidth=0.5,
-                             alpha=0.3):
+def _sub_monetary_bhv_over_t(
+        data, fig, subplot_spec,
+        letter=None, title=None, ylabel=True,
+        mean_plot=None, thick_linewidth=2, thin_linewidth=0.5,
+        alpha=0.3):
     """
     :param data: either one (array n_good * t_max) data/ or a list [(array n_good * tmax), ...]
     :param fig:
     :param subplot_spec:
     :param letter:
     :param title:
-    :param xlabel:
+    :param ylabel:
     :param mean_plot:
     :param thick_linewidth:
     :param thin_linewidth:
@@ -70,7 +66,6 @@ def monetary_behavior_over_t(data, fig, subplot_spec,
             ax.set_xticks([])
 
         ax.tick_params(labelsize=8)
-        # ax.set_aspect(0.75)
 
     ax0 = fig.add_subplot(gs[:, :])
     ax0.set_axis_off()
@@ -88,6 +83,27 @@ def monetary_behavior_over_t(data, fig, subplot_spec,
 
     if title is not None:
         ax0.set_title(title)
+
+
+def monetary_bhv_over_t(data, mean_plot, n_side, fig, subplot_spec, exp):
+
+    coord = it.product(range(n_side), range(n_side))
+    gs = grd.GridSpecFromSubplotSpec(nrows=1, ncols=n_side, subplot_spec=subplot_spec)
+
+    for i in range(n_side):
+
+        _sub_monetary_bhv_over_t(
+            # If the graph is generated from experiment data, each column (the good considered as money) is one 'i'.
+            # If the graph is generated from simulation data, 'i' stills represents one column
+            # (the good considered as money),
+            # but there are multiple economies so multiple curves (each curves representing
+            # one simulated economy and the mean plot is the mean computed from these economies)
+            data=data[i] if exp else [j[i] for j in data],
+            mean_plot=mean_plot[i] if mean_plot is not None else None,
+            fig=fig, subplot_spec=gs[next(coord)],
+            title=f'm={i+1}',
+            ylabel=i == 0
+        )
 
 
 def medium_over_t(
