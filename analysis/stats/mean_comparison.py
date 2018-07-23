@@ -43,9 +43,8 @@ def monetary_behavior(m_bhv):
             }
         )
 
-        print("i", np.array([m_bhv[g1, :], m_bhv[g2, :]]))
-
         global i
+        print(i, np.array([m_bhv[g1, :], m_bhv[g2, :]]))
         i += 1
 
     valid = mw(to_compare)
