@@ -23,6 +23,9 @@ def get_comparisons(data):
     return comparisons
 
 
+i = 0
+
+
 def monetary_behavior(m_bhv):
 
     comparisons = get_comparisons(m_bhv)
@@ -39,6 +42,11 @@ def monetary_behavior(m_bhv):
                 "name": f"good_{g1 + 1}_vs_good_{g2 +1}"
             }
         )
+
+        print("i", np.array([m_bhv[g1, :], m_bhv[g2, :]]))
+
+        global i
+        i += 1
 
     valid = mw(to_compare)
 
