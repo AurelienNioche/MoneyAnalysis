@@ -22,7 +22,7 @@ application = get_wsgi_application()
 
 
 import simulation.economy
-import simulation.runner
+import simulation.run
 
 import analysis.tools
 import analysis.tools.format
@@ -122,7 +122,7 @@ def stats_exp():
 
 def stats_sim():
 
-    bkp = simulation.runner.run(phase=False)
+    bkp = simulation.run.get_data(phase=False)
 
     room_ids = (414, 415, 416, 417)
 
@@ -190,8 +190,8 @@ def phase_diagram():
     # (Plot for each good considered as money if max_col == None)
     max_col = 1
 
-    three_good_data = simulation.runner.run(phase=True, n_good=3)
-    four_good_data = simulation.runner.run(phase=True, n_good=4)
+    three_good_data = simulation.run.get_data(phase=True, n_good=3)
+    four_good_data = simulation.run.get_data(phase=True, n_good=4)
 
     data = []
 
@@ -221,7 +221,7 @@ def sim_overall():
 
     """
 
-    bkp = simulation.runner.run(phase=False)
+    bkp = simulation.run.get_data(phase=False)
 
     room_id = {
         3: (414, 416),

@@ -15,7 +15,7 @@ import analysis.tools.economy
 import analysis.graph.phase_diagram
 
 
-def get_parameters(
+def _get_phase_parameters(
         n_good=3,
         agent_model='RLAgent',
         constant_x_value=np.array([50, ]),
@@ -27,18 +27,12 @@ def get_parameters(
 
     assert len(constant_x_value) == len(constant_x_index), \
         '"constant_x_value" and "constant_x_index" should have equal size!'
-    assert agent_model in ('RLAgent', 'QLearner'), 'Bad argument for "agent_model"!'
+    assert agent_model in ('RLAgent', ), 'Bad argument for "agent_model"!'
     assert economy_model in ('prod: i-1', 'prod: i+1'), 'Bad argument for "economy_model"!'
 
-    if agent_model == 'RLAgent':
-        first_cog_range = np.linspace(0.1, 0.25, n_cog_value)
-        second_cog_range = np.linspace(0.8, 1.2, n_cog_value)
-        third_cog_range = np.linspace(0.1, 0.15, n_cog_value)
-
-    else:
-        first_cog_range = np.linspace(0.1, 0.5, n_cog_value)
-        second_cog_range = np.linspace(0.01, 0.1, n_cog_value)
-        third_cog_range = np.linspace(0.1, 0.5, n_cog_value)
+    first_cog_range = np.linspace(0.1, 0.25, n_cog_value)
+    second_cog_range = np.linspace(0.8, 1.2, n_cog_value)
+    third_cog_range = np.linspace(0.1, 0.15, n_cog_value)
 
     # ------------------------------ #
 
@@ -80,7 +74,7 @@ def get_parameters(
     return parameters
 
 
-def get_experiment_like_parameters():
+def _get_experiment_like_parameters():
 
     parameters = []
 
@@ -125,7 +119,7 @@ def _produce_data(phase, n_good):
 
     if phase:
 
-        params = get_parameters(
+        params = _get_phase_parameters(
             n_good=n_good,
             agent_model='RLAgent',
             constant_x_index=np.array([0, ]) if n_good == 3 else np.array([0, 1]),
@@ -134,7 +128,7 @@ def _produce_data(phase, n_good):
 
     else:
 
-        params = get_experiment_like_parameters()
+        params = _get_experiment_like_parameters()
 
     max_ = len(params)
 
@@ -150,7 +144,14 @@ def _produce_data(phase, n_good):
     return data
 
 
-def get_pool_data(force=False, phase=False, n_good=3):
+def get_data(phase=None, n_good=None):
+
+    parser = argparse.ArgumentParser(description='Run money simulations.')
+    parser.add_argument('-f', '--force', action="store_true", default=False,
+                        help="Force creation of new data.")
+    args = parser.parse_args()
+
+    force = args.force
 
     if phase:
         data_folder = f'data/phase_{n_good}_goods'
@@ -170,21 +171,5 @@ def get_pool_data(force=False, phase=False, n_good=3):
     return bkp
 
 
-def run(phase=None, n_good=None):
-
-    parser = argparse.ArgumentParser(description='Run money simulations.')
-    parser.add_argument('-f', '--force', action="store_true", default=False,
-                        help="Force creation of new data.")
-    args = parser.parse_args()
-
-    bkp = get_pool_data(
-        force=args.force,
-        phase=phase,
-        n_good=n_good
-    )
-
-    return bkp
-
-
 if __name__ == "__main__":
-    run()
+    get_data()
