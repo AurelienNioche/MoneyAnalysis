@@ -5,7 +5,7 @@ import numpy as np
 def plot(
         means, errors, sig=None,
         title=None,
-        xlabel=None, ylabel=None,
+        xlabel=None, xlabel_fontsize=10, ylabel=None, ylabel_fontsize=10, xticks_fontsize=5,
         subplot_spec=None, fig=None, f_name=None, letter=None, labels=None):
 
     if fig is None:
@@ -27,7 +27,7 @@ def plot(
     ax.spines['right'].set_visible(False)
 
     ax.tick_params(axis='y', labelsize=8)
-    ax.tick_params(axis='x', length=0)
+    ax.tick_params(axis='x', length=0, labelsize=xticks_fontsize)
 
     # Set x labels
     labels_pos = np.arange(len(labels))
@@ -68,8 +68,8 @@ def plot(
 
     ax.set_yticks((0, 0.5, 1))
 
-    ax.set_ylabel(ylabel)
-    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel, fontsize=ylabel_fontsize)
+    ax.set_xlabel(xlabel, fontsize=xlabel_fontsize)
 
     ax.set_title(title)
 

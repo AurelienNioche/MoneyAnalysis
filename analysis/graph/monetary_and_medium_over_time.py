@@ -4,9 +4,10 @@ import itertools as it
 
 def _sub_monetary_bhv_over_t(
         data, fig, subplot_spec,
-        letter=None, title=None, ylabel=True,
+        letter=None, title=None, ylabel_display=True,
         mean_plot=None, thick_linewidth=2, thin_linewidth=0.5,
-        alpha=0.3):
+        alpha=0.3,
+        title_fontsize=20, xlabel_fontsize=15, ylabel_fontsize=15):
     """
     :param data: either one (array n_good * t_max) data/ or a list [(array n_good * tmax), ...]
     :param fig:
@@ -39,12 +40,12 @@ def _sub_monetary_bhv_over_t(
         else:
             ax.plot(data[i], color=colors[i], linewidth=thick_linewidth)
 
-        if ylabel:
+        if ylabel_display:
             ax.set_yticks([0, 1])
         else:
             ax.set_yticks([])
 
-        ax.set_ylim(-0.1, 1.1)
+        ax.set_ylim(-0.01, 1.01)
 
         if mean_plot is not None:
             ax.set_xlim(0, len(data[0][i]))
@@ -54,7 +55,7 @@ def _sub_monetary_bhv_over_t(
         ax.axhline(y=1 / (n_good - 1), linewidth=1, linestyle='--', color='0.5', zorder=-10)
 
         if i == (n_good - 1):
-            ax.set_xlabel('$t$')
+            ax.set_xlabel('$t$', fontsize=xlabel_fontsize)
 
             if mean_plot is not None:
 
@@ -70,10 +71,10 @@ def _sub_monetary_bhv_over_t(
     ax0 = fig.add_subplot(gs[:, :])
     ax0.set_axis_off()
 
-    if ylabel:
+    if ylabel_display:
         ax0.text(
             s="Monetary behavior", x=-0.3, y=0.5, horizontalalignment='center', verticalalignment='center',
-            transform=ax0.transAxes, fontsize=10, rotation='vertical')
+            transform=ax0.transAxes, fontsize=ylabel_fontsize, rotation='vertical')
 
     if letter:
         ax0.text(
@@ -82,10 +83,11 @@ def _sub_monetary_bhv_over_t(
             fontsize=20)
 
     if title is not None:
-        ax0.set_title(title)
+        ax0.set_title(title, fontsize=title_fontsize)
 
 
-def monetary_bhv_over_t(data, mean_plot, n_side, fig, subplot_spec, exp):
+def monetary_bhv_over_t(data, mean_plot, n_side, fig, subplot_spec, exp,
+                        title_fontsize, xlabel_fontsize, ylabel_fontsize):
 
     coord = it.product(range(n_side), range(n_side))
     gs = grd.GridSpecFromSubplotSpec(nrows=1, ncols=n_side, subplot_spec=subplot_spec)
@@ -102,12 +104,16 @@ def monetary_bhv_over_t(data, mean_plot, n_side, fig, subplot_spec, exp):
             mean_plot=mean_plot[i] if mean_plot is not None else None,
             fig=fig, subplot_spec=gs[next(coord)],
             title=f'm={i+1}',
-            ylabel=i == 0
+            title_fontsize=title_fontsize,
+            xlabel_fontsize=xlabel_fontsize,
+            ylabel_fontsize=ylabel_fontsize,
+            ylabel_display=i == 0
         )
 
 
 def medium_over_t(
         data, fig, subplot_spec, thick_linewidth=2, thin_linewidth=0.5, alpha=0.3,
+        xlabel_fontsize=10, ylabel_fontsize=10,
         letter=None, mean_plot=None):
 
     """
@@ -149,7 +155,7 @@ def medium_over_t(
 
         if i == (n_good - 1):
 
-            ax.set_xlabel('$t$')
+            ax.set_xlabel('$t$', fontsize=xlabel_fontsize)
 
             if mean_plot is not None:
 
@@ -168,7 +174,7 @@ def medium_over_t(
     ax0.set_axis_off()
 
     ax0.text(s="Used as medium", x=-0.2, y=0.5, horizontalalignment='center', verticalalignment='center',
-             transform=ax0.transAxes, fontsize=10, rotation='vertical')
+             transform=ax0.transAxes, fontsize=ylabel_fontsize, rotation='vertical')
 
     if letter:
         ax0.text(

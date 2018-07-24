@@ -52,13 +52,15 @@ def experiment_subplot(data, title, f_name, exp=True, letter=None,
         data['monetary_over_t'],
         n_side=len(data['distribution']),
         mean_plot=data.get('monetary_over_t_means'),
-        fig=fig, subplot_spec=gs[0, 0], exp=exp)
+        fig=fig, subplot_spec=gs[0, 0], exp=exp,
+        xlabel_fontsize=14, ylabel_fontsize=14, title_fontsize=15)
 
     # --------------------- #
 
     analysis.graph.monetary_and_medium_over_time.medium_over_t(
         data['medium_over_t'],
-        fig=fig, subplot_spec=gs[0, 1], mean_plot=data.get('medium_over_t_means'))
+        fig=fig, subplot_spec=gs[0, 1], mean_plot=data.get('medium_over_t_means'),
+        xlabel_fontsize=14, ylabel_fontsize=14)
 
     # --------------------- #
 
@@ -69,28 +71,35 @@ def experiment_subplot(data, title, f_name, exp=True, letter=None,
         subplot_spec=gs[1, 0],
         title='',
         xlabel='Good',
+        xlabel_fontsize=14,
+        xticks_fontsize=11,
         ylabel='Monetary behavior',
+        ylabel_fontsize=14,
         fig=fig,
     )
 
     analysis.graph.monetary_and_medium_bar.plot(
         means=data['medium_bar'][0],
-        errrors=data['medium_bar'][1],
+        errors=data['medium_bar'][1],
         sig=data['medium_bar'][2],
         subplot_spec=gs[1, 1],
         xlabel='Good',
+        xlabel_fontsize=14,
+        xticks_fontsize=11,
         ylabel='Used as medium',
+        ylabel_fontsize=14,
         title='',
         fig=fig,
     )
 
-    _set_title_using_fake_fig(title=title, subplot_spec=gs[:, :], fig=fig, letter=letter)
+    _set_title_using_fake_fig(
+        title=title, subplot_spec=gs[:, :], fig=fig, letter=letter, title_fontsize=14, letter_fontsize=25)
 
     if f_name:
         plt.savefig(f_name)
 
 
-def _set_title_using_fake_fig(title, subplot_spec, fig, letter):
+def _set_title_using_fake_fig(title, subplot_spec, fig, letter, title_fontsize, letter_fontsize):
 
     ax = fig.add_subplot(subplot_spec)
 
@@ -101,8 +110,8 @@ def _set_title_using_fake_fig(title, subplot_spec, fig, letter):
     ax.set_xticks([])
     ax.set_yticks([])
 
-    ax.text(s=title.replace('_', ' ').replace('good', 'goods').upper(), x=0.4, y=1.07, fontsize=10)
-    ax.text(s=letter, x=-0.05, y=-0.1, fontsize=20)
+    ax.text(s=title.replace('_', ' ').replace('good', 'goods').upper(), x=0.35, y=1.07, fontsize=title_fontsize)
+    ax.text(s=letter, x=-0.05, y=-0.1, fontsize=letter_fontsize)
 
 
 # ---------------------------------------------------- EXAMPLE ----------------------------------------------- #
@@ -149,7 +158,7 @@ def experiment_example(n_good=3):
 
         data.append(example_data)
 
-    experiment(data=data, titles=titles, f_name=f'../../fig/exp_{n_good}_example.pdf', exp=False)
+    experiment(data=data, titles=titles, f_name=f'fig/exp_{n_good}_example.pdf', exp=False)
 
 
 if __name__ == '__main__':
