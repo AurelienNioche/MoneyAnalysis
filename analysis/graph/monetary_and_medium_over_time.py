@@ -14,11 +14,14 @@ def _sub_monetary_bhv_over_t(
     :param subplot_spec:
     :param letter:
     :param title:
-    :param ylabel:
+    :param ylabel_display:
     :param mean_plot:
     :param thick_linewidth:
     :param thin_linewidth:
     :param alpha:
+    :param title_fontsize:
+    :param xlabel_fontsize:
+    :param ylabel_fontsize:
     :return:
     """
 
@@ -113,9 +116,8 @@ def monetary_bhv_over_t(data, mean_plot, n_side, fig, subplot_spec, exp,
 
 def medium_over_t(
         data, fig, subplot_spec, thick_linewidth=2, thin_linewidth=0.5, alpha=0.3,
-        xlabel_fontsize=10, ylabel_fontsize=10,
-        letter=None, mean_plot=None):
-
+        letter=None, mean_plot=None,
+        xlabel_fontsize=10, ylabel_fontsize=10):
     """
     :param data: either one (array n_good * t_max) data/ or a list [(array n_good * tmax), ...]
     :param fig:
@@ -125,9 +127,10 @@ def medium_over_t(
     :param alpha:
     :param letter:
     :param mean_plot:
+    :param xlabel_fontsize:
+    :param ylabel_fontsize:
     :return:
     """
-
     n_good = len(data[0]) if mean_plot is not None else len(data)
     colors = [f'C{i+4}' for i in range(n_good)]
 

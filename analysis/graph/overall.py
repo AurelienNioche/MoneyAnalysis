@@ -93,7 +93,8 @@ def experiment_subplot(data, title, f_name, exp=True, letter=None,
     )
 
     _set_title_using_fake_fig(
-        title=title, subplot_spec=gs[:, :], fig=fig, letter=letter, title_fontsize=14, letter_fontsize=25)
+        title=title, subplot_spec=gs[:, :], fig=fig, letter=letter,
+        title_fontsize=14, letter_fontsize=25)
 
     if f_name:
         plt.savefig(f_name)
