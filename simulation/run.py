@@ -11,8 +11,8 @@ import backup.structure
 
 import simulation.economy
 import simulation.parameters
+
 import analysis.tools.economy
-import analysis.graph.phase_diagram
 
 
 def _get_phase_parameters(
@@ -169,7 +169,3 @@ def get_data(phase=None, n_good=None):
         bkp.load(data_folder)
 
     return bkp
-
-
-if __name__ == "__main__":
-    get_data()

@@ -19,7 +19,7 @@ class Economy(object):
 
         self.n_agent = sum(self.repartition)
 
-        self.agents = self.create_agents()
+        self.agents = self.create_agents(kwargs.get('heterogeneous'))
 
         self.t = 0
 
@@ -57,7 +57,7 @@ class Economy(object):
 
         return roles
 
-    def create_agents(self):
+    def create_agents(self, heterogeneous):
 
         agents = np.zeros(self.n_agent, dtype=object)
 
@@ -70,7 +70,8 @@ class Economy(object):
             for ind in range(n):
                 a = eval(self.agent_model)(
                     prod=i, cons=j,
-                    cognitive_parameters=self.cognitive_parameters,
+                    cognitive_parameters=
+                    self.cognitive_parameters if not heterogeneous else self.cognitive_parameters[idx],
                     n_goods=self.n_goods,
                     idx=idx
                 )
