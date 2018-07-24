@@ -21,35 +21,49 @@ def _get_parameters():
 
     parameters = []
 
-    n_sim = 2
+    n_sim = 10
     n_good = 3
     t_max = 100
     economy_model = 'prod: i-1'
     agent_model = 'RLAgent'
     distribution = [
-        (9, 9, 18),
-        (9, 9, 18),
-        (9, 9, 18)
+        (9, 9, 18) for _ in range(n_sim)
     ]
-
-    heterogeneous = (False, False, True)
 
     seeds = np.random.randint(2**32-1, size=n_sim)
 
-    # print(np.asarray(distribution[-1]).shape)
-    cognitive_parameters = [
-        (0.1, 1.2, 0.1), (0.25, 0.8, 0.15),
-        np.random.choice(
-            [
-                (0.1, 1.2, 0.1), (0.25, 0.8, 0.15)
-            ],
-            size=np.sum(np.asarray(distribution[-1]))
-        )
-
-        # (0.1, 1.0, 0.125),
-        # (0.1, 1.0, 0.125), (0.1, 1.2, 0.1),
-        # (0.175, 1.0, 0.15), (0.175, 1.0, 0.125), (0.25, 1.2, 0.125), (0.1, 1.2, 0.15), (0.25, 1.2, 0.125)
+    base_cog = [
+        (
+            np.random.randint(1, 99) / 100,
+            np.random.randint(60, 90) / 100,
+            np.random.randint(8, 30) / 100
+        ) for _ in range(n_sim - 1)
     ]
+
+    # base_cog = [(0.54, 0.69, 0.27), (0.05, 0.73, 0.12), (0.45, 0.63, 0.11)]
+
+    # base_cog = [
+    #     [0.87, 0.65, 0.18],
+    #     [0.01, 0.73, 0.11],
+    #     [0.92, 0.64, 0.22]
+    # ]
+
+    heterogeneous_cog = [
+        np.asarray(base_cog)
+        [np.random.choice(
+            range(len(base_cog)),
+            size=np.sum(np.asarray(distribution[-1]))
+        )]
+    ]
+
+    heterogeneous = (False, ) * len(base_cog) + (True,)
+
+    print("*" * 10)
+    print(base_cog)
+    print("*" * 10)
+    print(heterogeneous_cog)
+
+    cognitive_parameters = base_cog + heterogeneous_cog
 
     for i in range(n_sim):
 
@@ -90,25 +104,38 @@ def _produce_data():
 
 def main():
 
-    bkp = _produce_data()
+    i = 0
+    while True:
 
-    monetary_bhv = bkp.monetary_bhv
+        print("*" * 10, i, "*" * 10)
 
-    # reformat each economies to compress on agents
-    monetary_over_user = [
-        analysis.tools.format.monetary_bhv_over_user(m)
-        for m in monetary_bhv
-    ]
+        bkp = _produce_data()
 
-    # Now we can do stats
-    sig = [analysis.stats.mean_comparison.run(i) for i in monetary_over_user]
-    # print(sig)
-    results = [
-        i[0][-1] < 0.05 and i[1][-1] < 0.05
-        for i in sig
-    ]
-    print(results)
-    print(bkp.room_id)
+        monetary_bhv = bkp.monetary_bhv
+
+        # reformat each economies to compress on agents
+        monetary_over_user = [
+            analysis.tools.format.monetary_bhv_over_user(m)
+            for m in monetary_bhv
+        ]
+
+        # Now we can do stats
+        sig = [analysis.stats.mean_comparison.run(i) for i in monetary_over_user]
+        # print(sig)
+        results = np.asarray([
+            i[0][-1] < 0.05 and i[1][-1] < 0.05
+            for i in sig
+        ])[np.asarray(bkp.room_id)]
+
+        print(results)
+        # print(bkp.room_id)
+
+        #if np.sum(results) != len(results):
+        #    break
+        if np.sum(results[:-1]) == len(results) -1 and not results[-1]:
+            break
+
+        i += 1
 
 
 if __name__ == "__main__":
