@@ -2,6 +2,7 @@ import multiprocessing
 import os
 import numpy as np
 from tqdm import tqdm
+import pickle
 
 import simulation.economy
 
@@ -81,6 +82,8 @@ def _get_parameters():
 
         parameters.append(param)
 
+        print(param)
+
     return parameters
 
 
@@ -104,7 +107,13 @@ def _produce_data():
 
 def main():
 
+    f_name = 'data/supplementary.p'
+
     i = 0
+
+    success = []
+    max_success = 20
+
     while True:
 
         print("*" * 10, i, "*" * 10)
@@ -128,11 +137,14 @@ def main():
         ])[np.asarray(bkp.room_id)]
 
         print(results)
-        # print(bkp.room_id)
 
-        #if np.sum(results) != len(results):
-        #    break
         if np.sum(results[:-1]) == len(results) -1 and not results[-1]:
+            success.append(bkp)
+
+        if len(success) == max_success:
+            with open(f_name, 'wb') as f:
+                pickle.dump(success, f)
+
             break
 
         i += 1

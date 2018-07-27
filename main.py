@@ -36,6 +36,8 @@ import analysis.experiment.monetary_and_medium
 import analysis.experiment.demographics
 
 import analysis.stats.mean_comparison
+import simulation.supplementary_exploration
+import simulation.supplementary_exploitation
 
 
 def exp_overall():
@@ -347,10 +349,12 @@ if __name__ == '__main__':
     # main()
 
     # # Uncomment for experiment analysis and experiment-like simulations
-    exp_overall()
+    # exp_overall()
     # sim_overall()
     # analysis.graph.overall.experiment_example()
 
+    # simulation.supplementary_exploration.main()
+    simulation.supplementary_exploitation.main()
     # # Uncomment for producing stats
     # stats_sim()
     # stats_exp()
