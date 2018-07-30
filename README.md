@@ -31,7 +31,7 @@ may account for the hypothesis of cognitive heterogeneity among agents as a prec
 The latter script exploits those results (for the moment 20 batch of 10 set of cognitive parameters were selected
  and saved in supplementary.p file) by taking each set and varying specifically the set of heterogeneous parameters as well as the seed 
  used in simulations, in order to test its robustness.
- Currently, among the 20 batch, the 6th batch seems to be the more robust. On 100 trials, 25 trial (on average) were successful (
- meaning that varying the heterogeneous parameters set a hundred times returned significant results for the first 9 set of parameters
+ Currently, among the 20 batch, the 6th batch seems to be the more robust. On 100 trials, 25 trial (on average) were successful 
+ (meaning that varying the heterogeneous parameters set a hundred times returned significant results for the first 9 set of parameters
  and in contrary non-significant results in regards to the 10th set of parameters).
 
