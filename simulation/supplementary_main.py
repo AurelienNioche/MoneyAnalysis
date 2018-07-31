@@ -2,15 +2,12 @@ import pickle
 from tqdm import tqdm
 import numpy as np
 import os
-import matplotlib.pyplot as plt
-# import multiprocessing.pool as
 
 import backup.structure
 import analysis.graph.supplementary
 
 
 import analysis.tools.format
-# from simulation.supplementary_exploitation import run_one
 import simulation.economy
 
 
@@ -58,11 +55,6 @@ def _get_parameters():
 
     heterogeneous = (False, ) * len(base_cog) + (True,)
 
-    print("*" * 10)
-    print(base_cog)
-    print("*" * 10)
-    print(heterogeneous_cog)
-
     cognitive_parameters = base_cog + heterogeneous_cog
 
     print(f'Treating {n_batch} batchs.')
@@ -82,8 +74,6 @@ def _get_parameters():
         }
 
         parameters.append(param)
-
-        print(param)
 
     return parameters
 
@@ -105,7 +95,7 @@ def _run_batches(n_batch=20):
 
     data = []
 
-    for i in range(n_batch):
+    for _ in tqdm(range(n_batch)):
 
         d = _produce_data()
         data.append(d)
@@ -122,35 +112,22 @@ def analyse(data):
         y = [[] for _ in range(n_batch)]
 
         for i, b in enumerate(data):
-            print("i", i)
 
             n_sim = len(b.medium)
 
             for j in range(n_sim):
 
-                print("j", j)
-
                 mean, e = analysis.tools.format.exp_monetary_bhv_bar_plot(monetary_bhv=b.monetary_bhv[j])
                 y[i].append(mean[m])
 
-                print(f"m {mean[m]:.2f}")
-
         y = np.asarray(y).transpose()
 
-        print(y.shape)
         analysis.graph.supplementary.box_plot(y, f_name=f"fig/supplementary{m}.pdf")
-    # plt.show()
 
 
 def main(force=False):
 
-    # ----- files -------- #
-
     f_name = 'data/supplementary.p'
-
-    # params_f_name = 'data/params_supplementary_exploitation.p'
-
-    # ----- load data  ------ #
 
     if os.path.exists(f_name) and not force:
 
