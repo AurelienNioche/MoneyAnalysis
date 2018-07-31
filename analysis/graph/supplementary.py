@@ -2,11 +2,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def box_plot(data, xlabel=None, ylabel=None, fig=None):
+def box_plot(data, xlabel=None, ylabel=None, f_name=None):
 
-    if fig is None:
-        fig = plt.figure()
-        ax = fig.add_subplot(111)
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
     # n = len(results.keys())
     #
     # tick_labels = [
@@ -19,11 +18,12 @@ def box_plot(data, xlabel=None, ylabel=None, fig=None):
     positions = list(range(len(data[0])))
 
     y_scatter = data.flatten()
-    x_scatter = np.repeat(range(n), len(data[0, :]))
-    colors_scatter = np.array([colors[i] for i in x_scatter])
+    x_scatter = np.repeat(np.arange(n) + 1, len(data[0, :]))
+
+    colors_scatter = np.array([colors[i-1] for i in x_scatter])
 
     # box plot reads by columns
-    box_plot_data = data.reshape(data.shape[1], data.shape[0])
+    box_plot_data = data.transpose()#data.reshape(data.shape[1], data.shape[0])
 
     ax.scatter(x_scatter, y_scatter, c=colors_scatter, s=30, alpha=0.5, linewidth=0.0, zorder=1)
 
@@ -35,9 +35,13 @@ def box_plot(data, xlabel=None, ylabel=None, fig=None):
 
     # ax.set_xlabel("Type of control\nMonkey {}.".format(monkey), fontsize=fontsize)
     # ax.set_xlabel("Control type", fontsize=fontsize)
-    ax.set_ylabel(ylabel, fontsize=fontsize)
+    if ylabel is not None:
+        ax.set_ylabel(ylabel, fontsize=fontsize)
+    # ax.set_xlim()
 
     # ax.set_xlim(0, 3)
+
+    ax.set_ylim(0, 1)
 
     # Boxplot
     bp = ax.boxplot(box_plot_data, showfliers=False, zorder=2)
@@ -49,10 +53,14 @@ def box_plot(data, xlabel=None, ylabel=None, fig=None):
 
     # ax.set_aspect(3)
 
+    if f_name is not None:
+
+        plt.savefig(f_name)
+
 
 def main():
 
-    y = np.random.random((3, 10))
+    y = np.random.random((10, 10))
     box_plot(y)
     plt.show()
 
