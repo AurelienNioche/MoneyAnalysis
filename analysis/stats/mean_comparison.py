@@ -14,7 +14,6 @@ comparisons = {
         (0, 3)
     ]
 
-
 }
 
 
