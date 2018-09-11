@@ -34,6 +34,7 @@ import analysis.graph.phase_diagram
 
 import analysis.experiment.monetary_and_medium
 import analysis.experiment.demographics
+import analysis.experiment.rewards
 
 import analysis.stats.mean_comparison
 import simulation.supplementary_exploration
@@ -354,7 +355,7 @@ if __name__ == '__main__':
     # sim_overall()
     # analysis.graph.overall.experiment_example()
 
-    simulation.supplementary_main.main()
+    # simulation.supplementary_main.main()
     # simulation.supplementary_exploration.main()
     # simulation.supplementary_exploitation.main()
     # # Uncomment for producing stats
@@ -363,5 +364,7 @@ if __name__ == '__main__':
 
     # # Uncomment for running simulations used for phase diagram
     # phase_diagram()
+
+    analysis.experiment.rewards.run()
 
     pass
