@@ -341,27 +341,21 @@ def sim_overall():
         )
 
 
-def main():
-    pass
-
-
 if __name__ == '__main__':
 
-    # main()
+    # Create fig folder
+    os.makedirs("fig", exist_ok=True)
 
     # # Uncomment for experiment analysis and experiment-like simulations
-    # exp_overall()
-    # sim_overall()
-    # analysis.graph.overall.experiment_example()
+    exp_overall()
+    sim_overall()
+    analysis.graph.overall.experiment_example()
 
     simulation.supplementary_exploitation.main()
-    # simulation.supplementary_exploration.main()
-    # simulation.supplementary_exploitation.main()
+
     # # Uncomment for producing stats
-    # stats_sim()
-    # stats_exp()
+    stats_sim()
+    stats_exp()
 
     # # Uncomment for running simulations used for phase diagram
-    # phase_diagram()
-
-    pass
+    phase_diagram()
