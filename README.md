@@ -1,5 +1,29 @@
 # MoneyAnalysis
 
+
+### Dependencies
+
+Python
+
+    brew install python3
+    
+
+Python libraries
+
+    pip3 install numpy matplotlib scipy django psycopg2-binary tqdm
+    
+postgresql
+
+    brew install postgresql
+
+
+### Access to data
+
+Run restore script for DB
+
+    bash init_db.sh
+    
+
 ## Simulations
 
 ### General

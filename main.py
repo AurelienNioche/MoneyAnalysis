@@ -34,7 +34,6 @@ import analysis.graph.phase_diagram
 
 import analysis.experiment.monetary_and_medium
 import analysis.experiment.demographics
-import analysis.experiment.rewards
 
 import analysis.stats.mean_comparison
 import simulation.supplementary_exploration
@@ -56,8 +55,11 @@ def exp_overall():
 
         data = []
         titles = (f'{good}_good_non_uniform', f'{good}_good_uniform')
+        stat_title = (f'{good}-NUPM', f'{good}-U')
 
-        for k in titles:
+        for k, k_s in zip(titles, stat_title):
+
+            # print(k)
 
             # Get data
             medium = results[k]['medium']
@@ -66,9 +68,13 @@ def exp_overall():
 
             # Do stats
             monetary_over_user = analysis.tools.format.monetary_bhv_over_user(m_bhv)
-            money_sig = analysis.stats.mean_comparison.run(monetary_over_user)
+            # print("Monetary behavior")
+            money_sig = analysis.stats.mean_comparison.run(monetary_over_user, print_latex=True,
+                                                           xp_session=k_s, measure="MB")
             medium_over_user = analysis.tools.format.medium_over_user(medium)
-            med_sig = analysis.stats.mean_comparison.run(medium_over_user)
+            # print("Medium")
+            med_sig = analysis.stats.mean_comparison.run(medium_over_user, print_latex=True,
+                                                         xp_session=k_s, measure="MoE")
 
             # Format data for Monetary bhv graph
             monetary_means, monetary_err = analysis.tools.format.exp_monetary_bhv_bar_plot(m_bhv)
@@ -342,29 +348,21 @@ def sim_overall():
         )
 
 
-def main():
-    pass
-
-
 if __name__ == '__main__':
 
-    # main()
+    # Create fig folder
+    os.makedirs("fig", exist_ok=True)
 
     # # Uncomment for experiment analysis and experiment-like simulations
-    # exp_overall()
+    exp_overall()
     # sim_overall()
     # analysis.graph.overall.experiment_example()
 
-    # simulation.supplementary_main.main()
-    # simulation.supplementary_exploration.main()
     # simulation.supplementary_exploitation.main()
+
     # # Uncomment for producing stats
     # stats_sim()
     # stats_exp()
 
     # # Uncomment for running simulations used for phase diagram
     # phase_diagram()
-
-    analysis.experiment.rewards.run()
-
-    pass
