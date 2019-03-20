@@ -32,6 +32,7 @@ def experiment(data, titles, f_name, exp=True):
     plt.subplots_adjust(bottom=0.1, right=0.98, top=0.9, left=0.04)
     # plt.tight_layout()
     plt.savefig(f_name)
+    print(f"Figure '{f_name}' created.\n")
 
 
 def experiment_subplot(data, title, f_name, exp=True, letter=None,

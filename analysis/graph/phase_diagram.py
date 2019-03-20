@@ -81,6 +81,7 @@ def plot(data, labels, f_name, max_col=None):
 
     os.makedirs(os.path.dirname(f_name), exist_ok=True)
     plt.savefig(f_name)
+    print(f"Figure '{f_name}' created.\n")
 
 
 def plot_example():

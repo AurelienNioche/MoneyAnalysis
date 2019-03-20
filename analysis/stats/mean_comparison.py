@@ -13,7 +13,6 @@ comparisons = {
         (0, 2),
         (0, 3)
     ]
-
 }
 
 
@@ -41,7 +40,9 @@ def _mw(to_compare, print_latex=False, **kwargs):
         if print_latex:
             xp_session = kwargs["xp_session"]
             measure = kwargs["measure"]
-            print(f"{xp_session} & {measure} & ${f_name}$ & ${u}$ & ${p:.3f}$ & ${p_c:.3f}{'^*' if v else ''}$ & ${n}$" + r"\\")
+            p_c = f"{p_c:.3f}" if p_c >= 0.001 else '<0.001'
+            p = f"{p:.3f}" if p >= 0.001 else '<0.001'
+            print(f"{xp_session} & {measure} & ${f_name}$ & ${u}$ & ${p}$ & ${p_c}{'^*' if v else ''}$ & ${n}$" + r"\\")
 
         else:
             print(f"[{cond_name}] Mann-Whitney rank test: $u={u}$, $p={p_c:.3f}$, p raw {p:.3f}, $n={n}$, sign.: {v}")

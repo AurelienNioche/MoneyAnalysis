@@ -48,8 +48,8 @@ def save(obj, file_name):
 
 def load(file_name):
 
-    print(f"Loading file '{file_name}'...")
+    print(f"Loading file '{file_name}'...", end=" ")
     with open(file_name, 'rb')as f:
         data = pickle.load(file=f)
-    print("Done")
+    print("Done!\n")
     return data
