@@ -27,10 +27,17 @@ from game.models import User, Room, Choice
 from analysis.tools.conversion import Converter
 
 import numpy as np
+import matplotlib.pyplot as plt
+
+import pickle
+
+SCRIPT_FOLDER = os.path.dirname(os.path.abspath(__file__))
+DATA_FOLDER = f"{SCRIPT_FOLDER}/../../data"
+INDIVIDUAL_DATA = f"{DATA_FOLDER}/individual_data.p"
 
 N_DEMOGRAPHIC_VAR = 2
 N_STATIC_VAR = 3
-N_DYNAMIC_VAR = 1
+N_DYNAMIC_VAR = 5
 
 GENDER_IDX = 0
 AGE_IDX = 1
@@ -40,8 +47,25 @@ PROD_IDX = 3
 CONS_IDX = 4
 
 
-def individual_data():
+def running_mean(x, N):
+    return np.convolve(x, np.ones(N) / N, mode='valid')
 
+# def running_mean(l, N):
+#     sum = 0
+#     result = list(0 for x in l)
+#
+#     for i in range(0, N):
+#         sum = sum + l[i]
+#         result[i] = sum / (i + 1)
+#
+#     for i in range(N, len(l)):
+#         sum = sum - l[i - N] + l[i]
+#         result[i] = sum / N
+#
+#     return result
+
+
+def load_individual_data_from_db():
     # Static data
     users = User.objects.all().order_by('id')
     n = len(users)
@@ -49,8 +73,9 @@ def individual_data():
     static_data = np.zeros((n, N_DEMOGRAPHIC_VAR + N_STATIC_VAR))
 
     for i, u in enumerate(users):
-
         n_good = Room.objects.get(id=u.room_id).n_type
+
+        static_data[i, ROOM_IDX] = u.room_id
 
         static_data[i, CONS_IDX] = Converter.convert_value(u.consumption_good, n_good=n_good)
         static_data[i, PROD_IDX] = Converter.convert_value(u.production_good, n_good=n_good)
@@ -59,7 +84,7 @@ def individual_data():
         static_data[i, AGE_IDX] = u.age
 
     # Dynamic data
-    user_id = [u.id for u in users]
+    # user_id = [u.id for u in users]
 
     rooms = Room.objects.all().order_by('id')
 
@@ -90,18 +115,98 @@ def individual_data():
 
                     if g in (prod, cons):
                         direct = (in_hand, desired) == (prod, cons)
-                        dynamic_data[i, -1] = direct
+                        dynamic_data[i, t, -1] = direct
                     else:
                         indirect_with_g = (in_hand, desired) in [(prod, g), (g, cons)]
-                        dynamic_data[i, g] = indirect_with_g
+                        dynamic_data[i, t, g] = indirect_with_g
+
+    return static_data, dynamic_data
 
 
+def individual_data():
+
+    if os.path.exists(INDIVIDUAL_DATA):
+        static_data, dynamic_data = pickle.load(open(INDIVIDUAL_DATA, 'rb'))
+
+    else:
+        static_data, dynamic_data = load_individual_data_from_db()
+        pickle.dump(obj=(static_data, dynamic_data), file=open(INDIVIDUAL_DATA, 'wb'))
+
+    return static_data, dynamic_data
 
 
+def evolution_direct(static_data, dynamic_data, window_size=15):
+
+    data = {}
+    print(static_data[:, CONS_IDX])
+    rooms = Room.objects.all().order_by('id')
+    rooms_id = [r.id for r in rooms]
+    for r_id in rooms_id:
+
+        r = Room.objects.get(id=r_id)
+        n_good = r.n_type
+        # t_max = r.t_max
+        # n = r.counter
+
+        ns = [int(i) for i in r.types.split("/")]
+        print(ns)
+
+        data_room = []
+
+        for g in range(n_good):
+
+            cons_g_bool = static_data[:, CONS_IDX] == g
+            belong_r_bool = static_data[:, ROOM_IDX] == r_id
+
+            cons_belong_r_bool = cons_g_bool*belong_r_bool
+            n = int(np.sum(cons_belong_r_bool))
+
+            raw = dynamic_data[cons_belong_r_bool, :, -1]
+
+            data_good = []
+
+            for i in range(n):
+                # print(raw[i].shape)
+                # print(len(raw[i]))
+                r_mean = running_mean(raw[i], N=window_size)
+                # print(len(r_mean))
+                data_ind = r_mean
+            # for i in range(ns[g]):
+            #     pass
+                data_good.append(data_ind)
+
+            data_room.append(data_good)
+
+        data[r_id] = data_room
+
+    return data
 
 
+def fig_evo(data_evo):
 
+    rooms_id = list(data_evo.keys())
+    rooms_id.sort()
 
+    colors = [f"C{i}" for i in range(4)]
+
+    fig, ax = plt.subplots(ncols=1, nrows=4, figsize=(6, 20))
+
+    for idx, r_id in enumerate(rooms_id):
+
+        # print(data)
+        data_room = data_evo[r_id]
+
+        n_good = len(data_room)
+
+        for g in range(n_good):
+
+            data_good = data_room[g]
+
+            n = len(data_good)
+            for i in range(n):
+                ax[idx].plot(data_good[i], color=colors[g], alpha=0.5)
+
+    plt.show()
 
     # for r in rooms:
     #
@@ -156,6 +261,13 @@ def individual_data():
     #                     i += 1
 
 
+def main():
+
+    static_data, dynamic_data = individual_data()
+    data_evo = evolution_direct(static_data, dynamic_data)
+    fig_evo(data_evo)
+
+
 if __name__ == "__main__":
 
-    individual_data()
+    main()
