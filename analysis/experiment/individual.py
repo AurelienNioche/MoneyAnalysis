@@ -36,7 +36,7 @@ DATA_FOLDER = f"{SCRIPT_FOLDER}/../../data"
 INDIVIDUAL_DATA = f"{DATA_FOLDER}/individual_data.p"
 
 N_DEMOGRAPHIC_VAR = 2
-N_STATIC_VAR = 3
+N_STATIC_VAR = 11
 N_DYNAMIC_VAR = 5
 
 # Demographic variables
