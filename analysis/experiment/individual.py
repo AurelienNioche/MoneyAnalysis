@@ -39,12 +39,26 @@ N_DEMOGRAPHIC_VAR = 2
 N_STATIC_VAR = 3
 N_DYNAMIC_VAR = 5
 
+# Demographic variables
 GENDER_IDX = 0
 AGE_IDX = 1
 
+# Static variables
 ROOM_IDX = 2
 PROD_IDX = 3
 CONS_IDX = 4
+S_IND_0 = 5
+S_IND_1 = 6
+S_IND_2 = 7
+S_IND_3 = 8
+S_DIRECT = 9
+
+# Dynamic variables
+D_IND_O = 0
+D_IND_1 = 1
+D_IND_2 = 2
+D_IND_3 = 3
+D_DIRECT = 4
 
 
 def running_mean(x, N):
@@ -80,7 +94,7 @@ def load_individual_data_from_db():
         static_data[i, CONS_IDX] = Converter.convert_value(u.consumption_good, n_good=n_good)
         static_data[i, PROD_IDX] = Converter.convert_value(u.production_good, n_good=n_good)
 
-        static_data[i, GENDER_IDX] = 0 if u.gender == 'male' else 1
+        static_data[i, GENDER_IDX] = u.gender == 'female'
         static_data[i, AGE_IDX] = u.age
 
     # Dynamic data
@@ -99,6 +113,9 @@ def load_individual_data_from_db():
         r = Room.objects.get(id=u.room_id)
         n_good = r.n_type
 
+        prod = static_data[i, PROD_IDX]
+        cons = static_data[i, CONS_IDX]
+
         for t in range(t_max):
 
             choices = Choice.objects.filter(room_id=r.id, t=t, user_id=u.id)
@@ -107,9 +124,6 @@ def load_individual_data_from_db():
 
                 desired = Converter.convert_value(c.desired_good, n_good=n_good)
                 in_hand = Converter.convert_value(c.good_in_hand, n_good=n_good)
-
-                prod = static_data[i, PROD_IDX]
-                cons = static_data[i, CONS_IDX]
 
                 for g in range(n_good):
 
@@ -161,7 +175,7 @@ def evolution_direct(static_data, dynamic_data, window_size=15):
             cons_belong_r_bool = cons_g_bool*belong_r_bool
             n = int(np.sum(cons_belong_r_bool))
 
-            raw = dynamic_data[cons_belong_r_bool, :, -1]
+            raw = dynamic_data[cons_belong_r_bool, :, D_DIRECT]
 
             data_good = []
 
