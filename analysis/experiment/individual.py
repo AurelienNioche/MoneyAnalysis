@@ -138,7 +138,7 @@ def individual_data():
 def evolution_direct(static_data, dynamic_data, window_size=15):
 
     data = {}
-    print(static_data[:, CONS_IDX])
+    # print(static_data[:, CONS_IDX])
     rooms = Room.objects.all().order_by('id')
     rooms_id = [r.id for r in rooms]
     for r_id in rooms_id:
@@ -148,8 +148,8 @@ def evolution_direct(static_data, dynamic_data, window_size=15):
         # t_max = r.t_max
         # n = r.counter
 
-        ns = [int(i) for i in r.types.split("/")]
-        print(ns)
+        # ns = [int(i) for i in r.types.split("/")]
+        # print(ns)
 
         data_room = []
 
