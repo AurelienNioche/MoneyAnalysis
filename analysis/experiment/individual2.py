@@ -135,7 +135,55 @@ def individual_data():
     return static_data, dynamic_data
 
 
-def evolution_direct(static_data, dynamic_data, window_size=5):
+def evolution_25(dynamic_data, nsplit=2):
+
+    data = {}
+    # print(static_data[:, CONS_IDX])
+    rooms = Room.objects.all().order_by('id')
+    rooms_id = [r.id for r in rooms]
+
+    for r_id in rooms_id:
+
+        r = Room.objects.get(id=r_id)
+        n_good = r.n_type
+        # t_max = r.t_max
+        # n = r.counter
+
+        # ns = [int(i) for i in r.types.split("/")]
+        # print(ns)
+
+        data_room = []
+
+        for g in range(n_good):
+
+            cons_g_bool = dynamic_data[:, CONS_IDX] == g
+            belong_r_bool = dynamic_data[:, ROOM_IDX] == r_id
+
+            cons_belong_r_bool = cons_g_bool*belong_r_bool
+            n = int(np.sum(cons_belong_r_bool))
+
+            raw = dynamic_data[cons_belong_r_bool, :, -1]
+
+            data_good = []
+
+            for i in range(n):
+
+                spl =
+                mean(raw[i, :25]
+                # print(len(r_mean))
+                data_ind = r_mean
+            # for i in range(ns[g]):
+            #     pass
+                data_good.append(data_ind)
+
+            data_room.append(data_good)
+
+        data[r_id] = data_room
+
+    return data
+
+
+def evolution_direct(static_data, dynamic_data, window_size=25):
 
     data = {}
     # print(static_data[:, CONS_IDX])
