@@ -39,30 +39,30 @@ N_DEMOGRAPHIC_VAR = 2
 N_STATIC_VAR = 3
 N_DYNAMIC_VAR = 5
 
+# Demographic variables
 GENDER_IDX = 0
 AGE_IDX = 1
 
+# Static variables
 ROOM_IDX = 2
 PROD_IDX = 3
 CONS_IDX = 4
+S_IND_0 = 5
+S_IND_1 = 6
+S_IND_2 = 7
+S_IND_3 = 8
+S_DIRECT = 9
+
+# Dynamic variables
+D_IND_O = 0
+D_IND_1 = 1
+D_IND_2 = 2
+D_IND_3 = 3
+D_DIRECT = 4
 
 
 def running_mean(x, N):
     return np.convolve(x, np.ones(N) / N, mode='valid')
-
-# def running_mean(l, N):
-#     sum = 0
-#     result = list(0 for x in l)
-#
-#     for i in range(0, N):
-#         sum = sum + l[i]
-#         result[i] = sum / (i + 1)
-#
-#     for i in range(N, len(l)):
-#         sum = sum - l[i - N] + l[i]
-#         result[i] = sum / N
-#
-#     return result
 
 
 def load_individual_data_from_db():
@@ -135,10 +135,9 @@ def individual_data():
     return static_data, dynamic_data
 
 
-def evolution_25(dynamic_data, nsplit=2):
+def evolution_direct_split(static_data, dynamic_data, n_split, const):
 
     data = {}
-    # print(static_data[:, CONS_IDX])
     rooms = Room.objects.all().order_by('id')
     rooms_id = [r.id for r in rooms]
 
@@ -146,37 +145,31 @@ def evolution_25(dynamic_data, nsplit=2):
 
         r = Room.objects.get(id=r_id)
         n_good = r.n_type
-        # t_max = r.t_max
-        # n = r.counter
-
-        # ns = [int(i) for i in r.types.split("/")]
-        # print(ns)
 
         data_room = []
 
         for g in range(n_good):
 
-            cons_g_bool = dynamic_data[:, CONS_IDX] == g
-            belong_r_bool = dynamic_data[:, ROOM_IDX] == r_id
+            cons_g_bool = static_data[:, CONS_IDX] == g
+            belong_r_bool = static_data[:, ROOM_IDX] == r_id
 
             cons_belong_r_bool = cons_g_bool*belong_r_bool
             n = int(np.sum(cons_belong_r_bool))
 
-            raw = dynamic_data[cons_belong_r_bool, :, -1]
+            raw = dynamic_data[cons_belong_r_bool, :, const]
+            tmax = len(dynamic_data[0, :])
+            spl = tmax//n_split
+            bnds = np.arange(tmax+1, step=spl)
 
-            data_good = []
+            points = [[] for _ in range(n_split)]
 
             for i in range(n):
+                for j, k in enumerate(bnds):
+                    if k != bnds[-1]:
+                        data_ind = np.mean(raw[i, k:bnds[j+1]])
+                        points[j].append(data_ind)
 
-                spl =
-                mean(raw[i, :25]
-                # print(len(r_mean))
-                data_ind = r_mean
-            # for i in range(ns[g]):
-            #     pass
-                data_good.append(data_ind)
-
-            data_room.append(data_good)
+            data_room.append(points)
 
         data[r_id] = data_room
 
@@ -186,18 +179,12 @@ def evolution_25(dynamic_data, nsplit=2):
 def evolution_direct(static_data, dynamic_data, window_size=25):
 
     data = {}
-    # print(static_data[:, CONS_IDX])
     rooms = Room.objects.all().order_by('id')
     rooms_id = [r.id for r in rooms]
     for r_id in rooms_id:
 
         r = Room.objects.get(id=r_id)
         n_good = r.n_type
-        # t_max = r.t_max
-        # n = r.counter
-
-        # ns = [int(i) for i in r.types.split("/")]
-        # print(ns)
 
         data_room = []
 
@@ -214,13 +201,8 @@ def evolution_direct(static_data, dynamic_data, window_size=25):
             data_good = []
 
             for i in range(n):
-                # print(raw[i].shape)
-                # print(len(raw[i]))
                 r_mean = running_mean(raw[i], N=window_size)
-                # print(len(r_mean))
                 data_ind = r_mean
-            # for i in range(ns[g]):
-            #     pass
                 data_good.append(data_ind)
 
             data_room.append(data_good)
@@ -228,6 +210,44 @@ def evolution_direct(static_data, dynamic_data, window_size=25):
         data[r_id] = data_room
 
     return data
+
+
+def fig_evo_scatter(data_evo, title):
+
+    rooms_id = list(data_evo.keys())
+    rooms_id.sort()
+
+    colors = [f"C{i}" for i in range(4)]
+
+    fig, ax = plt.subplots(ncols=4, nrows=4, figsize=(20, 20))
+    fig.suptitle(title)
+
+    for idx, r_id in enumerate(rooms_id):
+
+        data_room = data_evo[r_id]
+
+        n_good = len(data_room)
+        n_split = len(data_room[0])
+        n_sub = len(data_room[0][0])
+
+        for g in range(n_good):
+
+            for n in range(n_sub):
+
+                sub = []
+
+                for s in range(n_split):
+
+                    data_sub = data_room[g][s][n]
+                    sub.append(data_sub)
+
+                    ax[idx, g].scatter([s], [data_sub], color=colors[g])
+
+                assert len(sub) == n_split
+                ax[idx, g].plot(range(n_split), sub, color=colors[g])
+                ax[idx, g].set_xlim([-1, n_split+1])
+
+    plt.show()
 
 
 def fig_evo(data_evo):
@@ -256,64 +276,14 @@ def fig_evo(data_evo):
 
     plt.show()
 
-    # for r in rooms:
-    #
-    #     n_good = r.n_type
-    #     print(r.id)
-    #
-    #     monetary_behavior = np.zeros((n_good, r.n_user, r.t_max))
-    #     medium = np.ones((n_good, r.n_user, r.t_max)) * -1
-    #
-    #     ordered_goods = [n_good - 1, ] + list(range(n_good - 1))
-    #
-    #     group_users = [
-    #         User.objects.filter(
-    #             room_id=r.id, production_good=Converter.reverse_value(g, n_good)).order_by('id')
-    #         for g in ordered_goods
-    #     ]
-    #
-    #     for m in range(n_good):
-    #
-    #         for t in range(r.t_max):
-    #
-    #             i = 0
-    #             for users in group_users:
-    #
-    #                 for u in users:
-    #
-    #                     choices = Choice.objects.filter(room_id=r.id, t=t, user_id=u.id)
-    #
-    #                     for c in choices:
-    #
-    #                         desired = Converter.convert_value(c.desired_good, n_good=n_good)
-    #                         in_hand = Converter.convert_value(c.good_in_hand, n_good=n_good)
-    #
-    #                         prod = Converter.convert_value(
-    #                             u.production_good,
-    #                             n_good=n_good)
-    #
-    #                         cons = Converter.convert_value(
-    #                             u.consumption_good,
-    #                             n_good=n_good)
-    #
-    #                         if m in (prod, cons):
-    #                             monetary_conform = (in_hand, desired) == (prod, cons)
-    #                             medium[m, i, t] = - 1
-    #
-    #                         else:
-    #                             monetary_conform = (in_hand, desired) in [(prod, m), (m, cons)]
-    #                             medium[m, i, t] = monetary_conform
-    #
-    #                         monetary_behavior[m, i, t] = monetary_conform
-    #
-    #                     i += 1
-
 
 def main():
 
     static_data, dynamic_data = individual_data()
-    data_evo = evolution_direct(static_data, dynamic_data)
-    fig_evo(data_evo)
+
+    for const in (D_IND_O, D_IND_1, D_IND_2, D_IND_3, D_DIRECT):
+        data_evo = evolution_direct_split(static_data, dynamic_data, n_split=3, const=const)
+        fig_evo_scatter(data_evo, title=const)
 
 
 if __name__ == "__main__":
