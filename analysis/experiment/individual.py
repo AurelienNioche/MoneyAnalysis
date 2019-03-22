@@ -175,7 +175,7 @@ def evolution_direct(static_data, dynamic_data, window_size=15):
             data_good = []
 
             for i in range(n):
-                r_mean = running_mean(raw[i], N=window_size)
+                r_mean = running_mean(raw[i], n=window_size)
                 data_ind = r_mean
                 data_good.append(data_ind)
 
