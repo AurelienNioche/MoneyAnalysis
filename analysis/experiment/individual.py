@@ -32,7 +32,11 @@ import matplotlib.pyplot as plt
 import pickle
 
 SCRIPT_FOLDER = os.path.dirname(os.path.abspath(__file__))
-DATA_FOLDER = f"{SCRIPT_FOLDER}/../../data"
+ROOT_FOLDER = f"{SCRIPT_FOLDER}/../../"
+
+DATA_FOLDER = f"{ROOT_FOLDER}/data"
+FIG_FOLDER = f"{ROOT_FOLDER}/fig"
+
 INDIVIDUAL_DATA = f"{DATA_FOLDER}/individual_data.p"
 
 N_STATIC_VAR = 11
