@@ -231,10 +231,11 @@ def fig_evo_scatter(data_evo, title):
 
         n_good = len(data_room)
         n_split = len(data_room[0])
-        n_sub = len(data_room[0][0])
-        print(f'Room {r_id}, ngood={n_good}, nsub={n_sub}')
 
         for g in range(n_good):
+
+            n_sub = len(data_room[g][0])
+            print(f'Room={r_id}, ngood={n_good}, good={g}, nsub={n_sub}')
 
             for n in range(n_sub):
 
