@@ -141,12 +141,11 @@ def evolution_direct_split(static_data, dynamic_data, n_split, const):
     rooms = Room.objects.all().order_by('id')
     rooms_id = [r.id for r in rooms]
 
-    rooms_id = [416, 415, 414, 417]
+
 
     for r_id in rooms_id:
 
         r = Room.objects.get(id=r_id)
-        print(r.types)
         n_good = r.n_type
 
         data_room = []
@@ -175,7 +174,6 @@ def evolution_direct_split(static_data, dynamic_data, n_split, const):
             data_room.append(points)
 
         data[r_id] = data_room
-
     return data
 
 
@@ -220,10 +218,12 @@ def fig_evo_scatter(data_evo, title):
     rooms_id = list(data_evo.keys())
     rooms_id.sort()
 
+    rooms_id = [416, 414, 415, 417]
+
     colors = [f"C{i}" for i in range(4)]
 
-    fig, ax = plt.subplots(ncols=4, nrows=4, figsize=(20, 20), constrained_layout=True)
-    plt.title(title)
+    fig, ax = plt.subplots(ncols=4, nrows=4, figsize=(20, 20))
+    fig.suptitle(title)
 
     for idx, r_id in enumerate(rooms_id):
 
