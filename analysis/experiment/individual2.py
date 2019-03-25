@@ -83,7 +83,7 @@ def fig_evo_scatter(data_evo, title, f_name=None):
 
     fig, ax = plt.subplots(ncols=4, nrows=4, figsize=(20, 20))
 
-    fig.suptitle(title)
+    ax[0, 0].set_title(title)
     print(f'Doing {title}')
 
     for idx, r_id in enumerate(rooms_id):
@@ -115,6 +115,8 @@ def fig_evo_scatter(data_evo, title, f_name=None):
                 ax[idx, g].set_ylim([-.02, 1.02])
                 ax[idx, g].set_xticks([])
                 ax[idx, g].set_yticks([0, 0.25, 0.5, 0.75, 1.])
+
+    plt.tight_layout()
 
     if f_name:
         plt.savefig(f"{FIG_FOLDER}/{f_name}")
