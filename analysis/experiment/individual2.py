@@ -246,12 +246,14 @@ def fig_evo_scatter(data_evo, title):
                     data_sub = data_room[g][s][n]
                     sub.append(data_sub)
 
-                    ax[idx, g].scatter([s], [data_sub], color=colors[g], alpha=0.6)
+                    ax[idx, g].scatter([s], [data_sub], color=colors[g], alpha=0.5)
 
                 assert len(sub) == n_split
-                ax[idx, g].plot(range(n_split), sub, color=colors[g], alpha=0.6)
-                ax[idx, g].set_xlim([-1, n_split+1])
+                ax[idx, g].plot(range(n_split), sub, color=colors[g], alpha=0.5)
+                ax[idx, g].set_xlim([-0.15, n_split-0.85])
                 ax[idx, g].set_ylim([-.01, 1.01])
+                ax[idx, g].set_xticks([])
+                ax[idx, g].set_yticks([0, 0.25, 0.5, 0.75, 1.])
 
     plt.show()
 
