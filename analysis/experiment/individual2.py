@@ -236,7 +236,6 @@ def fig_evo_scatter(data_evo, title):
 
         for g in range(n_good):
 
-
             for n in range(n_sub):
 
                 sub = []
