@@ -233,6 +233,7 @@ def fig_evo_scatter(data_evo, title):
 
         for g in range(n_good):
 
+            print(f'Room {r_id}, ngood={n_good}, nsub={n_sub}')
             for n in range(n_sub):
 
                 sub = []
@@ -247,6 +248,7 @@ def fig_evo_scatter(data_evo, title):
                 assert len(sub) == n_split
                 ax[idx, g].plot(range(n_split), sub, color=colors[g], alpha=0.6)
                 ax[idx, g].set_xlim([-1, n_split+1])
+                ax[idx, g].set_ylim([-.01, 1.01])
 
     plt.show()
 
