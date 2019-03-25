@@ -221,7 +221,9 @@ def fig_evo_scatter(data_evo, title):
     colors = [f"C{i}" for i in range(4)]
 
     fig, ax = plt.subplots(ncols=4, nrows=4, figsize=(20, 20))
+
     fig.suptitle(title)
+    print(f'Doing {title}')
 
     for idx, r_id in enumerate(rooms_id):
 
@@ -230,10 +232,11 @@ def fig_evo_scatter(data_evo, title):
         n_good = len(data_room)
         n_split = len(data_room[0])
         n_sub = len(data_room[0][0])
+        print(f'Room {r_id}, ngood={n_good}, nsub={n_sub}')
 
         for g in range(n_good):
 
-            print(f'Room {r_id}, ngood={n_good}, nsub={n_sub}')
+
             for n in range(n_sub):
 
                 sub = []
