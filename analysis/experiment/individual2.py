@@ -14,6 +14,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # Django specific settings
 import os
+import sys
+SCRIPT_FOLDER = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(f"{SCRIPT_FOLDER}/../../")
+
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "MoneyAnalysis.settings")
 
 # Ensure settings are read
@@ -31,7 +35,6 @@ import matplotlib.pyplot as plt
 
 import pickle
 
-SCRIPT_FOLDER = os.path.dirname(os.path.abspath(__file__))
 DATA_FOLDER = f"{SCRIPT_FOLDER}/../../data"
 INDIVIDUAL_DATA = f"{DATA_FOLDER}/individual_data.p"
 
