@@ -141,8 +141,6 @@ def evolution_direct_split(static_data, dynamic_data, n_split, const):
     rooms = Room.objects.all().order_by('id')
     rooms_id = [r.id for r in rooms]
 
-
-
     for r_id in rooms_id:
 
         r = Room.objects.get(id=r_id)
@@ -244,10 +242,10 @@ def fig_evo_scatter(data_evo, title):
                     data_sub = data_room[g][s][n]
                     sub.append(data_sub)
 
-                    ax[idx, g].scatter([s], [data_sub], color=colors[g])
+                    ax[idx, g].scatter([s], [data_sub], color=colors[g], alpha=0.6)
 
                 assert len(sub) == n_split
-                ax[idx, g].plot(range(n_split), sub, color=colors[g])
+                ax[idx, g].plot(range(n_split), sub, color=colors[g], alpha=0.6)
                 ax[idx, g].set_xlim([-1, n_split+1])
 
     plt.show()
