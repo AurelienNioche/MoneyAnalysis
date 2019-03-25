@@ -219,7 +219,7 @@ def fig_evo_scatter(data_evo, title):
 
     colors = [f"C{i}" for i in range(4)]
 
-    fig, ax = plt.subplots(ncols=4, nrows=4, figsize=(20, 20))
+    fig, ax = plt.subplots(ncols=4, nrows=4, figsize=(20, 20), constrained_layout=True)
     fig.suptitle(title)
 
     for idx, r_id in enumerate(rooms_id):
@@ -281,9 +281,10 @@ def main():
 
     static_data, dynamic_data = individual_data()
 
-    for const in (D_IND_O, D_IND_1, D_IND_2, D_IND_3, D_DIRECT):
+    for name, const in zip(('D_IND_0', 'D_IND_1', 'D_IND_2', 'D_IND_3', 'D_DIRECT'),
+                           (D_IND_O, D_IND_1, D_IND_2, D_IND_3, D_DIRECT)):
         data_evo = evolution_direct_split(static_data, dynamic_data, n_split=3, const=const)
-        fig_evo_scatter(data_evo, title=const)
+        fig_evo_scatter(data_evo, title=name)
 
 
 if __name__ == "__main__":
