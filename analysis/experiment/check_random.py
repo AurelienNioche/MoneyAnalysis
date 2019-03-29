@@ -27,10 +27,11 @@ def main():
             for g in goods:
                 if (ih, c) in [(prod, g), (g, cons)]:
                     ind_ex[g] += 1
+        ih = c
 
-    print(dir_ex/t_max)
+    print(f'dir: {dir_ex/t_max}')
     for g in range(n_goods):
-        print(f'ind with {g}:', ind_ex[g] / t_max)
+        print(f'ind with {g}: {ind_ex[g] / t_max}')
 
 
 if __name__ == "__main__":
