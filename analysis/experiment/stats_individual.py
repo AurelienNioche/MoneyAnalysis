@@ -27,7 +27,7 @@ application = get_wsgi_application()
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.stats
-import statsmodels
+import statsmodels.stats.multitest
 
 from analysis.experiment.individual import individual_data, CONS, ROOM, \
     D_IND_0, D_IND_1, D_IND_2, D_IND_3, D_DIRECT, FIG_FOLDER
@@ -46,7 +46,7 @@ def get_groups(static_data, dynamic_data, span, const, rooms_id, g):
         raw = dynamic_data[cons_belong_r_bool, :, const]
         bnd = round(len(dynamic_data[0, :]) * span)
 
-        data.append(raw[:, -bnd:])
+        data.append(np.mean(raw[:, -bnd:], axis=1))
 
     return data
 
@@ -55,7 +55,6 @@ def _mw(to_compare, print_latex=False, **kwargs):
 
     ns = []
 
-    print(to_compare)
     ps = []
     us = []
 
@@ -81,7 +80,7 @@ def _mw(to_compare, print_latex=False, **kwargs):
             print(f"{xp_session} & {measure} & ${f_name}$ & ${u}$ & ${p}$ & ${p_c}{'^*' if v else ''}$ & ${n}$" + r"\\")
 
         else:
-            print(f"[{cond_name}] Mann-Whitney rank test: $u={u}$, $p={p_c:.3f}$, p raw {p:.3f}, $n={n}$, sign.: {v}")
+            print(f"[{cond_name}] Mann-Whitney rank test: $u={u}$, $p corr={p_c:.3f}$, p raw {p:.3f}, $n={n}$, sign.: {v}")
 
     return p_corr
 
@@ -89,14 +88,11 @@ def _mw(to_compare, print_latex=False, **kwargs):
 def main():
 
     static_data, dynamic_data = individual_data()
-
-    # for name, const in zip(('D_IND_0', 'D_IND_1', 'D_IND_2', 'D_IND_3', 'D_DIRECT'),
-    #                        (D_IND_0, D_IND_1, D_IND_2, D_IND_3, D_DIRECT)):
-    #     data_evo = evolution_direct_split(static_data, dynamic_data, n_split=3, const=const)
-    #     fig_evo_scatter(data_evo, title=name, f_name=f'individual_tracking_{name}.pdf')
     room_ids = [416, 414]
-    grouped_data = get_groups(static_data, dynamic_data, span=.33, const=D_IND_0, rooms_id=[416, 414], g=2)
-    print(grouped_data)
+
+    grouped_data = get_groups(
+        static_data, dynamic_data, span=.5, const=D_IND_0, rooms_id=[416, 414], g=2
+    )
 
     to_compare = [
             {
@@ -105,7 +101,7 @@ def main():
             }
         ]
 
-    p = _mw(to_compare, print_latex=True,)
+    p = _mw(to_compare)
     print(p)
 
 
