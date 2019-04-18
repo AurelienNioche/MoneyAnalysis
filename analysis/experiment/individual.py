@@ -14,6 +14,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # Django specific settings
 import os
+
+from analysis.experiment.evolution import evolution_direct
+from analysis.experiment.graph import fig_evo
+
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "MoneyAnalysis.settings")
 
 # Ensure settings are read
@@ -23,13 +27,15 @@ application = get_wsgi_application()
 
 from game.models import User, Room, Choice
 
-
-from analysis.tools.conversion import Converter
+import enum
 
 import numpy as np
-import matplotlib.pyplot as plt
-
 import pickle
+
+from analysis.tools.conversion import Converter
+from analysis.experiment.metric import monetary_behavior
+
+
 
 SCRIPT_FOLDER = os.path.dirname(os.path.abspath(__file__))
 ROOT_FOLDER = f"{SCRIPT_FOLDER}/../../"
@@ -42,47 +48,28 @@ INDIVIDUAL_DATA = f"{DATA_FOLDER}/individual_data.p"
 N_STATIC_VAR = 11
 N_DYNAMIC_VAR = 5
 
-# Static variables
-GENDER = 0
-AGE = 1
-ROOM = 2
-PROD = 3
-CONS = 4
-S_IND_0 = 5
-S_IND_1 = 6
-S_IND_2 = 7
-S_IND_3 = 8
-S_DIRECT = 9
 
-# Dynamic variables
-D_IND_0 = 0
-D_IND_1 = 1
-D_IND_2 = 2
-D_IND_3 = 3
-D_DIRECT = 4
+class Dyn(enum.Enum):
+
+    IND_0 = 0
+    IND_1 = 1
+    IND_2 = 2
+    IND_3 = 3
+    DIRECT = 4
+    NP = 5
 
 
-def running_mean(x, n):
-    """
-    :param x: data
-    :param n: window size
-    :return:
-    """
-    return np.convolve(x, np.ones(n) / n, mode='valid')
-
-# def running_mean(l, N):
-#     sum = 0
-#     result = list(0 for x in l)
-#
-#     for i in range(0, N):
-#         sum = sum + l[i]
-#         result[i] = sum / (i + 1)
-#
-#     for i in range(N, len(l)):
-#         sum = sum - l[i - N] + l[i]
-#         result[i] = sum / N
-#
-#     return result
+class Stc(enum.Enum):
+    GENDER = 0
+    AGE = 1
+    ROOM = 2
+    PROD = 3
+    CONS = 4
+    IND_0 = 5
+    IND_1 = 6
+    IND_2 = 7
+    IND_3 = 8
+    DIRECT = 9
 
 
 def load_individual_data_from_db():
@@ -96,13 +83,13 @@ def load_individual_data_from_db():
     for i, u in enumerate(users):
         n_good = Room.objects.get(id=u.room_id).n_type
 
-        static_data[i, ROOM] = u.room_id
+        static_data[i, Stc.ROOM] = u.room_id
 
-        static_data[i, CONS] = Converter.convert_value(u.consumption_good, n_good=n_good)
-        static_data[i, PROD] = Converter.convert_value(u.production_good, n_good=n_good)
+        static_data[i, Stc.CONS] = Converter.convert_value(u.consumption_good, n_good=n_good)
+        static_data[i, Stc.PROD] = Converter.convert_value(u.production_good, n_good=n_good)
 
-        static_data[i, GENDER] = u.gender == 'female'
-        static_data[i, AGE] = u.age
+        static_data[i, Stc.GENDER] = u.gender == 'female'
+        static_data[i, Stc.AGE] = u.age
 
     rooms = Room.objects.all().order_by('id')
 
@@ -117,27 +104,33 @@ def load_individual_data_from_db():
         r = Room.objects.get(id=u.room_id)
         n_good = r.n_type
 
-        prod = static_data[i, PROD]
-        cons = static_data[i, CONS]
+        prod = static_data[i, Stc.PROD]
+        cons = static_data[i, Stc.CONS]
 
+        in_hand = np.zeros(t_max, dtype=int)
+        desired = np.zeros(t_max, dtype=int)
+
+        # Preprocess the data
         for t in range(t_max):
 
             c = Choice.objects.get(room_id=r.id, t=t, user_id=u.id)
 
-            desired = Converter.convert_value(c.desired_good, n_good=n_good)
-            in_hand = Converter.convert_value(c.good_in_hand, n_good=n_good)
+            in_hand[t] = Converter.convert_value(c.good_in_hand, n_good=n_good)
+            desired[t] = Converter.convert_value(c.desired_good, n_good=n_good)
 
-            for g in range(n_good):
-
-                if g in (prod, cons):
-                    direct = (in_hand, desired) == (prod, cons)
-                    dynamic_data[i, t, -1] = direct
-                else:
-                    indirect_with_g = (in_hand, desired) in [(prod, g), (g, cons)]
-                    dynamic_data[i, t, g] = indirect_with_g
-
-        for g in range(n_good):
-            static_data[i, globals()[f"S_IND_{g}"]] = np.mean(dynamic_data[i, :, globals()[f"D_IND_{g}"]])
+        # Analysis
+        monetary_behavior(n_good=n_good, in_hand=in_hand, desired=desired, prod=prod, cons=cons)
+        #     for g in range(n_good):
+        #
+        #         if g in (prod, cons):
+        #             direct = (in_hand, desired) == (prod, cons)
+        #             dynamic_data[i, t, -1] = direct
+        #         else:
+        #             indirect_with_g = (in_hand, desired) in [(prod, g), (g, cons)]
+        #             dynamic_data[i, t, g] = indirect_with_g
+        #
+        # for g in range(n_good):
+        #     static_data[i, globals()[f"S_IND_{g}"]] = np.mean(dynamic_data[i, :, globals()[f"D_IND_{g}"]])
 
     return static_data, dynamic_data
 
@@ -152,68 +145,6 @@ def individual_data(force=False):
         static_data, dynamic_data = pickle.load(open(INDIVIDUAL_DATA, 'rb'))
 
     return static_data, dynamic_data
-
-
-def evolution_direct(static_data, dynamic_data, window_size=5):
-
-    data = {}
-    rooms = Room.objects.all().order_by('id')
-    rooms_id = [r.id for r in rooms]
-
-    for r_id in rooms_id:
-
-        r = Room.objects.get(id=r_id)
-        n_good = r.n_type
-        data_room = []
-
-        for g in range(n_good):
-
-            cons_g_bool = static_data[:, CONS] == g
-            belong_r_bool = static_data[:, ROOM] == r_id
-
-            cons_belong_r_bool = cons_g_bool*belong_r_bool
-            n = int(np.sum(cons_belong_r_bool))
-
-            raw = dynamic_data[cons_belong_r_bool, :, D_DIRECT]
-
-            data_good = []
-
-            for i in range(n):
-                r_mean = running_mean(raw[i], n=window_size)
-                data_ind = r_mean
-                data_good.append(data_ind)
-
-            data_room.append(data_good)
-
-        data[r_id] = data_room
-
-    return data
-
-
-def fig_evo(data_evo):
-
-    rooms_id = list(data_evo.keys())
-    rooms_id.sort()
-
-    colors = [f"C{i}" for i in range(4)]
-
-    fig, ax = plt.subplots(ncols=1, nrows=4, figsize=(6, 20))
-
-    for idx, r_id in enumerate(rooms_id):
-
-        data_room = data_evo[r_id]
-
-        n_good = len(data_room)
-
-        for g in range(n_good):
-
-            data_good = data_room[g]
-
-            n = len(data_good)
-            for i in range(n):
-                ax[idx].plot(data_good[i], color=colors[g], alpha=0.5)
-
-    plt.show()
 
 
 def main():
