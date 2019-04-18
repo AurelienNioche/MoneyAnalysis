@@ -10,7 +10,7 @@ Python
 
 Python libraries
 
-    pip3 install numpy matplotlib scipy django psycopg2-binary tqdm
+    pip3 install numpy matplotlib scipy django psycopg2-binary tqdm statsmodels
     
 postgresql
 
