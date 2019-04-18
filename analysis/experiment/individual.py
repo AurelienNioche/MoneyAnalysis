@@ -36,7 +36,6 @@ from analysis.tools.conversion import Converter
 from analysis.experiment.metric import monetary_behavior
 
 
-
 SCRIPT_FOLDER = os.path.dirname(os.path.abspath(__file__))
 ROOT_FOLDER = f"{SCRIPT_FOLDER}/../../"
 

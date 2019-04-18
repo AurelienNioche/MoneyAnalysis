@@ -17,9 +17,10 @@ def monetary_behavior(n_good, in_hand, desired, prod, cons):
 
         ih = in_hand[t]
 
-        # Check if direct
+        # Check for direct
         # if (ih, c) == (prod, cons):
         #     dir_ex += 1
+        # Check for indirect
         # else:
         #     for g in goods:
         #         if (ih, c) in [(prod, g), (g, cons)]:
@@ -33,6 +34,10 @@ def monetary_behavior(n_good, in_hand, desired, prod, cons):
                 _dir_ex += 1
             else:
                 _ind_ex[c] += 1
+
+        ind_ex[t, :] = _ind_ex.copy()
+        dir_ex[t] = _dir_ex
+        n[t] = _n
 
     _dir_ex /= _n
     _ind_ex /= _n
