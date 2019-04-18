@@ -6,7 +6,7 @@ def main():
     prod = 1
     cons = 2
     t_max = 10000
-    n_goods = 3
+    n_goods = 4
 
     ih = prod
 

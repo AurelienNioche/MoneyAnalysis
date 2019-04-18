@@ -37,7 +37,7 @@ Indeed, it shows that some set of cog parameters may allow money emergence when 
 of them distributed heterogeneously among agents may results in a non monetary system. These results 
 may account for the hypothesis of cognitive heterogeneity among agents as a precluding factor of money emergence.
 
-The latter script exploits those results (for the moment 20 batches of 10 set of cognitive parameters were selected
+The latter script exploits those results (for the moment 20 batches of 10 set of cognitive parameters were selectedI
  and saved in supplementary.p file) by taking each set and varying specifically the set of heterogeneous parameters as well as the seed 
  used in simulations, in order to test its robustness.
  Currently, among the 20 batch, the 6th batch seems to be the more robust. On 100 trials, 25 trial (on average) were successful 

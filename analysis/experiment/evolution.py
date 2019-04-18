@@ -31,11 +31,13 @@ application = get_wsgi_application()
 import numpy as np
 
 from game.models import Room
-from analysis.experiment.individual import individual_data, CONS, ROOM, \
-    D_IND_0, D_IND_1, D_IND_2, D_IND_3, D_DIRECT
+#from analysis.experiment.individual import individual_data, CONS, ROOM, \
+    #D_IND_0, D_IND_1, D_IND_2, D_IND_3, D_DIRECT
+
+from analysis.experiment.individual import Stc, Dyn
 
 
-def evolution_direct_split(static_data, dynamic_data, n_split, const):
+def evolution_direct_split(static_data, dynamic_data, n, n_split, const):
 
     data = {}
     rooms = Room.objects.all().order_by('id')
@@ -50,8 +52,8 @@ def evolution_direct_split(static_data, dynamic_data, n_split, const):
 
         for g in range(n_good):
 
-            cons_g_bool = static_data[:, CONS] == g
-            belong_r_bool = static_data[:, ROOM] == r_id
+            cons_g_bool = static_data[:, Stc.CONS] == g
+            belong_r_bool = static_data[:, Stc.ROOM] == r_id
 
             cons_belong_r_bool = cons_g_bool*belong_r_bool
             n = int(np.sum(cons_belong_r_bool))
@@ -66,28 +68,13 @@ def evolution_direct_split(static_data, dynamic_data, n_split, const):
             for i in range(n):
                 for j, k in enumerate(bnds):
                     if k != bnds[-1]:
-                        data_ind = np.mean(raw[i, k:bnds[j+1]])
+                        data_ind = raw[i, k:bnds[j+1]] / n[bnds[j+1]]
                         points[j].append(data_ind)
 
             data_room.append(points)
 
         data[r_id] = data_room
     return data
-
-
-def main():
-
-    static_data, dynamic_data = individual_data()
-
-    for name, const in zip(('D_IND_0', 'D_IND_1', 'D_IND_2', 'D_IND_3', 'D_DIRECT'),
-                           (D_IND_0, D_IND_1, D_IND_2, D_IND_3, D_DIRECT)):
-        data_evo = evolution_direct_split(static_data, dynamic_data, n_split=3, const=const)
-        fig_evo_scatter(data_evo, title=name, f_name=f'individual_tracking_{name}.pdf')
-
-
-if __name__ == "__main__":
-
-    main()
 
 
 def evolution_direct(static_data, dynamic_data, window_size=5):
@@ -104,16 +91,14 @@ def evolution_direct(static_data, dynamic_data, window_size=5):
 
         for g in range(n_good):
 
-            cons_g_bool = static_data[:, CONS] == g
-            belong_r_bool = static_data[:, ROOM] == r_id
+            cons_g_bool = static_data[:, Stc.CONS] == g
+            belong_r_bool = static_data[:, Stc.ROOM] == r_id
 
             cons_belong_r_bool = cons_g_bool*belong_r_bool
             n = int(np.sum(cons_belong_r_bool))
 
-            raw = dynamic_data[cons_belong_r_bool, :, D_DIRECT]
-
-            data_good = []
-
+            raw = dynamic_data[cons_belong_r_bool, :, Dyn.D_DIRECT] 
+            data_good = [] 
             for i in range(n):
                 r_mean = running_mean(raw[i], n=window_size)
                 data_ind = r_mean
@@ -124,3 +109,19 @@ def evolution_direct(static_data, dynamic_data, window_size=5):
         data[r_id] = data_room
 
     return data
+
+
+def main():
+
+    static_data, dynamic_data, n = individual_data()
+
+    for const in Dyn:
+        data_evo = evolution_direct_split(static_data, dynamic_data, n=n, n_split=3, const=const)
+        fig_evo_scatter(data_evo, title=name, f_name=f'individual_tracking_{name}.pdf')
+
+
+if __name__ == "__main__":
+
+    main()
+
+
