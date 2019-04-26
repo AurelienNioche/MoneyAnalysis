@@ -115,7 +115,7 @@ def main():
 
     static_data, dynamic_data = individual_data()
 
-    consts = [k for k in vars(Dyn) if not k.startswith('_')]
+    consts = [k for k in vars(Dyn) if not k.startswith('_') and not k != "NP"]
 
     for const in consts:
         data_evo = evolution_direct_split(static_data, dynamic_data, n_split=3, const=getattr(Dyn, const))

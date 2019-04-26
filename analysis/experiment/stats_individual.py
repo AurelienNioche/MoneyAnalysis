@@ -87,10 +87,11 @@ def _mw(to_compare, print_latex=False, **kwargs):
 def main():
 
     static_data, dynamic_data = individual_data()
+    # 416 uniform
     room_ids = [416, 414]
 
     grouped_data = get_groups(
-        static_data, dynamic_data, span=.5, const=Dyn.IND_0, rooms_id=[416, 414], g=2
+        static_data, dynamic_data, span=.8, const=Dyn.IND_0, rooms_id=[416, 414], g=2
     )
 
     to_compare = [
