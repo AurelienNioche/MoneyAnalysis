@@ -59,7 +59,7 @@ def evolution_direct_split(static_data, dynamic_data, n_split, const):
             n = int(np.sum(cons_belong_r_bool))
 
             raw = dynamic_data[cons_belong_r_bool, :, const]
-            tmax = len(dynamic_data[0, :])
+            tmax = len(dynamic_data[0, :, 0])
             spl = tmax//n_split
             bnds = np.arange(tmax+1, step=spl)
 
@@ -68,7 +68,7 @@ def evolution_direct_split(static_data, dynamic_data, n_split, const):
             for i in range(n):
                 for j, k in enumerate(bnds):
                     if k != bnds[-1]:
-                        data_ind = raw[i, k:bnds[j+1]] / dynamic_data[cons_belong_r_bool, bnds[j+1], Dyn.NP]
+                        data_ind = np.mean(raw[i, k:bnds[j+1]]) #/ dynamic_data[cons_belong_r_bool, bnds[j+1], Dyn.NP][0]
                         points[j].append(data_ind)
 
             data_room.append(points)
