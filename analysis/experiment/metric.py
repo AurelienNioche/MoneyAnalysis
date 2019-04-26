@@ -5,13 +5,13 @@ def monetary_behavior(n_good, in_hand, desired, prod, cons):
 
     t_max = len(in_hand)
 
-    ind_ex = np.zeros((t_max, n_good), dtype=int)
-    dir_ex = np.zeros(t_max, dtype=int)
+    ind_ex = np.zeros((t_max, n_good))
+    dir_ex = np.zeros(t_max)
     n = np.zeros(t_max, dtype=int)
 
     _n = 0
     _dir_ex = 0
-    _ind_ex = np.zeros(n_good, dtype=int)
+    _ind_ex = np.zeros(n_good)
 
     for t in range(t_max):
 
