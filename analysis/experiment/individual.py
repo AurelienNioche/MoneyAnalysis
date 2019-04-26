@@ -118,7 +118,11 @@ def load_individual_data_from_db():
             desired[t] = Converter.convert_value(c.desired_good, n_good=n_good)
 
         # Analysis
-        monetary_behavior(n_good=n_good, in_hand=in_hand, desired=desired, prod=prod, cons=cons)
+        dir_ex, ind_ex, n_p = monetary_behavior(n_good=n_good, in_hand=in_hand, desired=desired, prod=prod, cons=cons)
+        dynamic_data[i, :, :Dyn.DIRECT] = ind_ex
+        dynamic_data[i, :, Dyn.DIRECT] = dir_ex
+        dynamic_data[i, :, Dyn.NP] = n_p
+
         #     for g in range(n_good):
         #
         #         if g in (prod, cons):
