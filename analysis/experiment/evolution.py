@@ -115,9 +115,11 @@ def main():
 
     static_data, dynamic_data = individual_data()
 
-    for const in Dyn:
-        data_evo = evolution_direct_split(static_data, dynamic_data, n_split=3, const=const)
-        fig_evo_scatter(data_evo, title=const.name, f_name=f'individual_tracking_{const.name}.pdf')
+    consts = [k for k in vars(Dyn) if not k.startswith('_')]
+
+    for const in consts:
+        data_evo = evolution_direct_split(static_data, dynamic_data, n_split=3, const=getattr(Dyn, const))
+        fig_evo_scatter(data_evo, title=const, f_name=f'individual_tracking_{const}.pdf')
 
 
 if __name__ == "__main__":
