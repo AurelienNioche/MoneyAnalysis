@@ -29,8 +29,7 @@ import matplotlib.pyplot as plt
 import scipy.stats
 import statsmodels.stats.multitest
 
-from analysis.experiment.individual import individual_data, CONS, ROOM, \
-    D_IND_0, D_IND_1, D_IND_2, D_IND_3, D_DIRECT, FIG_FOLDER
+from analysis.experiment.individual import individual_data, Dyn, Stc
 
 
 def get_groups(static_data, dynamic_data, span, const, rooms_id, g):
@@ -38,8 +37,8 @@ def get_groups(static_data, dynamic_data, span, const, rooms_id, g):
     data = []
     for r_id in rooms_id:
 
-        cons_g_bool = static_data[:, CONS] == g
-        belong_r_bool = static_data[:, ROOM] == r_id
+        cons_g_bool = static_data[:, Stc.CONS] == g
+        belong_r_bool = static_data[:, Stc.ROOM] == r_id
 
         cons_belong_r_bool = cons_g_bool * belong_r_bool
 
@@ -91,7 +90,7 @@ def main():
     room_ids = [416, 414]
 
     grouped_data = get_groups(
-        static_data, dynamic_data, span=.5, const=D_IND_0, rooms_id=[416, 414], g=2
+        static_data, dynamic_data, span=.5, const=Dyn.IND_0, rooms_id=[416, 414], g=2
     )
 
     to_compare = [
