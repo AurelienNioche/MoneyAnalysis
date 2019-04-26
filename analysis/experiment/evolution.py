@@ -34,10 +34,10 @@ from game.models import Room
 #from analysis.experiment.individual import individual_data, CONS, ROOM, \
     #D_IND_0, D_IND_1, D_IND_2, D_IND_3, D_DIRECT
 
-from analysis.experiment.individual import Stc, Dyn
+from analysis.experiment.individual import Stc, Dyn, individual_data
 
 
-def evolution_direct_split(static_data, dynamic_data, n, n_split, const):
+def evolution_direct_split(static_data, dynamic_data, n_split, const):
 
     data = {}
     rooms = Room.objects.all().order_by('id')
@@ -68,7 +68,7 @@ def evolution_direct_split(static_data, dynamic_data, n, n_split, const):
             for i in range(n):
                 for j, k in enumerate(bnds):
                     if k != bnds[-1]:
-                        data_ind = raw[i, k:bnds[j+1]] / n[bnds[j+1]]
+                        data_ind = raw[i, k:bnds[j+1]] / dynamic_data[cons_belong_r_bool, bnds[j+1], Dyn.NP]
                         points[j].append(data_ind)
 
             data_room.append(points)
@@ -113,11 +113,11 @@ def evolution_direct(static_data, dynamic_data, window_size=5):
 
 def main():
 
-    static_data, dynamic_data, n = individual_data()
+    static_data, dynamic_data = individual_data()
 
     for const in Dyn:
-        data_evo = evolution_direct_split(static_data, dynamic_data, n=n, n_split=3, const=const)
-        fig_evo_scatter(data_evo, title=name, f_name=f'individual_tracking_{name}.pdf')
+        data_evo = evolution_direct_split(static_data, dynamic_data, n_split=3, const=const)
+        fig_evo_scatter(data_evo, title=const.name, f_name=f'individual_tracking_{const.name}.pdf')
 
 
 if __name__ == "__main__":

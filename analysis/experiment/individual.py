@@ -15,8 +15,8 @@
 # Django specific settings
 import os
 
-from analysis.experiment.evolution import evolution_direct
-from analysis.experiment.graph import fig_evo
+#from analysis.experiment.evolution import evolution_direct
+#from analysis.experiment.graph import fig_evo
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "MoneyAnalysis.settings")
 
