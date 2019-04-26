@@ -97,7 +97,7 @@ def evolution_direct(static_data, dynamic_data, window_size=5):
             cons_belong_r_bool = cons_g_bool*belong_r_bool
             n = int(np.sum(cons_belong_r_bool))
 
-            raw = dynamic_data[cons_belong_r_bool, :, Dyn.D_DIRECT] 
+            raw = dynamic_data[cons_belong_r_bool, :, Dyn.DIRECT]
             data_good = [] 
             for i in range(n):
                 r_mean = running_mean(raw[i], n=window_size)

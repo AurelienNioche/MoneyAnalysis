@@ -15,8 +15,8 @@
 # Django specific settings
 import os
 
-#from analysis.experiment.evolution import evolution_direct
-#from analysis.experiment.graph import fig_evo
+# from analysis.experiment.evolution import evolution_direct
+# from analysis.experiment.graph import fig_evo
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "MoneyAnalysis.settings")
 
@@ -150,16 +150,16 @@ def individual_data(force=False):
     return static_data, dynamic_data
 
 
-def main():
-
-    static_data, dynamic_data = individual_data()
-    data_evo = evolution_direct(static_data, dynamic_data)
-    fig_evo(data_evo)
-
-
-if __name__ == "__main__":
-
-    main()
+# def main():
+#
+#     static_data, dynamic_data = individual_data()
+#     data_evo = evolution_direct(static_data, dynamic_data)
+#     fig_evo(data_evo)
+#
+#
+# if __name__ == "__main__":
+#
+#     main()
 
 
 # for r in rooms:
