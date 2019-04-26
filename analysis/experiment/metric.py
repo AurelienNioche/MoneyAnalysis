@@ -35,11 +35,8 @@ def monetary_behavior(n_good, in_hand, desired, prod, cons):
             else:
                 _ind_ex[c] += 1
 
-        ind_ex[t, :] = _ind_ex.copy()
-        dir_ex[t] = _dir_ex
+        ind_ex[t, :] = _ind_ex / _n
+        dir_ex[t] = _dir_ex / _n
         n[t] = _n
-
-    _dir_ex /= _n
-    _ind_ex /= _n
 
     return dir_ex, ind_ex, n

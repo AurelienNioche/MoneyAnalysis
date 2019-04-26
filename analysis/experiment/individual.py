@@ -45,10 +45,10 @@ FIG_FOLDER = f"{ROOT_FOLDER}/fig"
 INDIVIDUAL_DATA = f"{DATA_FOLDER}/individual_data.p"
 
 N_STATIC_VAR = 11
-N_DYNAMIC_VAR = 5
+N_DYNAMIC_VAR = 6
 
 
-class Dyn(enum.Enum):
+class Dyn:
 
     IND_0 = 0
     IND_1 = 1
@@ -58,7 +58,7 @@ class Dyn(enum.Enum):
     NP = 5
 
 
-class Stc(enum.Enum):
+class Stc:
     GENDER = 0
     AGE = 1
     ROOM = 2
@@ -119,7 +119,7 @@ def load_individual_data_from_db():
 
         # Analysis
         dir_ex, ind_ex, n_p = monetary_behavior(n_good=n_good, in_hand=in_hand, desired=desired, prod=prod, cons=cons)
-        dynamic_data[i, :, :Dyn.DIRECT] = ind_ex
+        dynamic_data[i, :, :n_good] = ind_ex
         dynamic_data[i, :, Dyn.DIRECT] = dir_ex
         dynamic_data[i, :, Dyn.NP] = n_p
 
