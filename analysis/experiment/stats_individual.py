@@ -93,21 +93,24 @@ def main():
     # 415 4G  uniform
     # 416 3G uniform
     # 417 4G non-uniform
-    room_ids = [416, 414]
+    for (room1, name1),  (room2, name2) in zip(
+            [(415, '3G U'), (416, '4G U')], [(417, '3G NU'), (414, '4G NU')]):
 
-    grouped_data = get_groups(
-        static_data, dynamic_data, span=.8, const=Dyn.IND_0, rooms_id=[416, 414], g=2
-    )
+        print(f'{name1} vs. {name2}')
 
-    to_compare = [
-            {
-                "data": np.array(grouped_data),
-                "name": f"rm_{room_ids[0]}_vs_rm_{room_ids[1]}"
-            }
-        ]
+        grouped_data = get_groups(
+            static_data, dynamic_data, span=.8, const=Dyn.DIRECT, rooms_id=[room1, room2], g=0
+        )
 
-    p = _mw(to_compare)
-    print(p)
+        to_compare = [
+                {
+                    "data": np.array(grouped_data),
+                    "name": f"rm_{room1}_vs_rm_{room2}"
+                }
+            ]
+
+        p = _mw(to_compare)
+        print(p)
 
 
 if __name__ == "__main__":
