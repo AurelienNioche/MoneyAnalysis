@@ -42,6 +42,8 @@ def evolution_direct_split(static_data, dynamic_data, n_split, const):
     data = {}
     rooms = Room.objects.all().order_by('id')
     rooms_id = [r.id for r in rooms]
+    print([(i, j) for i, j in zip([k.types for k in rooms], [l.id for l in rooms])])
+    quit()
 
     for r_id in rooms_id:
 

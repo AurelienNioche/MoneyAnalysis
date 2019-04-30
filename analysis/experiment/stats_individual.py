@@ -79,7 +79,8 @@ def _mw(to_compare, print_latex=False, **kwargs):
             print(f"{xp_session} & {measure} & ${f_name}$ & ${u}$ & ${p}$ & ${p_c}{'^*' if v else ''}$ & ${n}$" + r"\\")
 
         else:
-            print(f"[{cond_name}] Mann-Whitney rank test: $u={u}$, $p corr={p_c:.3f}$, p raw {p:.3f}, $n={n}$, sign.: {v}")
+            print(
+                f"[{cond_name}] Mann-Whitney rank test: $u={u}$, $p corr={p_c:.3f}$, p raw {p:.3f}, $n={n}$, sign.: {v}")
 
     return p_corr
 
@@ -87,7 +88,11 @@ def _mw(to_compare, print_latex=False, **kwargs):
 def main():
 
     static_data, dynamic_data = individual_data()
-    # 416 uniform
+
+    # 414 3G non-uniform
+    # 415 4G  uniform
+    # 416 3G uniform
+    # 417 4G non-uniform
     room_ids = [416, 414]
 
     grouped_data = get_groups(
