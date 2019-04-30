@@ -58,7 +58,7 @@ def _mw(to_compare, print_latex=False, **kwargs):
     us = []
 
     for dic in to_compare:
-        u, p = scipy.stats.mannwhitneyu(dic["data"][0], dic["data"][1])
+        u, p = scipy.stats.mannwhitneyu(dic["data"][0], dic["data"][1], alternative="two-sided")
         n = len(dic["data"][0]) + len(dic["data"][1])
         ps.append(p)
         us.append(u)
@@ -99,7 +99,7 @@ def main():
         print(f'{name1} vs. {name2}')
 
         grouped_data = get_groups(
-            static_data, dynamic_data, span=.8, const=Dyn.DIRECT, rooms_id=[room1, room2], g=0
+            static_data, dynamic_data, span=.5, const=Dyn.IND_0, rooms_id=[room1, room2], g=2 if '3' in name1 else 3
         )
 
         to_compare = [
@@ -111,6 +111,7 @@ def main():
 
         p = _mw(to_compare)
         print(p)
+        print()
 
 
 if __name__ == "__main__":
