@@ -99,7 +99,7 @@ def main():
         print(f'{name1} vs. {name2}')
 
         grouped_data = get_groups(
-            static_data, dynamic_data, span=.5, const=Dyn.IND_0, rooms_id=[room1, room2], g=2 if '3' in name1 else 3
+            static_data, dynamic_data, span=.5, const=Dyn.IND_0, rooms_id=[room1, room2], g=2
         )
 
         to_compare = [
