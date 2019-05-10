@@ -39,6 +39,17 @@ from analysis.experiment.individual import Stc, Dyn, individual_data
 
 
 def evolution_direct_split(static_data, dynamic_data, n_split, const):
+
+    """
+    :param static_data:
+    :param dynamic_data:
+    :param n_split:
+    :param const:
+    :return:
+    dictionary.
+     * Key: number of room.
+     * Value: nested list with dimenions: type of agent, time window, individual
+    """
     data = {}
     rooms = Room.objects.all().order_by('id')
     rooms_id = [r.id for r in rooms]
@@ -50,9 +61,9 @@ def evolution_direct_split(static_data, dynamic_data, n_split, const):
 
         data_room = []
 
-        for g in range(n_good):
+        for agent_type in range(n_good):
 
-            cons_g_bool = static_data[:, Stc.CONS] == g
+            cons_g_bool = static_data[:, Stc.CONS] == agent_type
             belong_r_bool = static_data[:, Stc.ROOM] == r_id
 
             cons_belong_r_bool = cons_g_bool * belong_r_bool
@@ -109,6 +120,7 @@ def evolution_direct_split(static_data, dynamic_data, n_split, const):
 
 
 def evolution_direct(static_data, dynamic_data, window_size=5):
+
     data = {}
     rooms = Room.objects.all().order_by('id')
     rooms_id = [r.id for r in rooms]

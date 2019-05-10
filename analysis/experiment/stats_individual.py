@@ -30,27 +30,32 @@ import scipy.stats
 import statsmodels.stats.multitest
 
 from analysis.experiment.individual import individual_data, Dyn, Stc
+from analysis.experiment.evolution import evolution_direct_split
 
 
-def get_groups(static_data, dynamic_data, span, const, rooms_id, g):
+def get_groups(static_data, dynamic_data, n_split, const, rooms_id, agent_type):
 
-    data = []
+    data = evolution_direct_split(static_data, dynamic_data, n_split, const)
+    to_return = []
     for r_id in rooms_id:
 
-        cons_g_bool = static_data[:, Stc.CONS] == g
-        belong_r_bool = static_data[:, Stc.ROOM] == r_id
+        d = data[r_id][agent_type][-1]
+        to_return.append(d)
 
-        cons_belong_r_bool = cons_g_bool * belong_r_bool
+        # cons_g_bool = static_data[:, Stc.CONS] == g
+        # belong_r_bool = static_data[:, Stc.ROOM] == r_id
+        #
+        # cons_belong_r_bool = cons_g_bool * belong_r_bool
+        #
+        # raw = dynamic_data[cons_belong_r_bool, :, const]
+        # bnd = round(len(dynamic_data[0, :]) * span)
+        #
+        # selected = raw[:, -bnd:]
+        # d = np.mean(selected, axis=1)
+        # print("n", d.shape[0])
+        # data.append(d)
 
-        raw = dynamic_data[cons_belong_r_bool, :, const]
-        bnd = round(len(dynamic_data[0, :]) * span)
-
-        selected = raw[:, -bnd:]
-        d = np.mean(selected, axis=1)
-        print("n", d.shape[0])
-        data.append(d)
-
-    return data
+    return to_return
 
 
 def _mw(to_compare, print_latex=False, **kwargs):
@@ -62,7 +67,7 @@ def _mw(to_compare, print_latex=False, **kwargs):
 
     for dic in to_compare:
         try:
-            u, p = scipy.stats.mannwhitneyu(dic["data"][0], dic["data"][1], alternative="two-sided")
+            u, p = scipy.stats.mannwhitneyu(dic["data"][0], dic["data"][1])  # , alternative="two-sided")
             n = len(dic["data"][0]) + len(dic["data"][1])
             ps.append(p)
             us.append(u)
@@ -103,7 +108,7 @@ def main():
     # 416 3G uniform
     # 417 4G non-uniform
 
-    consts = [k for k in vars(Dyn) if not k.startswith('_') and k != "NP"]
+    consts = [k for k in vars(Dyn) if not k.startswith('_') and k not in ("NP", "N_VAR")]
 
     for (room1, name1), (room2, name2) in zip(
             [(416, '3G U'), (415, '4G U')], [(414, '3G NU'), (417, '4G NU')]):
@@ -122,7 +127,8 @@ def main():
                 print(f'{name1} vs. {name2}')
 
                 grouped_data = get_groups(
-                    static_data, dynamic_data, span=0.33, const=getattr(Dyn, const), rooms_id=[room1, room2], g=g
+                    static_data, dynamic_data, n_split=3, const=getattr(Dyn, const), rooms_id=[room1, room2],
+                    agent_type=g
                 )
 
                 to_compare = [
