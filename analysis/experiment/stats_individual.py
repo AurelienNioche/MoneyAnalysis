@@ -111,7 +111,7 @@ def main():
         for g in range(int(name1[0])):
 
             print('-' * 10)
-            print(g)
+            print("G", g)
 
             for const in consts:
 
