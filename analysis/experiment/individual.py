@@ -33,7 +33,7 @@ import numpy as np
 import pickle
 
 from analysis.tools.conversion import Converter
-from analysis.experiment.metric import monetary_behavior
+from analysis.experiment.metric import exchange
 
 
 SCRIPT_FOLDER = os.path.dirname(os.path.abspath(__file__))
@@ -50,12 +50,16 @@ N_DYNAMIC_VAR = 6
 
 class Dyn:
 
-    IND_0 = 0
+    IND_0 = 0  # Cumulative number of indirect exchange with good 0
     IND_1 = 1
     IND_2 = 2
     IND_3 = 3
-    DIRECT = 4
-    NP = 5
+    DIRECT = 4  # Cumulative number of direct exchange with production good in hand
+    NP = 5  # Cumulative number of timesteps with production good in hand
+    MONEY_0 = 6
+    MONEY_1 = 7
+    MONEY_2 = 8
+    MONEY_3 = 9
 
 
 class Stc:
@@ -118,10 +122,14 @@ def load_individual_data_from_db():
             desired[t] = Converter.convert_value(c.desired_good, n_good=n_good)
 
         # Analysis
-        dir_ex, ind_ex, n_p = monetary_behavior(n_good=n_good, in_hand=in_hand, desired=desired, prod=prod, cons=cons)
+        dir_ex, ind_ex, n_p = exchange(n_good=n_good, in_hand=in_hand, desired=desired, prod=prod, cons=cons)
         dynamic_data[i, :, :n_good] = ind_ex
         dynamic_data[i, :, Dyn.DIRECT] = dir_ex
         dynamic_data[i, :, Dyn.NP] = n_p
+
+        monetary_behavior, n_p = \
+            monetary_behavior(n_good=n_good, in_hand=in_hand, desired=desired, prod=prod, cons=cons)
+        dynamic_data[i, :, Dyn.MONEY_0: Dyn.MONEY_0+n_good] = monetary_behavior
 
         #     for g in range(n_good):
         #

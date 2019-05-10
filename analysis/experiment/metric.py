@@ -1,7 +1,19 @@
 import numpy as np
 
 
-def monetary_behavior(n_good, in_hand, desired, prod, cons):
+def exchange(n_good, in_hand, desired, prod, cons):
+
+    """
+    Compute for a single subject for each timestep the cumulative number of
+        * direct exchange with production good in hand
+        * indirect exchange with good x
+    :param n_good:
+    :param in_hand:
+    :param desired:
+    :param prod:
+    :param cons:
+    :return:
+    """
 
     t_max = len(in_hand)
 
@@ -16,7 +28,7 @@ def monetary_behavior(n_good, in_hand, desired, prod, cons):
     for t in range(t_max):
 
         ih = in_hand[t]
-
+        # --- old way ---
         # Check for direct
         # if (ih, c) == (prod, cons):
         #     dir_ex += 1
@@ -35,8 +47,43 @@ def monetary_behavior(n_good, in_hand, desired, prod, cons):
             else:
                 _ind_ex[c] += 1
 
-        ind_ex[t, :] = _ind_ex / _n
-        dir_ex[t] = _dir_ex / _n
+        ind_ex[t, :] = _ind_ex
+        dir_ex[t] = _dir_ex
         n[t] = _n
 
     return dir_ex, ind_ex, n
+
+
+def monetary(n_good, in_hand, desired, prod, cons):
+
+    t_max = len(in_hand)
+
+    monetary_behavior = np.zeros((t_max, n_good))
+    n = np.zeros(t_max, dtype=int)
+
+    _n = 0  #
+    _m_bh = np.zeros(n_good)  # Monetary behavior
+
+    for t in range(t_max):
+
+        ih = in_hand[t]
+
+        if ih == prod:
+            _n += 1
+
+            c = desired[t]
+
+            for monetary_good in range(n_good):
+
+                prod_or_cons_money = monetary_good in [prod, cons]
+
+                if int(c == cons):
+                    _m_bh[monetary_good] += int(prod_or_cons_money)
+
+                else:
+                    _m_bh[monetary_good] += int(c == monetary_good)
+
+        monetary_behavior[t, :] = _m_bh
+        n[t] = _n
+
+    return monetary_behavior, n
