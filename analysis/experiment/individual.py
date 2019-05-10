@@ -33,7 +33,7 @@ import numpy as np
 import pickle
 
 from analysis.tools.conversion import Converter
-from analysis.experiment.metric import exchange
+from analysis.experiment.metric import exchange, monetary
 
 
 SCRIPT_FOLDER = os.path.dirname(os.path.abspath(__file__))
@@ -127,9 +127,9 @@ def load_individual_data_from_db():
         dynamic_data[i, :, Dyn.DIRECT] = dir_ex
         dynamic_data[i, :, Dyn.NP] = n_p
 
-        monetary_behavior, n_p = \
-            monetary_behavior(n_good=n_good, in_hand=in_hand, desired=desired, prod=prod, cons=cons)
-        dynamic_data[i, :, Dyn.MONEY_0: Dyn.MONEY_0+n_good] = monetary_behavior
+        m_bh, n_p = \
+            monetary(n_good=n_good, in_hand=in_hand, desired=desired, prod=prod, cons=cons)
+        dynamic_data[i, :, Dyn.MONEY_0: Dyn.MONEY_0+n_good] = m_bh
 
         #     for g in range(n_good):
         #
