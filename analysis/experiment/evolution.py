@@ -69,14 +69,12 @@ def evolution_direct_split(static_data, dynamic_data, n_split, const):
             for i in range(n):
                 # for each bound (window, nsplit)
                 for j in range(len(bnds) - 1):
+                    data_window = raw[i, bnds[j]:bnds[j + 1]]
+                    norm_data_window = data_window - min(data_window) + 1
+                    n_possibility = dynamic_data[i, bnds[j]:bnds[j + 1], Dyn.NP]
+                    norm_n_possibility = n_possibility - min(n_possibility) + 1
 
-                    data_ind = np.mean(
-                        raw[i, bnds[j]:bnds[j+1]] /
-                        (
-                                dynamic_data[i, bnds[j+1], Dyn.NP] -
-                                dynamic_data[i, bnds[j], Dyn.NP]
-                        )
-                    )
+                    data_ind = np.mean(norm_data_window / norm_n_possibility)
 
                     points[j].append(data_ind)
 
