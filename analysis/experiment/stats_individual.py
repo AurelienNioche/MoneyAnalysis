@@ -106,7 +106,7 @@ def main():
     consts = [k for k in vars(Dyn) if not k.startswith('_') and k != "NP"]
 
     for (room1, name1), (room2, name2) in zip(
-            [(415, '3G U'), (416, '4G U')], [(417, '3G NU'), (414, '4G NU')]):
+            [(416, '3G U'), (415, '4G U')], [(414, '3G NU'), (417, '4G NU')]):
 
         print(f'{name1} vs. {name2}')
 
@@ -122,7 +122,7 @@ def main():
                 print(f'{name1} vs. {name2}')
 
                 grouped_data = get_groups(
-                    static_data, dynamic_data, span=.5, const=getattr(Dyn, const), rooms_id=[room1, room2], g=g
+                    static_data, dynamic_data, span=0.33, const=getattr(Dyn, const), rooms_id=[room1, room2], g=g
                 )
 
                 to_compare = [
