@@ -108,15 +108,16 @@ def main():
     for (room1, name1), (room2, name2) in zip(
             [(415, '3G U'), (416, '4G U')], [(417, '3G NU'), (414, '4G NU')]):
 
-        for g in range(int(name1[0])):
+        print(f'{name1} vs. {name2}')
 
-            print('-' * 10)
-            print("G", g)
+        for const in consts:
 
-            for const in consts:
+            print("*" * 10)
+            print(const)
 
-                print("*" * 10)
-                print(const)
+            for g in range(int(name1[0])):
+                print('-' * 10)
+                print("CONS", g)
 
                 print(f'{name1} vs. {name2}')
 
