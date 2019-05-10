@@ -45,7 +45,10 @@ def get_groups(static_data, dynamic_data, span, const, rooms_id, g):
         raw = dynamic_data[cons_belong_r_bool, :, const]
         bnd = round(len(dynamic_data[0, :]) * span)
 
-        data.append(np.mean(raw[:, -bnd:], axis=1))
+        selected = raw[:, -bnd:]
+        d = np.mean(selected, axis=1)
+        print("n", d.shape[0])
+        data.append(d)
 
     return data
 
@@ -102,30 +105,35 @@ def main():
 
     consts = [k for k in vars(Dyn) if not k.startswith('_') and k != "NP"]
 
-    for const in consts:
+    for (room1, name1), (room2, name2) in zip(
+            [(415, '3G U'), (416, '4G U')], [(417, '3G NU'), (414, '4G NU')]):
 
-        print("*" * 10)
-        print(const)
+        for g in range(int(name1[0])):
 
-        for (room1, name1),  (room2, name2) in zip(
-                [(415, '3G U'), (416, '4G U')], [(417, '3G NU'), (414, '4G NU')]):
+            print('-' * 10)
+            print(g)
 
-            print(f'{name1} vs. {name2}')
+            for const in consts:
 
-            grouped_data = get_groups(
-                static_data, dynamic_data, span=.5, const=getattr(Dyn, const), rooms_id=[room1, room2], g=1
-            )
+                print("*" * 10)
+                print(const)
 
-            to_compare = [
-                    {
-                        "data": np.array(grouped_data),
-                        "name": f"rm_{room1}_vs_rm_{room2}"
-                    }
-                ]
+                print(f'{name1} vs. {name2}')
 
-            p = _mw(to_compare)
-            print(p)
-            print()
+                grouped_data = get_groups(
+                    static_data, dynamic_data, span=.5, const=getattr(Dyn, const), rooms_id=[room1, room2], g=g
+                )
+
+                to_compare = [
+                        {
+                            "data": np.array(grouped_data),
+                            "name": f"rm_{room1}_vs_rm_{room2}"
+                        }
+                    ]
+
+                p = _mw(to_compare)
+                print(p)
+                print()
 
 
 if __name__ == "__main__":
