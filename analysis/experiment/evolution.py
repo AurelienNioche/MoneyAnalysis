@@ -117,6 +117,7 @@ def main():
 
     consts = [k for k in vars(Dyn) if not k.startswith('_') and k != "NP"]
     for const in consts:
+        print(const)
         data_evo = evolution_direct_split(static_data, dynamic_data, n_split=3, const=getattr(Dyn, const))
         fig_evo_scatter(data_evo, title=const, f_name=f'individual_tracking_{const}.pdf')
 
