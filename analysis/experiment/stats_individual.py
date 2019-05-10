@@ -104,6 +104,9 @@ def main():
 
     for const in consts:
 
+        print("*" * 10)
+        print(const)
+
         for (room1, name1),  (room2, name2) in zip(
                 [(415, '3G U'), (416, '4G U')], [(417, '3G NU'), (414, '4G NU')]):
 
