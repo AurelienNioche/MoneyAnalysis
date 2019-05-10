@@ -44,9 +44,6 @@ FIG_FOLDER = f"{ROOT_FOLDER}/fig"
 
 INDIVIDUAL_DATA = f"{DATA_FOLDER}/individual_data.p"
 
-N_STATIC_VAR = 11
-N_DYNAMIC_VAR = 6
-
 
 class Dyn:
 
@@ -61,6 +58,8 @@ class Dyn:
     MONEY_2 = 8
     MONEY_3 = 9
 
+    N_VAR = 10
+
 
 class Stc:
     GENDER = 0
@@ -74,6 +73,8 @@ class Stc:
     IND_3 = 8
     DIRECT = 9
 
+    N_VAR = 10
+
 
 def load_individual_data_from_db():
 
@@ -81,7 +82,7 @@ def load_individual_data_from_db():
     users = User.objects.all().order_by('id')
     n = len(users)
 
-    static_data = np.zeros((n, N_STATIC_VAR))
+    static_data = np.zeros((n, Stc.N_VAR))
 
     for i, u in enumerate(users):
         n_good = Room.objects.get(id=u.room_id).n_type
@@ -100,7 +101,7 @@ def load_individual_data_from_db():
     assert len(np.unique([r.t_max for r in rooms]) == 1)
     t_max = rooms[0].t_max
 
-    dynamic_data = np.zeros((n, t_max, N_DYNAMIC_VAR))
+    dynamic_data = np.zeros((n, t_max, Dyn.N_VAR))
 
     for i, u in enumerate(users):
 
