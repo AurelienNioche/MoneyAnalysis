@@ -58,11 +58,17 @@ def _mw(to_compare, print_latex=False, **kwargs):
     us = []
 
     for dic in to_compare:
-        u, p = scipy.stats.mannwhitneyu(dic["data"][0], dic["data"][1], alternative="two-sided")
-        n = len(dic["data"][0]) + len(dic["data"][1])
-        ps.append(p)
-        us.append(u)
-        ns.append(n)
+        try:
+            u, p = scipy.stats.mannwhitneyu(dic["data"][0], dic["data"][1], alternative="two-sided")
+            n = len(dic["data"][0]) + len(dic["data"][1])
+            ps.append(p)
+            us.append(u)
+            ns.append(n)
+        except ValueError as e:
+            print(e)
+
+    if not len(ns):
+        return
 
     valid, p_corr, alpha_c_sidak, alpha_c_bonf = \
         statsmodels.stats.multitest.multipletests(pvals=ps, alpha=0.05, method="b")
@@ -97,7 +103,7 @@ def main():
     consts = [k for k in vars(Dyn) if not k.startswith('_') and k != "NP"]
 
     for const in consts:
-        print(const)
+
         for (room1, name1),  (room2, name2) in zip(
                 [(415, '3G U'), (416, '4G U')], [(417, '3G NU'), (414, '4G NU')]):
 
