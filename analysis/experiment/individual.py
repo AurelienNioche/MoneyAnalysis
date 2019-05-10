@@ -140,7 +140,7 @@ def load_individual_data_from_db():
 
 def individual_data(force=False):
 
-    if os.path.exists(INDIVIDUAL_DATA) or force:
+    if not os.path.exists(INDIVIDUAL_DATA) or force:
         static_data, dynamic_data = load_individual_data_from_db()
         pickle.dump(obj=(static_data, dynamic_data), file=open(INDIVIDUAL_DATA, 'wb'))
 
