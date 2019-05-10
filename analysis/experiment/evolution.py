@@ -42,8 +42,6 @@ def evolution_direct_split(static_data, dynamic_data, n_split, const):
     data = {}
     rooms = Room.objects.all().order_by('id')
     rooms_id = [r.id for r in rooms]
-    print([(i, j) for i, j in zip([k.types for k in rooms], [l.id for l in rooms])])
-    quit()
 
     for r_id in rooms_id:
 
@@ -117,8 +115,7 @@ def main():
 
     static_data, dynamic_data = individual_data()
 
-    consts = [k for k in vars(Dyn) if not k.startswith('_') and not k != "NP"]
-
+    consts = [k for k in vars(Dyn) if not k.startswith('_') and k != "NP"]
     for const in consts:
         data_evo = evolution_direct_split(static_data, dynamic_data, n_split=3, const=getattr(Dyn, const))
         fig_evo_scatter(data_evo, title=const, f_name=f'individual_tracking_{const}.pdf')

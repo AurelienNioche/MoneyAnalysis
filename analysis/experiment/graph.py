@@ -76,6 +76,7 @@ def fig_evo_scatter(data_evo, title, f_name=None):
     plt.tight_layout()
 
     if f_name:
+        plt.show()
         plt.savefig(f"{FIG_FOLDER}/{f_name}")
     else:
         plt.show()
