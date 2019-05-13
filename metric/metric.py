@@ -1,5 +1,6 @@
 import numpy as np
 
+from metric.window import get_windowed_observation
 
 def exchange(n_good, in_hand, desired, prod, cons):
 
@@ -115,7 +116,7 @@ def get_observation(in_hand, desired, prod, cons):
                                          desired=desired[i_eco][i_agent],
                                          prod=prod[i_eco][i_agent],
                                          cons=cons[i_eco][i_agent])
-            obs_eco[i_agent] = np.random.random(n_good)
+            obs_eco[i_agent] = get_windowed_observation() # np.random.random(n_good)
 
         obs.append(np.mean(obs_eco, axis=1))
 
