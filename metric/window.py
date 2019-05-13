@@ -36,7 +36,7 @@ from game.models import Room
 # D_IND_0, D_IND_1, D_IND_2, D_IND_3, D_DIRECT
 
 from analysis.experiment.individual import Stc, Dyn, individual_data
-from analysis.experiment import metric
+import metric
 
 
 def get_windowed_observation(dir_ex, ind_ex, n, n_split, n_good):
@@ -49,41 +49,41 @@ def get_windowed_observation(dir_ex, ind_ex, n, n_split, n_good):
 
     for good in range(n_good):
 
-        for i_bound in range(len(bounds) - 1):
+        #for i_bound in range(len(bounds) - 1):
 
-            # set inferior and superior bound
-            inf = bounds[i_bound]
-            sup = bounds[i_bound+1]
+        # set inferior and superior bound
+        inf = bounds[-2]
+        sup = bounds[-1]
 
-            # get windowed data
-            windowed_ind = ind_ex[inf:sup, good]
-            windowed_dir = dir_ex[inf:sup]
-            n_possibility = n[inf:sup]
+        # get windowed data
+        windowed_ind = ind_ex[inf:sup, good]
+        windowed_dir = dir_ex[inf:sup]
+        n_possibility = n[inf:sup]
 
-            # If it is not the first window normalize, otherwise no (minus 0)
-            # normalized by the number of attempts
-            last_data_ind = ind_ex[inf - 1, good] if i_bound != 0 else 0
-            last_data_dir = dir_ex[inf - 1] if i_bound != 0 else 0
-            last_n = n[inf - 1] if i_bound != 0 else 0
+        # If it is not the first window normalize, otherwise no (minus 0)
+        # normalized by the number of attempts
+        last_data_ind = ind_ex[inf - 1, good]
+        last_data_dir = dir_ex[inf - 1]
+        last_n = n[inf - 1]
 
-            norm_windowed_ind = windowed_ind - last_data_ind
-            norm_windowed_dir = windowed_dir - last_data_dir
+        norm_windowed_ind = windowed_ind - last_data_ind
+        norm_windowed_dir = windowed_dir - last_data_dir
 
-            norm_n_possibility = n_possibility - last_n
+        norm_n_possibility = n_possibility - last_n
 
-            ind_to_compute = []
-            dir_to_compute = []
-            # idx = 0
-            for ex_type, norm in zip(
-                    [ind_to_compute, dir_to_compute], [norm_windowed_ind, norm_windowed_dir]):
-                for x, y in zip(norm,  norm_n_possibility):
+        ind_to_compute = []
+        dir_to_compute = []
+        # idx = 0
+        for ex_type, norm in zip(
+                [ind_to_compute, dir_to_compute], [norm_windowed_ind, norm_windowed_dir]):
+            for x, y in zip(norm,  norm_n_possibility):
 
-                    if y > 0:
-                        ex_type.append(x/y)
-                    # idx += 1
+                if y > 0:
+                    ex_type.append(x/y)
+                # idx += 1
 
-            averaged_dir_ex = np.mean(dir_to_compute)
-            averaged_ind_ex[good] = np.mean(ind_to_compute)
+        averaged_dir_ex = np.mean(dir_to_compute)
+        averaged_ind_ex[good] = np.mean(ind_to_compute)
 
     return averaged_dir_ex, averaged_ind_ex
 
@@ -91,8 +91,6 @@ def get_windowed_observation(dir_ex, ind_ex, n, n_split, n_good):
 def main():
 
     dir_ex, ind_ex, n = metric.exchange(n_good=3, )
-
-
 
 
 if __name__ == '__main__':
