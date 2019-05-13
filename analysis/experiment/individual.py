@@ -27,13 +27,11 @@ application = get_wsgi_application()
 
 from game.models import User, Room, Choice
 
-import enum
-
 import numpy as np
 import pickle
 
 from analysis.tools.conversion import Converter
-from analysis.experiment.metric import exchange, monetary
+from metric.metric import exchange, monetary
 
 
 SCRIPT_FOLDER = os.path.dirname(os.path.abspath(__file__))

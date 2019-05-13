@@ -19,18 +19,20 @@ class Economy(object):
 
         self.n_agent = sum(self.repartition)
 
+        # ---- For backup ----- #
+        self.bkp_in_hand = np.zeros((self.n_agent, self.t_max))
+        self.bkp_desired = np.zeros((self.n_agent, self.t_max))
+        self.bkp_prod = np.zeros(self.n_agent)
+        self.bkp_cons = np.zeros(self.n_agent)
+
+        # ---------- #
+
         self.agents = self.create_agents(kwargs.get('heterogeneous'))
 
         self.t = 0
 
         self.markets = self.get_markets(self.n_goods)
         self.exchange_types = list(it.combinations(range(self.n_goods), r=2))
-
-        # ---- For backup ----- #
-        self.bkp_medium = np.ones((self.n_goods, self.n_agent, self.t_max)) * -1
-        # self.bkp_medium_over_time = np.zeros((self.n_goods, self.t_max))
-        self.bkp_monetary_bhv = \
-            np.ones((self.n_goods, self.n_agent, self.t_max)) * -1
 
     @staticmethod
     def get_markets(n_goods):
@@ -42,6 +44,11 @@ class Economy(object):
 
     @staticmethod
     def get_roles(n_goods, model):
+        """
+        :param n_goods: int
+        :param model: string: 'prod: i+1' or 'prod: i-1'
+        :return: array of size n_goods:2 (prod / cons)
+        """
 
         roles = np.zeros((n_goods, 2), dtype=int)
         if model == 'prod: i+1':
@@ -77,6 +84,10 @@ class Economy(object):
                 )
 
                 agents[idx] = a
+
+                self.bkp_prod[idx] = i
+                self.bkp_cons[idx] = j
+
                 idx += 1
 
         return agents
@@ -87,8 +98,10 @@ class Economy(object):
             self.time_step(t)
 
         return {
-            'medium': self.bkp_medium,
-            'monetary_bhv': self.bkp_monetary_bhv
+            'in_hand': self.bkp_in_hand,
+            'desired': self.bkp_desired,
+            'prod': self.bkp_prod,
+            'cons': self.bkp_cons
         }
 
     def time_step(self, t):
@@ -110,21 +123,6 @@ class Economy(object):
 
             agent_choice = agent.which_exchange_do_you_want_to_try()
             self.markets[agent_choice].append(agent.idx)
-
-            # ---- For backup ----- #
-
-            for m in range(self.n_goods):
-
-                if m in (agent.P, agent.C):
-                    monetary_conform = agent_choice == (agent.P, agent.C)
-
-                else:
-                    monetary_conform = agent_choice in [(agent.P, m), (m, agent.C)]
-                    self.bkp_medium[m, agent.idx, self.t] = monetary_conform
-
-                self.bkp_monetary_bhv[m, agent.idx, self.t] = monetary_conform
-
-            # ----------- #
 
         success_idx = []
 
