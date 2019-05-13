@@ -12,6 +12,13 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+import numpy as np
+import pickle
+
+from analysis.tools.conversion import Converter
+from metric.metric import exchange, monetary
+
 # Django specific settings
 import os
 
@@ -26,12 +33,6 @@ application = get_wsgi_application()
 
 
 from game.models import User, Room, Choice
-
-import numpy as np
-import pickle
-
-from analysis.tools.conversion import Converter
-from metric.metric import exchange, monetary
 
 
 SCRIPT_FOLDER = os.path.dirname(os.path.abspath(__file__))
