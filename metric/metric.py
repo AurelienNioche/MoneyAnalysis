@@ -157,33 +157,35 @@ def get_observation(in_hand, desired, prod, cons, n_split=3):
     n_eco = len(in_hand)
 
     for i_eco in tqdm(range(n_eco)):
+
         n_good = int(max(in_hand[i_eco][:, 0])) + 1  # All individuals, time step=0
         n_agent = len(in_hand[i_eco])
 
         obs_eco = np.zeros((n_agent, n_good))
         for i_agent in range(n_agent):
 
-            # dir_ex, ind_ex, n = exchange(n_good=n_good,
-            #                              in_hand=in_hand[i_eco][i_agent],
-            #                              desired=desired[i_eco][i_agent],
-            #                              prod=prod[i_eco][i_agent],
-            #                              cons=cons[i_eco][i_agent])
-            # obs_eco[i_agent] = get_windowed_observation(dir_ex=dir_ex, ind_ex=ind_ex, n=n,
-            #                                             n_good=n_good, n_split=n_split)  # np.random.random(n_good)
+            dir_ex, ind_ex, n = exchange(n_good=n_good,
+                                         in_hand=in_hand[i_eco][i_agent],
+                                         desired=desired[i_eco][i_agent],
+                                         prod=prod[i_eco][i_agent],
+                                         cons=cons[i_eco][i_agent])
+            obs_eco[i_agent] = get_windowed_observation(dir_ex=dir_ex, ind_ex=ind_ex, n=n,
+                                                        n_good=n_good, n_split=n_split)  # np.random.random(n_good)
 
-            obs_eco[i_agent, :] = [0.5 for _ in range(n_good)]
+            # obs_eco[i_agent, :] = [0.5 for _ in range(n_good)]
 
         to_add = []
         for i_good in range(n_good):
+
             non_prod_i = prod[i_eco] != i_good
             non_cons_i = cons[i_eco] != i_good
             can_use_as_m = non_prod_i * non_cons_i
-            assert sum(can_use_as_m) > 0
+
             np.seterr(all='raise')
             to_add.append(
                 np.mean(obs_eco[can_use_as_m, i_good])
             )
+
         obs.append(to_add)
 
-    print(len(obs))
     return obs

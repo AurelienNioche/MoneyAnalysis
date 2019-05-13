@@ -125,6 +125,10 @@ class Economy(object):
             agent_choice = agent.which_exchange_do_you_want_to_try()
             self.markets[agent_choice].append(agent.idx)
 
+            # Bkp
+            self.bkp_in_hand[agent.idx, self.t], \
+                self.bkp_desired[agent.idx, self.t] = agent_choice
+
         success_idx = []
 
         for i, j in self.exchange_types:
