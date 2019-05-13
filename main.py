@@ -120,7 +120,10 @@ def phase_diagram():
     for d in (three_good_data, four_good_data):
 
         formatted_data, labels = analysis.tools.format.phase_diagram(
-            monetary_behavior=d.monetary_bhv,
+            in_hand=d.in_hand,
+            desired=d.desired,
+            prod=d.prod,
+            cons=d.cons,
             distribution=d.distribution,
             n_good=len(d.distribution[0])
         )
@@ -266,12 +269,12 @@ if __name__ == '__main__':
     # Create fig folder
     os.makedirs("fig", exist_ok=True)
 
-    # # Uncomment for experiment analysis and experiment-like simulations
-    exp_overall()
-    sim_overall()
-
     # # Uncomment for running simulations used for phase diagram
     phase_diagram()
+
+    # # Uncomment for experiment analysis and experiment-like simulations
+    sim_overall()
+    exp_overall()
 
     #   PROBABLY TO REMOVE !!!!!!
     # simulation.supplementary_exploitation.main()

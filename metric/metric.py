@@ -40,7 +40,7 @@ def exchange(n_good, in_hand, desired, prod, cons):
         if ih == prod:
             _n += 1
 
-            c = desired[t]
+            c = int(desired[t])
 
             if int(c == cons):
                 _dir_ex += 1
@@ -87,3 +87,36 @@ def monetary(n_good, in_hand, desired, prod, cons):
         n[t] = _n
 
     return monetary_behavior, n
+
+
+def get_observation(in_hand, desired, prod, cons):
+
+    """
+    :param: prod: nested list n_eco:n_agent
+    :param: cons: nested list n_eco:n_agent
+    :param in_hand: nested list n_eco:n_agent:t_max
+    :param desired: nested list n_eco:n_agent:t_max
+    :return: nested list economy index:good index
+    """
+
+    obs = []
+
+    n_eco = len(in_hand)
+
+    for i_eco in range(n_eco):
+        n_good = int(max(in_hand[i_eco][:, 0])) + 1  # All individuals, time step=0
+        n_agent = len(in_hand[i_eco])
+
+        obs_eco = np.zeros((n_agent, n_good))
+        for i_agent in range(n_agent):
+
+            dir_ex, ind_ex, n = exchange(n_good=n_good,
+                                         in_hand=in_hand[i_eco][i_agent],
+                                         desired=desired[i_eco][i_agent],
+                                         prod=prod[i_eco][i_agent],
+                                         cons=cons[i_eco][i_agent])
+            obs_eco[i_agent] = np.random.random(n_good)
+
+        obs.append(np.mean(obs_eco, axis=1))
+
+    return obs
