@@ -10,7 +10,7 @@ def get_windowed_observation(dir_ex, ind_ex, n, n_split, n_good, slice_idx=-1):
     m_ind_ex = np.zeros((n_split, n_good), dtype=float)
     m_dir_ex = np.zeros(n_split, dtype=float)
 
-    for i in range(len(bounds) - 1):
+    for i in range(n_split):
         # set inferior and superior bound
         inf = bounds[i]
         sup = bounds[i+1]
@@ -35,7 +35,7 @@ def get_windowed_observation(dir_ex, ind_ex, n, n_split, n_good, slice_idx=-1):
             else:
                 dir_to_compute.append(-1)
 
-        m_dir_ex = np.mean(dir_to_compute)
+        m_dir_ex[i] = np.mean(dir_to_compute)
 
         # Average indirect exchanges for each good
         for good in range(n_good):
@@ -58,7 +58,7 @@ def get_windowed_observation(dir_ex, ind_ex, n, n_split, n_good, slice_idx=-1):
                     ind_to_compute.append(-1)
                     # idx += 1
 
-            m_ind_ex[good] = np.mean(ind_to_compute)
+            m_ind_ex[i, good] = np.mean(ind_to_compute)
 
     return m_dir_ex[slice_idx], m_ind_ex[slice_idx, :] if slice_idx != 'all' else m_dir_ex, m_ind_ex
 
