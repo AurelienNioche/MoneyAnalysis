@@ -2,43 +2,49 @@ import numpy as np
 from tqdm import tqdm
 
 
-def get_windowed_observation(dir_ex, ind_ex, n, n_split, n_good):
+def get_windowed_observation(dir_ex, ind_ex, n, n_split, n_good, slice_idx=-1):
 
     tmax = len(n)
     step = tmax // n_split
     bounds = np.arange(tmax+1, step=step)
-    # averaged_dir_ex = np.zeros(n_good, dtype=float)
-    averaged_ind_ex = np.zeros(n_good, dtype=float)
+    m_ind_ex = np.zeros(n_good, dtype=float)
 
+    # set inferior and superior bound
+    inf = bounds[-2]
+    sup = bounds[-1]
+
+    # Number of attempts
+    n_possibility = n[inf:sup]
+    last_n = n[inf - 1]
+
+    # compute average direct exchanges
+    windowed_dir = dir_ex[inf:sup]
+    last_data_dir = dir_ex[inf - 1]
+    norm_n_possibility = n_possibility - last_n
+    norm_windowed_dir = windowed_dir - last_data_dir
+
+    dir_to_compute = []
+    for x, y in zip(norm_windowed_dir,  norm_n_possibility):
+
+        if y > 0:
+            dir_to_compute.append(x/y)
+        else:
+            dir_to_compute.append(-1)
+
+    m_dir_ex = np.mean(dir_to_compute)
+
+    # Average indirect exchanges for each good
     for good in range(n_good):
-
-        #for i_bound in range(len(bounds) - 1):
-
-        # set inferior and superior bound
-        inf = bounds[-2]
-        sup = bounds[-1]
 
         # get windowed data
         windowed_ind = ind_ex[inf:sup, good]
-        windowed_dir = dir_ex[inf:sup]
-        n_possibility = n[inf:sup]
-
         # If it is not the first window normalize, otherwise no (minus 0)
         # normalized by the number of attempts
         last_data_ind = ind_ex[inf - 1, good]
-        last_data_dir = dir_ex[inf - 1]
-        last_n = n[inf - 1]
 
         norm_windowed_ind = windowed_ind - last_data_ind
-        # norm_windowed_dir = windowed_dir - last_data_dir
-
-        norm_n_possibility = n_possibility - last_n
 
         ind_to_compute = []
-        # dir_to_compute = []
-        # idx = 0
-        # for ex_type, norm in zip(
-        #         [ind_to_compute, dir_to_compute], [norm_windowed_ind, norm_windowed_dir]):
         for x, y in zip(norm_windowed_ind,  norm_n_possibility):
 
             if y > 0:
@@ -47,11 +53,9 @@ def get_windowed_observation(dir_ex, ind_ex, n, n_split, n_good):
                 ind_to_compute.append(-1)
                 # idx += 1
 
-        # averaged_dir_ex = np.mean(dir_to_compute)
-        assert len(ind_to_compute)
-        averaged_ind_ex[good] = np.mean(ind_to_compute)
+        m_ind_ex[good] = np.mean(ind_to_compute)
 
-    return averaged_ind_ex  # averaged_dir_ex, averaged_ind_ex
+    return m_dir_ex[slice_idx], m_ind_ex[slice_idx] if slice_idx != 'all' else m_dir_ex, m_ind_ex
 
 
 def exchange(n_good, in_hand, desired, prod, cons):
