@@ -30,7 +30,6 @@ import analysis.tools.format
 import analysis.tools.economy
 
 import analysis.graph
-import analysis.graph.overall
 import analysis.graph.phase_diagram
 
 import analysis.experiment.monetary_and_medium
@@ -43,64 +42,6 @@ import simulation.supplementary_main
 
 SCRIPT_FOLDER = os.path.dirname(os.path.abspath(__file__))
 DATA_FOLDER = f'{SCRIPT_FOLDER}/data'
-
-
-def exp_overall():
-
-    """
-    plots each experimental condition
-    from experimental data
-
-    """
-
-    results = analysis.experiment.monetary_and_medium.run()
-
-    for good in (3, 4):
-
-        data = []
-        titles = (f'{good}_good_non_uniform', f'{good}_good_uniform')
-        stat_title = (f'{good}-NUPM', f'{good}-U')
-
-        for k, xp_session in zip(titles, stat_title):
-
-            # Get data
-            medium = results[k]['medium']
-            m_bhv = results[k]['monetary_bhv']
-            distribution = results[k]['distribution']
-
-            # Do stats
-            print(f"Stats for experiment '{k}':")
-
-            # Monetary bhv
-            monetary_over_user = analysis.tools.format.monetary_bhv_over_user(m_bhv)
-            money_sig = analysis.stats.mean_comparison.run(monetary_over_user, print_latex=True,
-                                                           xp_session=xp_session, measure="MB")
-
-            # Use as a medium
-            medium_over_user = analysis.tools.format.medium_over_user(medium)
-            med_sig = analysis.stats.mean_comparison.run(medium_over_user, print_latex=True,
-                                                         xp_session=xp_session, measure="MoE")
-
-            # Format data for Monetary bhv graph
-            monetary_means, monetary_err = analysis.tools.format.exp_monetary_bhv_bar_plot(m_bhv)
-            monetary_over_t = analysis.tools.format.monetary_bhv_over_t(m_bhv, distribution)
-
-            # Format data for Used as medium graph
-            medium_means, medium_err = analysis.tools.format.exp_medium_bar_plot(medium_over_user)
-            medium_over_t = analysis.tools.format.medium_over_t(medium)
-
-            d = {
-                'monetary_bar': (monetary_means, monetary_err, money_sig),
-                'monetary_over_t': monetary_over_t,
-                'medium_bar': (medium_means, medium_err, med_sig),
-                'medium_over_t': medium_over_t,
-                'distribution': distribution
-            }
-
-            data.append(d)
-            print()
-
-        analysis.graph.overall.experiment(data, titles, f_name=f'fig/xp_{good}.pdf', exp=True)
 
 
 def phase_diagram():
@@ -139,7 +80,7 @@ def phase_diagram():
             data.append(formatted_data)
 
         backup.save((data, labels), data_file)
-            
+
     analysis.graph.phase_diagram.plot(
         data=data,
         labels=labels,
@@ -148,13 +89,7 @@ def phase_diagram():
     )
 
 
-def sim_overall():
-
-    """
-    plots each experimental condition
-    from simulation data
-
-    """
+def sim_and_xp():
 
     bkp = simulation.run.get_data(phase=False)
 
@@ -177,101 +112,27 @@ def sim_overall():
 
             # ------------------------- Get data --------------------- #
 
-            monetary_bhv = [
-                d for i, d in enumerate(bkp.monetary_bhv)
-                if bkp.room_id[i] == r_id
-            ]
+            # monetary_bhv = [
+            #     d for i, d in enumerate(bkp.monetary_bhv)
+            #     if bkp.room_id[i] == r_id
+            # ]
+            #
+            # medium = [
+            #     d for i, d in enumerate(bkp.medium)
+            #     if bkp.room_id[i] == r_id
+            # ]
+            #
+            # # distribution is common
+            # distribution = [
+            #     d for i, d in enumerate(bkp.distribution)
+            #     if bkp.room_id[i] == r_id
+            # ][0]
 
-            medium = [
-                d for i, d in enumerate(bkp.medium)
-                if bkp.room_id[i] == r_id
-            ]
-
-            # distribution is common
-            distribution = [
-                d for i, d in enumerate(bkp.distribution)
-                if bkp.room_id[i] == r_id
-            ][0]
-
-            # ------------------------- Monetary bhv ------------------------------- #
-
-            # BAR PLOTS
-            # reformat each economies to compress on agents
-            monetary_over_user = [
-                analysis.tools.format.monetary_bhv_over_user(m)
-                for m in monetary_bhv
-            ]
-
-            # average all that
-            monetary_over_user_mean = \
-                analysis.tools.format.sim_monetary_mean_over_user(monetary_over_user)
-
-            # Now we can do stats
-            money_sig = analysis.stats.mean_comparison.run(monetary_over_user_mean,
-                                                           print_latex=True,
-                                                           xp_session=xp_session, measure="MB"
-                                                           )
-
-            # reformat for bar plots
-            monetary_means, monetary_err = \
-                analysis.tools.format.sim_monetary_bhv_bar_plot(monetary_over_user_mean)
-
-            # CURVE PLOTS
-            monetary_over_t = [
-                analysis.tools.format.monetary_bhv_over_t(m, distribution)
-                for m in monetary_bhv
-            ]
-
-            # Average all that
-            monetary_over_t_means = analysis.tools.format.sim_monetary_behavior_mean_over_t(monetary_over_t)
-
-            # ------------------------- Medium ------------------------------- #
-
-            # BAR PLOTS
-            # reformat each economies to compress on agents
-            medium_over_user = [
-                analysis.tools.format.medium_over_user(m)
-                for m in medium
-            ]
-
-            # average all that
-            medium_over_user_mean = \
-                analysis.tools.format.sim_medium_mean_over_user(medium_over_user)
-
-            # Now we can do stats
-            med_sig = analysis.stats.mean_comparison.run(medium_over_user_mean, print_latex=True,
-                                                         xp_session=xp_session, measure="MoE")
-
-            # reformat for bar plots
-            medium_means, medium_err = \
-                analysis.tools.format.sim_medium_bar_plot(medium_over_user_mean)
-
-            # CURVE PLOTS
-            # compress each economies on time
-            medium_over_t = [
-                analysis.tools.format.medium_over_t(m)
-                for m in medium
-            ]
-
-            # average all that
-            medium_over_t_means = analysis.tools.format.sim_medium_mean_over_t(medium_over_t)
-
-            d = {
-                'monetary_bar': (monetary_means, monetary_err, money_sig),
-                'monetary_over_t': monetary_over_t,
-                'monetary_over_t_means': monetary_over_t_means,
-                'medium_bar': (medium_means, medium_err, med_sig),
-                'medium_over_t': medium_over_t,
-                'medium_over_t_means': medium_over_t_means,
-                'distribution': distribution
-            }
-
-            data.append(d)
-            print()
-
-        analysis.graph.overall.experiment(
-            data, titles, f_name=f'fig/sim_{n_good}.pdf', exp=False
-        )
+            # # Now we can do stats
+            # money_sig = analysis.stats.mean_comparison.run(monetary_over_user_mean,
+            #                                                print_latex=True,
+            #                                                xp_session=xp_session, measure="MB"
+            #                                                )
 
 
 if __name__ == '__main__':
