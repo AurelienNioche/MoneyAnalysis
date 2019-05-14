@@ -14,11 +14,16 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # Django specific settings
 import os
+
+import metric.metric as metric
+
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "MoneyAnalysis.settings")
 
 # Ensure settings are read
 from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
+
+import numpy as np
 
 from backup import backup
 
@@ -39,6 +44,8 @@ import analysis.stats.mean_comparison
 import simulation.supplementary_exploration
 import simulation.supplementary_exploitation
 import simulation.supplementary_main
+
+from xp.xp import load_individual_data_from_db
 
 SCRIPT_FOLDER = os.path.dirname(os.path.abspath(__file__))
 DATA_FOLDER = f'{SCRIPT_FOLDER}/data'
@@ -69,7 +76,7 @@ def phase_diagram():
         for n_good in 3, 4:
             d = simulation.run.get_data(phase=True, n_good=n_good)
 
-            formatted_data, labels = analysis.tools.format.phase_diagram(
+            formatted_data, labels = metric.metric.phase_diagram(
                 in_hand=d.in_hand,
                 desired=d.desired,
                 prod=d.prod,
@@ -89,26 +96,47 @@ def phase_diagram():
     )
 
 
-def sim_and_xp():
+def sim_and_xp(n_split=3):
 
-    bkp = simulation.run.get_data(phase=False)
+    data, room_n_good, room_uniform = load_individual_data_from_db()
 
-    room_id = {
-        3: (414, 416),
-        4: (417, 415)
-    }
+    for n_good in 3, 4:
 
-    for n_good in (3, 4):
+        for uniform in True, False:
 
-        data = []
+            cond_n_good = room_n_good == n_good
+            cond_uniform = room_uniform == uniform
 
-        titles = [analysis.tools.economy.labels.get(r_id) for r_id in room_id[n_good]]
+            cond = cond_n_good * cond_uniform
 
-        for r_id in room_id[n_good]:
+            d = data[cond]
+            print(type(d))
 
-            label = analysis.tools.economy.labels.get(r_id)
-            xp_session = f"{n_good}-{'NUPM' if 'non_uniform' in label else 'U'}"
-            print(f"Stats for simulation '{label}':")
+            n_agent = len(d.prod)
+            for i in range(n_agent):
+                dir_ex, ind_ex, n = metric.exchange(n_good=n_good,in_hand=d.in_hand[i],
+                                                    desired=d.in_hand[i], cons=d.cons[i],
+                                                    prod=d.prod[i])
+                metric.get_windowed_observation(dir_ex=dir_ex, ind_ex=ind_ex, n=n, n_split=n_split, n_good=n_good)
+
+    # bkp = simulation.run.get_data(phase=False)
+    #
+    # room_id = {
+    #     3: (414, 416),
+    #     4: (417, 415)
+    # }
+    #
+    # for n_good in (3, 4):
+    #
+    #     data = []
+    #
+    #     titles = [analysis.tools.economy.labels.get(r_id) for r_id in room_id[n_good]]
+    #
+    #     for r_id in room_id[n_good]:
+    #
+    #         label = analysis.tools.economy.labels.get(r_id)
+    #         xp_session = f"{n_good}-{'NUPM' if 'non_uniform' in label else 'U'}"
+    #         print(f"Stats for simulation '{label}':")
 
             # ------------------------- Get data --------------------- #
 
@@ -141,11 +169,10 @@ if __name__ == '__main__':
     os.makedirs("fig", exist_ok=True)
 
     # # Uncomment for running simulations used for phase diagram
-    phase_diagram()
+    # phase_diagram()
 
     # # Uncomment for experiment analysis and experiment-like simulations
-    # sim_overall()
-    # exp_overall()
+    sim_and_xp()
 
     #   PROBABLY TO REMOVE !!!!!!
     # simulation.supplementary_exploitation.main()

@@ -116,39 +116,39 @@ def exchange(n_good, in_hand, desired, prod, cons):
     return dir_ex, ind_ex, n
 
 
-def monetary(n_good, in_hand, desired, prod, cons):
-
-    t_max = len(in_hand)
-
-    monetary_behavior = np.zeros((t_max, n_good))
-    n = np.zeros(t_max, dtype=int)
-
-    _n = 0  #
-    _m_bh = np.zeros(n_good)  # Monetary behavior
-
-    for t in range(t_max):
-
-        ih = in_hand[t]
-
-        if ih == prod:
-            _n += 1
-
-            c = desired[t]
-
-            for monetary_good in range(n_good):
-
-                prod_or_cons_money = monetary_good in [prod, cons]
-
-                if int(c == cons):
-                    _m_bh[monetary_good] += int(prod_or_cons_money)
-
-                else:
-                    _m_bh[monetary_good] += int(c == monetary_good)
-
-        monetary_behavior[t, :] = _m_bh
-        n[t] = _n
-
-    return monetary_behavior, n
+# def monetary(n_good, in_hand, desired, prod, cons):
+#
+#     t_max = len(in_hand)
+#
+#     monetary_behavior = np.zeros((t_max, n_good))
+#     n = np.zeros(t_max, dtype=int)
+#
+#     _n = 0  #
+#     _m_bh = np.zeros(n_good)  # Monetary behavior
+#
+#     for t in range(t_max):
+#
+#         ih = in_hand[t]
+#
+#         if ih == prod:
+#             _n += 1
+#
+#             c = desired[t]
+#
+#             for monetary_good in range(n_good):
+#
+#                 prod_or_cons_money = monetary_good in [prod, cons]
+#
+#                 if int(c == cons):
+#                     _m_bh[monetary_good] += int(prod_or_cons_money)
+#
+#                 else:
+#                     _m_bh[monetary_good] += int(c == monetary_good)
+#
+#         monetary_behavior[t, :] = _m_bh
+#         n[t] = _n
+#
+#     return monetary_behavior, n
 
 
 def get_observation(in_hand, desired, prod, cons, n_split=3):
@@ -198,3 +198,32 @@ def get_observation(in_hand, desired, prod, cons, n_split=3):
         obs.append(to_add)
 
     return obs
+
+
+def phase_diagram(in_hand, desired, prod, cons, distribution, n_good):
+
+    n = len(distribution)  # Number of economies in this batch
+
+    observation = get_observation(in_hand=in_hand, desired=desired, prod=prod, cons=cons)
+
+    money = np.array([
+        [observation[i][good] for good in range(n_good)] for i in range(n)
+    ])
+
+    unq_repartition = np.unique(distribution, axis=0)
+    labels = np.unique([i[-1] for i in unq_repartition])
+
+    n_side = len(labels)
+
+    phases = []
+
+    for good in range(n_good):
+
+        scores = np.array([
+            np.mean([money[i][good] for i in range(n) if np.all(distribution[i] == r)])
+            for r in unq_repartition
+        ])
+
+        phases.append(scores.reshape(n_side, n_side).T)
+
+    return phases, labels

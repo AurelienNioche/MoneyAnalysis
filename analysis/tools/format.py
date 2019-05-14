@@ -1,7 +1,6 @@
 import numpy as np
 import scipy.stats
 
-from metric.metric import get_observation
 
 # ---------- XP & SIM ---------------- #
 
@@ -245,30 +244,3 @@ def sim_monetary_behavior_mean_over_t(economies):
     return y
 
 
-def phase_diagram(in_hand, desired, prod, cons, distribution, n_good):
-
-    n = len(distribution)  # Number of economies in this batch
-
-    observation = get_observation(in_hand=in_hand, desired=desired, prod=prod, cons=cons)
-
-    money = np.array([
-        [observation[i][good] for good in range(n_good)] for i in range(n)
-    ])
-
-    unq_repartition = np.unique(distribution, axis=0)
-    labels = np.unique([i[-1] for i in unq_repartition])
-
-    n_side = len(labels)
-
-    phases = []
-
-    for good in range(n_good):
-
-        scores = np.array([
-            np.mean([money[i][good] for i in range(n) if np.all(distribution[i] == r)])
-            for r in unq_repartition
-        ])
-
-        phases.append(scores.reshape(n_side, n_side).T)
-
-    return phases, labels
