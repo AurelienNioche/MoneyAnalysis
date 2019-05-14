@@ -7,7 +7,7 @@ import os
 
 def _phase_diagram(
         data, ax, col, labels, n_good, title=None,
-        letter=None, n_ticks=3, vmax=1):
+        letter=None, ticks_position=(10, 50, 100, 150, 200), vmax=1):
         # , fig_name=None):
 
     im = ax.imshow(data, cmap="binary", origin="lower", vmin=0.0, vmax=vmax)  # , vmin=0.5)
@@ -15,13 +15,16 @@ def _phase_diagram(
     # Create colorbar
     ax.figure.colorbar(im, ax=ax)
 
-    step = int(len(labels)/n_ticks)
-    lab_to_display = labels[::step]
+    #step = int(len(labels)/n_ticks)
+    lab_to_display = ticks_position #labels[::step]
 
     ax.set_xticklabels(lab_to_display)
     ax.set_yticklabels(lab_to_display)
 
-    ticks = list(range(len(labels)))[::step]
+    # ticks = list(range(len(labels)))[::step]
+
+    ticks = [list(labels).index(i) for i in ticks_position]
+    # print(ticks)
 
     ax.set_xticks(ticks)
     ax.set_yticks(ticks)
