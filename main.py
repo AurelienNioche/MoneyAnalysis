@@ -108,9 +108,10 @@ def sim_and_xp(n_split=3):
             cond_uniform = room_uniform == uniform
 
             cond = cond_n_good * cond_uniform
-
-            d = data[cond]
-            print(type(d))
+            assert(np.sum(cond) == 1)
+            d_idx = np.where(cond == 1)[0][0]
+            print(type(d_idx))
+            d = data[d_idx]
 
             n_agent = len(d.prod)
             for i in range(n_agent):
