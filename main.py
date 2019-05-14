@@ -20,6 +20,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "MoneyAnalysis.settings")
 from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 
+from backup import backup
 
 import simulation.economy
 import simulation.run
@@ -39,6 +40,9 @@ import analysis.stats.mean_comparison
 import simulation.supplementary_exploration
 import simulation.supplementary_exploitation
 import simulation.supplementary_main
+
+SCRIPT_FOLDER = os.path.dirname(os.path.abspath(__file__))
+DATA_FOLDER = f'{SCRIPT_FOLDER}/data'
 
 
 def exp_overall():
@@ -112,24 +116,30 @@ def phase_diagram():
     # (Plot for each good considered as money if max_col == None)
     max_col = 1
 
-    three_good_data = simulation.run.get_data(phase=True, n_good=3)
-    four_good_data = simulation.run.get_data(phase=True, n_good=4)
+    data_file = f'{DATA_FOLDER}/formatted_phase_diagram.p'
 
-    data = []
+    if os.path.exists(data_file):
+        data, labels = backup.load(data_file)
 
-    for d in (three_good_data, four_good_data):
+    else:
 
-        formatted_data, labels = analysis.tools.format.phase_diagram(
-            in_hand=d.in_hand,
-            desired=d.desired,
-            prod=d.prod,
-            cons=d.cons,
-            distribution=d.distribution,
-            n_good=len(d.distribution[0])
-        )
+        data = []
 
-        data.append(formatted_data)
+        for n_good in 3, 4:
+            d = simulation.run.get_data(phase=True, n_good=n_good)
 
+            formatted_data, labels = analysis.tools.format.phase_diagram(
+                in_hand=d.in_hand,
+                desired=d.desired,
+                prod=d.prod,
+                cons=d.cons,
+                distribution=d.distribution,
+                n_good=len(d.distribution[0])
+            )
+            data.append(formatted_data)
+
+        backup.save((data, labels), data_file)
+            
     analysis.graph.phase_diagram.plot(
         data=data,
         labels=labels,
@@ -273,8 +283,8 @@ if __name__ == '__main__':
     phase_diagram()
 
     # # Uncomment for experiment analysis and experiment-like simulations
-    sim_overall()
-    exp_overall()
+    # sim_overall()
+    # exp_overall()
 
     #   PROBABLY TO REMOVE !!!!!!
     # simulation.supplementary_exploitation.main()

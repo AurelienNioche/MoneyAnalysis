@@ -22,7 +22,7 @@ def _get_phase_parameters(
         constant_x_index=np.array([0, ]),
         t_max=100,
         economy_model='prod: i-1',
-        range_repartition=range(20, 200, 20),
+        range_repartition=range(10, 210, 10),
         n_cog_value=3):
 
     assert len(constant_x_value) == len(constant_x_index), \
