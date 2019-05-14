@@ -110,7 +110,6 @@ def sim_and_xp(n_split=3):
             cond = cond_n_good * cond_uniform
             assert(np.sum(cond) == 1)
             d_idx = np.where(cond == 1)[0][0]
-            print(type(d_idx))
             d = data[d_idx]
 
             n_agent = len(d.prod)
