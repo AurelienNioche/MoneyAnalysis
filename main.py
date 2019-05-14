@@ -76,7 +76,7 @@ def phase_diagram():
         for n_good in 3, 4:
             d = simulation.run.get_data(phase=True, n_good=n_good)
 
-            formatted_data, labels = metric.metric.phase_diagram(
+            formatted_data, labels = metric.phase_diagram(
                 in_hand=d.in_hand,
                 desired=d.desired,
                 prod=d.prod,
