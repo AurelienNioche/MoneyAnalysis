@@ -7,55 +7,60 @@ def get_windowed_observation(dir_ex, ind_ex, n, n_split, n_good, slice_idx=-1):
     tmax = len(n)
     step = tmax // n_split
     bounds = np.arange(tmax+1, step=step)
-    m_ind_ex = np.zeros(n_good, dtype=float)
+    m_ind_ex = np.zeros((n_split, n_good), dtype=float)
+    m_dir_ex = np.zeros(n_split, dtype=float)
 
-    # set inferior and superior bound
-    inf = bounds[-2]
-    sup = bounds[-1]
+    for i in range(len(bounds) - 1):
+        # set inferior and superior bound
+        inf = bounds[i]
+        sup = bounds[i+1]
 
-    # Number of attempts
-    n_possibility = n[inf:sup]
-    last_n = n[inf - 1]
+        # Number of attempts
+        n_possibility = n[inf:sup]
 
-    # compute average direct exchanges
-    windowed_dir = dir_ex[inf:sup]
-    last_data_dir = dir_ex[inf - 1]
-    norm_n_possibility = n_possibility - last_n
-    norm_windowed_dir = windowed_dir - last_data_dir
+        last_n = n[inf - 1] if i != 0 else 0
+        last_data_dir = dir_ex[inf - 1] if i != 0 else 0
 
-    dir_to_compute = []
-    for x, y in zip(norm_windowed_dir,  norm_n_possibility):
+        # compute average direct exchanges
+        windowed_dir = dir_ex[inf:sup]
 
-        if y > 0:
-            dir_to_compute.append(x/y)
-        else:
-            dir_to_compute.append(-1)
+        norm_n_possibility = n_possibility - last_n
+        norm_windowed_dir = windowed_dir - last_data_dir
 
-    m_dir_ex = np.mean(dir_to_compute)
-
-    # Average indirect exchanges for each good
-    for good in range(n_good):
-
-        # get windowed data
-        windowed_ind = ind_ex[inf:sup, good]
-        # If it is not the first window normalize, otherwise no (minus 0)
-        # normalized by the number of attempts
-        last_data_ind = ind_ex[inf - 1, good]
-
-        norm_windowed_ind = windowed_ind - last_data_ind
-
-        ind_to_compute = []
-        for x, y in zip(norm_windowed_ind,  norm_n_possibility):
+        dir_to_compute = []
+        for x, y in zip(norm_windowed_dir,  norm_n_possibility):
 
             if y > 0:
-                ind_to_compute.append(x/y)
+                dir_to_compute.append(x/y)
             else:
-                ind_to_compute.append(-1)
-                # idx += 1
+                dir_to_compute.append(-1)
 
-        m_ind_ex[good] = np.mean(ind_to_compute)
+        m_dir_ex = np.mean(dir_to_compute)
 
-    return m_dir_ex[slice_idx], m_ind_ex[slice_idx] if slice_idx != 'all' else m_dir_ex, m_ind_ex
+        # Average indirect exchanges for each good
+        for good in range(n_good):
+
+            # get windowed data
+            windowed_ind = ind_ex[inf:sup, good]
+            # If it is not the first window normalize, otherwise no (minus 0)
+            # normalized by the number of attempts
+
+            last_data_ind = ind_ex[inf - 1, good] if i != 0 else 0
+
+            norm_windowed_ind = windowed_ind - last_data_ind
+
+            ind_to_compute = []
+            for x, y in zip(norm_windowed_ind,  norm_n_possibility):
+
+                if y > 0:
+                    ind_to_compute.append(x/y)
+                else:
+                    ind_to_compute.append(-1)
+                    # idx += 1
+
+            m_ind_ex[good] = np.mean(ind_to_compute)
+
+    return m_dir_ex[slice_idx], m_ind_ex[slice_idx, :] if slice_idx != 'all' else m_dir_ex, m_ind_ex
 
 
 def exchange(n_good, in_hand, desired, prod, cons):
