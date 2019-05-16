@@ -25,11 +25,10 @@ from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 
 import numpy as np
-import matplotlib.pyplot as plt
 import scipy.stats
 import statsmodels.stats.multitest
 
-from analysis.experiment.individual import individual_data, Dyn, Stc
+from analysis.experiment.individual import individual_data, Dyn
 from analysis.experiment.evolution import evolution_direct_split
 
 

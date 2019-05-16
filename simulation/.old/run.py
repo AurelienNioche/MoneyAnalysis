@@ -1,3 +1,4 @@
+import argparse
 import itertools
 from tqdm import tqdm
 import numpy as np
@@ -9,6 +10,9 @@ import backup.backup
 import backup.structure
 
 import simulation.economy
+import simulation.parameters
+
+import format.economy
 
 
 def _get_phase_parameters(
@@ -70,22 +74,61 @@ def _get_phase_parameters(
     return parameters
 
 
+def _get_experiment_like_parameters():
+
+    parameters = []
+
+    rooms = (414, 415, 416, 417)
+
+    distributions = [format.economy.distributions.get(i) for i in rooms]
+
+    i = 0
+    for i_r in range(len(rooms)):
+
+        for _ in range(simulation.parameters.n_sim):
+
+            n_good = len(distributions[i_r])
+            
+            param = {
+                'cognitive_parameters': simulation.parameters.cognitive_parameters[i],
+                'seed': simulation.parameters.seeds[i],
+                't_max': simulation.parameters.t_max,
+                'economy_model': simulation.parameters.economy_model,
+                'agent_model': simulation.parameters.agent_model,
+                'n_good': n_good,
+                'distribution': distributions[i_r],
+                'room_id': rooms[i_r]
+            }
+
+            parameters.append(param)
+
+            i += 1
+
+    return parameters
+
+
 def _run(param):
 
     e = simulation.economy.Economy(**param)
     return param, e.run()
 
 
-def _produce_data(n_good):
+def _produce_data(phase, n_good):
 
     tqdm.write("Run simulations.")
 
-    params = _get_phase_parameters(
-        n_good=n_good,
-        agent_model='RLAgent',
-        constant_x_index=np.array([0, ]) if n_good == 3 else np.array([0, 1]),
-        constant_x_value=np.array([50, ]) if n_good == 3 else np.array([50, 50])
-    )
+    if phase:
+
+        params = _get_phase_parameters(
+            n_good=n_good,
+            agent_model='RLAgent',
+            constant_x_index=np.array([0, ]) if n_good == 3 else np.array([0, 1]),
+            constant_x_value=np.array([50, ]) if n_good == 3 else np.array([50, 50])
+        )
+
+    else:
+
+        params = _get_experiment_like_parameters()
 
     max_ = len(params)
 
@@ -101,13 +144,24 @@ def _produce_data(n_good):
     return data
 
 
-def get_data(n_good, force=False):
+def get_data(phase=None, n_good=None):
 
-    data_folder = f'data/phase_{n_good}_goods'
+    parser = argparse.ArgumentParser(description='Run money simulations.')
+    parser.add_argument('-f', '--force', action="store_true", default=False,
+                        help="Force creation of new data.")
+    args = parser.parse_args()
+
+    force = args.force
+
+    if phase:
+        data_folder = f'data/phase_{n_good}_goods'
+
+    else:
+        data_folder = f'data/exp_like'
 
     if force or not os.path.exists(data_folder):
 
-        bkp = _produce_data(n_good)
+        bkp = _produce_data(phase, n_good)
         bkp.save(data_folder)
 
     else:

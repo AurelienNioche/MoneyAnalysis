@@ -4,10 +4,10 @@ import numpy as np
 import os
 
 import backup.structure
-import analysis.graph.supplementary
+import graph.old.supplementary
 
 
-import analysis.tools.format
+import format.old.format
 import simulation.economy
 
 
@@ -117,12 +117,12 @@ def analyse(data):
 
             for j in range(n_sim):
 
-                mean, e = analysis.tools.format.exp_monetary_bhv_bar_plot(monetary_bhv=b.monetary_bhv[j])
+                mean, e = format.old.format.exp_monetary_bhv_bar_plot(monetary_bhv=b.monetary_bhv[j])
                 y[i].append(mean[m])
 
         y = np.asarray(y).transpose()
 
-        analysis.graph.supplementary.box_plot(y, f_name=f"fig/supplementary{m}.pdf")
+        graph.old.supplementary.box_plot(y, f_name=f"fig/supplementary{m}.pdf")
 
 
 def main(force=False):

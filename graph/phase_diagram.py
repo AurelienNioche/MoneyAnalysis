@@ -2,7 +2,12 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as grd
 
 import numpy as np
+
 import os
+
+
+FIG_FOLDER = "fig"
+os.makedirs(FIG_FOLDER, exist_ok=True)
 
 
 def _phase_diagram(
@@ -82,23 +87,23 @@ def plot(data, labels, f_name, max_col=None):
 
     plt.tight_layout()
 
-    os.makedirs(os.path.dirname(f_name), exist_ok=True)
-    plt.savefig(f_name)
-    print(f"Figure '{f_name}' created.\n")
+    fig_path = os.path.join(FIG_FOLDER, f_name)
+    plt.savefig(fig_path)
+    print(f"Figure '{fig_path}' created.\n")
 
 
-def plot_example():
-
-    labels = np.arange(10, 200, 20)
-    n_side = len(labels)
-
-    data = [
-        np.random.random(size=(i, n_side, n_side)) for i in (3, 4)
-    ]
-
-    plot(data=data, labels=labels, f_name="../../fig/phase_diagram_example.pdf")
-
-
-if __name__ == "__main__":
-
-    plot_example()
+# def plot_example():
+#
+#     labels = np.arange(10, 200, 20)
+#     n_side = len(labels)
+#
+#     data = [
+#         np.random.random(size=(i, n_side, n_side)) for i in (3, 4)
+#     ]
+#
+#     plot(data=data, labels=labels, f_name="../../fig/phase_diagram_example.pdf")
+#
+#
+# if __name__ == "__main__":
+#
+#     plot_example()

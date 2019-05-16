@@ -16,7 +16,7 @@
 import numpy as np
 import pickle
 
-from analysis.tools.conversion import Converter
+from format import Converter
 from metric.metric import exchange, monetary
 
 # Django specific settings

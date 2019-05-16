@@ -4,9 +4,9 @@ import matplotlib.gridspec
 import scipy.stats
 import statsmodels.stats.multitest
 
-from analysis.graph.tools.violin import violin
+from graph import violin
 
-from game.models import User, Room, Choice
+from game.models import User
 
 import string
 

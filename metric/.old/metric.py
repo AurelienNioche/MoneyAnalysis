@@ -116,12 +116,46 @@ def exchange(n_good, in_hand, desired, prod, cons):
     return dir_ex, ind_ex, n
 
 
+# def monetary(n_good, in_hand, desired, prod, cons):
+#
+#     t_max = len(in_hand)
+#
+#     monetary_behavior = np.zeros((t_max, n_good))
+#     n = np.zeros(t_max, dtype=int)
+#
+#     _n = 0  #
+#     _m_bh = np.zeros(n_good)  # Monetary behavior
+#
+#     for t in range(t_max):
+#
+#         ih = in_hand[t]
+#
+#         if ih == prod:
+#             _n += 1
+#
+#             c = desired[t]
+#
+#             for monetary_good in range(n_good):
+#
+#                 prod_or_cons_money = monetary_good in [prod, cons]
+#
+#                 if int(c == cons):
+#                     _m_bh[monetary_good] += int(prod_or_cons_money)
+#
+#                 else:
+#                     _m_bh[monetary_good] += int(c == monetary_good)
+#
+#         monetary_behavior[t, :] = _m_bh
+#         n[t] = _n
+#
+#     return monetary_behavior, n
+
+
 def get_observation(in_hand, desired, prod, cons, n_split=3):
 
     """
-    :param n_split: integer
-    :param cons: nested list n_eco:n_agent
-    :param prod: nested list n_eco:n_agent
+    :param: prod: nested list n_eco:n_agent
+    :param: cons: nested list n_eco:n_agent
     :param in_hand: nested list n_eco:n_agent:t_max
     :param desired: nested list n_eco:n_agent:t_max
     :return: nested list economy index:good index

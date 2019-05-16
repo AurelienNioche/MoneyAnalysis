@@ -8,8 +8,8 @@ import simulation.economy
 
 import backup.structure
 
-import analysis.tools.format
-import analysis.stats.mean_comparison
+import format.old.format
+import stats.mean_comparison
 
 
 def _run(param):
@@ -124,12 +124,12 @@ def main():
 
         # reformat each economies to compress on agents
         monetary_over_user = [
-            analysis.tools.format.monetary_bhv_over_user(m)
+            format.old.format.monetary_bhv_over_user(m)
             for m in monetary_bhv
         ]
 
         # Now we can do stats
-        sig = [analysis.stats.mean_comparison.run(i) for i in monetary_over_user]
+        sig = [stats.mean_comparison.run(i) for i in monetary_over_user]
         # print(sig)
         results = np.asarray([
             i[0][-1] < 0.05 and i[1][-1] < 0.05

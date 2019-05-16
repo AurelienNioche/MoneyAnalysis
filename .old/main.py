@@ -29,12 +29,15 @@ from backup import backup
 
 import simulation.economy
 import simulation.run
-import simulation.run_xp_like
 
 import graph
 import graph.phase_diagram
 
-from xp import xp
+# import simulation.supplementary_exploration
+# import simulation.supplementary_exploitation
+# import simulation.supplementary_main
+
+from xp.xp import load_individual_data_from_db
 
 SCRIPT_FOLDER = os.path.dirname(os.path.abspath(__file__))
 DATA_FOLDER = f'{SCRIPT_FOLDER}/data'
@@ -85,9 +88,7 @@ def phase_diagram(f_name='phase.pdf'):
 
 def sim_and_xp(n_split=3):
 
-    xp_data, xp_room_n_good, xp_room_uniform = xp.load_individual_data_from_db()
-
-    sim_data = simulation.run_xp_like.get_data(xp_data=xp_data)
+    xp_data, xp_room_n_good, xp_room_uniform = load_individual_data_from_db()
 
     for n_good in 3, 4:
 
@@ -108,6 +109,49 @@ def sim_and_xp(n_split=3):
                                                     prod=xp_d.prod[i])
                 metric.get_windowed_observation(dir_ex=dir_ex, ind_ex=ind_ex, n=n, n_split=n_split, n_good=n_good)
 
+    # bkp = simulation.run.get_data(phase=False)
+    #
+    # room_id = {
+    #     3: (414, 416),
+    #     4: (417, 415)
+    # }
+    #
+    # for n_good in (3, 4):
+    #
+    #     data = []
+    #
+    #     titles = [analysis.format.economy.labels.get(r_id) for r_id in room_id[n_good]]
+    #
+    #     for r_id in room_id[n_good]:
+    #
+    #         label = analysis.format.economy.labels.get(r_id)
+    #         xp_session = f"{n_good}-{'NUPM' if 'non_uniform' in label else 'U'}"
+    #         print(f"Stats for simulation '{label}':")
+
+            # ------------------------- Get data --------------------- #
+
+            # monetary_bhv = [
+            #     d for i, d in enumerate(bkp.monetary_bhv)
+            #     if bkp.room_id[i] == r_id
+            # ]
+            #
+            # medium = [
+            #     d for i, d in enumerate(bkp.medium)
+            #     if bkp.room_id[i] == r_id
+            # ]
+            #
+            # # distribution is common
+            # distribution = [
+            #     d for i, d in enumerate(bkp.distribution)
+            #     if bkp.room_id[i] == r_id
+            # ][0]
+
+            # # Now we can do stats
+            # money_sig = analysis.stats.mean_comparison.run(monetary_over_user_mean,
+            #                                                print_latex=True,
+            #                                                xp_session=xp_session, measure="MB"
+            #                                                )
+
 
 if __name__ == '__main__':
 
@@ -116,3 +160,6 @@ if __name__ == '__main__':
 
     # # Uncomment for experiment analysis and experiment-like simulations
     sim_and_xp()
+
+    #   PROBABLY TO REMOVE !!!!!!
+    # simulation.supplementary_exploitation.main()

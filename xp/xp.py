@@ -15,7 +15,7 @@
 
 import numpy as np
 
-from analysis.tools.conversion import Converter
+from format.conversion import Converter
 
 # Django specific settings
 import os
@@ -44,9 +44,11 @@ INDIVIDUAL_DATA = f"{DATA_FOLDER}/individual_data.p"
 
 class DataXPSession:
 
-    def __init__(self, age, in_hand, desired, prod, cons, n_good, t_max):
+    def __init__(self, in_hand, desired, prod, cons, n_good, t_max, gender=None, age=None):
 
         self.age = age
+        self.gender=gender
+
         self.in_hand = in_hand
         self.desired = desired
         self.prod = prod
@@ -103,7 +105,7 @@ def load_individual_data_from_db():
 
         data[idx] = \
             DataXPSession(age=age, in_hand=in_hand, desired=desired, prod=prod, cons=cons,
-                          n_good=n_good, t_max=t_max)
+                          n_good=n_good, t_max=t_max, gender=gender)
         room_n_good[idx] = n_good
         room_uniform[idx] = len(np.unique([int(i) for i in r.types.split("/")])) == 1
 
