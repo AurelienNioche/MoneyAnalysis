@@ -38,6 +38,10 @@ from xp import xp
 
 from metric import metric
 
+from graph.boxplot import _boxplot
+
+import matplotlib.pyplot as plt
+
 SCRIPT_FOLDER = os.path.dirname(os.path.abspath(__file__))
 DATA_FOLDER = f'{SCRIPT_FOLDER}/data'
 
@@ -87,29 +91,46 @@ def phase_diagram(f_name='phase.pdf'):
 
 def sim_and_xp(n_split=3):
 
-    xp_data, xp_room_n_good, xp_room_uniform = xp.get_data()
+    xp_data, room_n_good, room_uniform = xp.get_data()
 
     sim_data = simulation.run_xp_like.get_data(xp_data=xp_data)
 
-    for n_good in 3, 4:
+    n_good_cond = 3, 4
+    category = 'SIM', 'HUMAN'
+    cond_labels = "NON-UNIF", "UNIF"
 
-        agent_types = tuple(range(2, n_good))
+    fig_data = {n_good: {
+        cat: {} for cat in category
+    } for n_good in n_good_cond}
+
+    for n_good in n_good_cond:
 
         for uniform in True, False:
 
-            xp_cond_n_good = xp_room_n_good == n_good
-            xp_cond_uniform = xp_room_uniform == uniform
+            # Find the good indexes
+            cond_n_good = room_n_good == n_good
+            cond_uniform = room_uniform == uniform
 
-            xp_cond = xp_cond_n_good * xp_cond_uniform
+            xp_cond = cond_n_good * cond_uniform
             assert(np.sum(xp_cond) == 1)
-            xp_d_idx = np.where(xp_cond == 1)[0][0]
-            xp_d = xp_data[xp_d_idx]
+            d_idx = np.where(xp_cond == 1)[0][0]
 
-            metric.boxplot(
-                data_xp_session=xp_d,
-                n_split=3,
-                agent_types=(2,),
-                obs_type='ind_0')
+            # Get formatted data for xp
+            xp_d = xp_data[d_idx]
+            xp_d_formatted = metric.boxplot(data_xp_session=xp_d)
+
+            # Get formatted data for sim
+            sim_d = sim_data[d_idx]
+            sim_d_formatted = metric.boxplot(data_xp_session=sim_d)
+
+            fig_data[n_good]['SIM'][cond_labels[int(uniform)]] = xp_d_formatted
+            fig_data[n_good]['HUMAN'][cond_labels[int(uniform)]] = sim_d_formatted
+
+    for n_good in n_good_cond:
+        for cat in category:
+            fig, ax = plt.subplots()
+            _boxplot(results=fig_data[n_good][cat], ax=ax, y_label='Freq. ind. ex. with good 0')
+            plt.savefig(f'fig/xp_{n_good}_{cat}.pdf')
 
 
 if __name__ == '__main__':
