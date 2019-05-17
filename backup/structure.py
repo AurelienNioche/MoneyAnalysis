@@ -49,3 +49,19 @@ class Data:
 
         for k, v in self._files_mapping(data_folder).items():
             setattr(self, v, backup.load(file_name=k))
+
+
+class DataXPSession:
+
+    def __init__(self, in_hand, desired, prod, cons, n_good, t_max, gender=None, age=None):
+
+        self.age = age
+        self.gender = gender
+
+        self.in_hand = in_hand
+        self.desired = desired
+        self.prod = prod
+        self.cons = cons
+
+        self.n_good = n_good
+        self.t_max = t_max

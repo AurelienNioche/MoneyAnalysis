@@ -36,6 +36,8 @@ import graph.phase_diagram
 
 from xp import xp
 
+from metric import metric
+
 SCRIPT_FOLDER = os.path.dirname(os.path.abspath(__file__))
 DATA_FOLDER = f'{SCRIPT_FOLDER}/data'
 
@@ -91,6 +93,8 @@ def sim_and_xp(n_split=3):
 
     for n_good in 3, 4:
 
+        agent_types = tuple(range(2, n_good))
+
         for uniform in True, False:
 
             xp_cond_n_good = xp_room_n_good == n_good
@@ -101,14 +105,11 @@ def sim_and_xp(n_split=3):
             xp_d_idx = np.where(xp_cond == 1)[0][0]
             xp_d = xp_data[xp_d_idx]
 
-            n_agent = len(xp_d.prod)
-            for i in range(n_agent):
-                dir_ex, ind_ex, n = metric.exchange(
-                    n_good=n_good, in_hand=xp_d.in_hand[i],
-                    desired=xp_d.in_hand[i], cons=xp_d.cons[i],
-                    prod=xp_d.prod[i])
-                metric.get_windowed_observation(
-                    dir_ex=dir_ex, ind_ex=ind_ex, n=n, n_split=n_split, n_good=n_good)
+            metric.boxplot(
+                data_xp_session=xp_d,
+                n_split=3,
+                agent_types=(2,),
+                obs_type='ind_0')
 
 
 if __name__ == '__main__':
