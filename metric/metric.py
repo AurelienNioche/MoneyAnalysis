@@ -32,8 +32,8 @@ def get_windowed_observation(dir_ex, ind_ex, n, n_split, n_good, slice_idx=-1):
 
             if y > 0:
                 dir_to_compute.append(x/y)
-            else:
-                dir_to_compute.append(-1)
+            # else:
+            #     dir_to_compute.append(-1)
 
         m_dir_ex[i] = np.mean(dir_to_compute)
 
@@ -54,8 +54,8 @@ def get_windowed_observation(dir_ex, ind_ex, n, n_split, n_good, slice_idx=-1):
 
                 if y > 0:
                     ind_to_compute.append(x/y)
-                else:
-                    ind_to_compute.append(-1)
+                # else:
+                #     ind_to_compute.append(-1)
                     # idx += 1
 
             m_ind_ex[i, good] = np.mean(ind_to_compute)

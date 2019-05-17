@@ -42,6 +42,7 @@ def _boxplot(
 
                 x_scatter.append(i)
 
+    assert np.all(np.asarray(y_scatter) >= 0)
     ax.scatter(x_scatter, y_scatter, c=colors_scatter, s=30, alpha=0.5, linewidth=0.0, zorder=1)
     ax.axhline(0.5, linestyle='--', color='0.3', zorder=-10, linewidth=0.5)
 
