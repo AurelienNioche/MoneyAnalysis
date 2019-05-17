@@ -1,6 +1,7 @@
 import numpy as np
 
 from xp import xp
+from backup import structure
 
 from simulation.run import _run
 
@@ -42,7 +43,7 @@ def get_data(xp_data, economy_model='prod: i-1'):
             'seed': np.random.randint(2 ** 32 - 1)
         })
 
-        sim_d = xp.DataXPSession(
+        sim_d = structure.DataXPSession(
             in_hand=bkp['in_hand'],
             desired=bkp['desired'],
             prod=bkp['prod'],

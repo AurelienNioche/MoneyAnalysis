@@ -60,7 +60,10 @@ def get_windowed_observation(dir_ex, ind_ex, n, n_split, n_good, slice_idx=-1):
 
             m_ind_ex[i, good] = np.mean(ind_to_compute)
 
-    return m_dir_ex[slice_idx], m_ind_ex[slice_idx, :] if slice_idx != 'all' else m_dir_ex, m_ind_ex
+    return (m_dir_ex[slice_idx], m_ind_ex[slice_idx, :]) if slice_idx != 'all' else (m_dir_ex, m_ind_ex)
+
+
+# def _get_windowed_observation
 
 
 def exchange(n_good, in_hand, desired, prod, cons):
@@ -195,7 +198,7 @@ def phase_diagram(in_hand, desired, prod, cons, distribution, n_good):
     return phases, labels
 
 
-def boxplot(data_xp_session, n_split=3, agent_types=(2, ), obs_type='ind_0'):
+def boxplot(data_xp_session, n_split=3, obs_type='ind_0'):
 
     """
     :param agent_types:
@@ -209,20 +212,40 @@ def boxplot(data_xp_session, n_split=3, agent_types=(2, ), obs_type='ind_0'):
 
     assert obs_type in ('ind_0', 'ind_1', 'ind_2', 'ind_3', 'dir'), 'Observation type not recognized'
 
+    if obs_type not in ('ind_0', 'dir'):
+        raise NotImplementedError('Other obs than ind_0 or dir are not available yet.')
+
     n_good = data_xp_session.n_good
 
     n_agent = len(data_xp_session.prod)
 
+    n_possible_type = 2 if obs_type == 'ind_0' else 0
+    agent_types = tuple(range(n_possible_type, n_good))
+
+    formatted_data = {k: [] for k in agent_types}
+
     for i in range(n_agent):
 
-        dir_ex, ind_ex, n = exchange(
-            n_good=n_good,
-            in_hand=data_xp_session.n_good.in_hand[i],
-            desired=data_xp_session.in_hand[i],
-            cons=data_xp_session.cons[i],
-            prod=data_xp_session.prod[i])
+        agent_type = data_xp_session.cons[i]
 
-        messy_data = get_windowed_observation(dir_ex=dir_ex, ind_ex=ind_ex, n=n, n_split=n_split, n_good=n_good)
-        if obs_type == 'ind_0':
+        if agent_type in agent_types:
 
-            pass
+            dir_ex, ind_ex, n = exchange(
+                n_good=n_good,
+                in_hand=data_xp_session.in_hand[i],
+                desired=data_xp_session.desired[i],
+                cons=agent_type,
+                prod=data_xp_session.prod[i])
+
+            _dir, _ind = get_windowed_observation(
+                    dir_ex=dir_ex, ind_ex=ind_ex, n=n, n_split=n_split, n_good=n_good)
+
+            if obs_type in ('ind_0', 'ind_1', 'ind_2', 'ind_3'):
+                good = int(obs_type[-1])
+
+                formatted_data[agent_type].append(_ind[good])
+
+            else:
+                formatted_data[agent_type].append(_dir)
+
+    return formatted_data

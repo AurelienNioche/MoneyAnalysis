@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as grd
+import numpy as np
 
 import os
 
@@ -16,32 +17,32 @@ def _boxplot(
         tick_labels = results.keys()
 
     if colors is None:
-        colors = ["black" for _ in range(len(results.keys()))]
+        colors = ['black' for _ in range(len(results.keys()))]
 
     n = len(results.keys())
     positions = list(range(n))
-
     x_scatter = []
     y_scatter = []
     colors_scatter = []
-
     values_box_plot = []
 
     for i, cond in enumerate(results.keys()):
 
-        values_box_plot.append([])
+        values_box_plot += [],
 
-        for v in results[cond].values():
+        for values in results[cond].values():
             # For box plot
-            values_box_plot[-1].append(v)
+            for v in values:
+                values_box_plot[-1].append(values)
 
-            # For scatter
-            y_scatter.append(v)
-            x_scatter.append(i)
-            colors_scatter.append(colors[i])
+                # For scatter
+                y_scatter.append(v)
+
+                colors_scatter.append(colors[i])
+
+                x_scatter.append(i)
 
     ax.scatter(x_scatter, y_scatter, c=colors_scatter, s=30, alpha=0.5, linewidth=0.0, zorder=1)
-
     ax.axhline(0.5, linestyle='--', color='0.3', zorder=-10, linewidth=0.5)
 
     if y_ticks is not None:
