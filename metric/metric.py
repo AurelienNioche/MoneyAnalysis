@@ -2,7 +2,7 @@ import numpy as np
 from tqdm import tqdm
 
 
-def get_windowed_observation(n_ex, n_prod_in_hand, n_split, n_good, slice_idx=-1):
+def get_windowed_observation(dir_ex, ind_ex, n, n_split, n_good, slice_idx=-1):
 
     tmax = len(n)
     step = tmax // n_split
@@ -222,6 +222,7 @@ def boxplot(data_xp_session, n_split=3, agent_types=(2, ), obs_type='ind_0'):
             cons=data_xp_session.cons[i],
             prod=data_xp_session.prod[i])
 
+        messy_data = get_windowed_observation(dir_ex=dir_ex, ind_ex=ind_ex, n=n, n_split=n_split, n_good=n_good)
         if obs_type == 'ind_0':
 
-            d = get_windowed_observation(dir_ex=dir_ex, ind_ex=ind_ex, n=n, n_split=n_split, n_good=n_good)
+            pass
