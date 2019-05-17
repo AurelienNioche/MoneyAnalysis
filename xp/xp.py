@@ -32,14 +32,15 @@ application = get_wsgi_application()
 
 from game.models import User, Room, Choice
 
+from backup import backup
 
-SCRIPT_FOLDER = os.path.dirname(os.path.abspath(__file__))
-ROOT_FOLDER = f"{SCRIPT_FOLDER}/../../"
+# SCRIPT_FOLDER = os.path.dirname(os.path.abspath(__file__))
+# ROOT_FOLDER = f"{SCRIPT_FOLDER}/../../"
 
-DATA_FOLDER = f"{ROOT_FOLDER}/data"
-FIG_FOLDER = f"{ROOT_FOLDER}/fig"
+DATA_FOLDER = f"data"
+# FIG_FOLDER = f"{ROOT_FOLDER}/fig"
 
-INDIVIDUAL_DATA = f"{DATA_FOLDER}/individual_data.p"
+DATA_FILE = f"{DATA_FOLDER}/xp_data.p"
 
 
 class DataXPSession:
@@ -47,7 +48,7 @@ class DataXPSession:
     def __init__(self, in_hand, desired, prod, cons, n_good, t_max, gender=None, age=None):
 
         self.age = age
-        self.gender=gender
+        self.gender = gender
 
         self.in_hand = in_hand
         self.desired = desired
@@ -58,14 +59,14 @@ class DataXPSession:
         self.t_max = t_max
 
 
-def load_individual_data_from_db():
+def _load__data_from_db():
 
     rooms = Room.objects.all().order_by('id')
 
     n_rooms = len(rooms)
 
     # list of DataXpSession
-    data = np.zeros(n_rooms, dtype=object)
+    data_session = np.zeros(n_rooms, dtype=object)
     room_n_good = np.zeros(n_rooms, dtype=int)
     room_uniform = np.zeros(n_rooms, dtype=bool)
 
@@ -103,10 +104,24 @@ def load_individual_data_from_db():
                 in_hand[i, t] = Converter.convert_value(c.good_in_hand, n_good=n_good)
                 desired[i, t] = Converter.convert_value(c.desired_good, n_good=n_good)
 
-        data[idx] = \
+        data_session[idx] = \
             DataXPSession(age=age, in_hand=in_hand, desired=desired, prod=prod, cons=cons,
                           n_good=n_good, t_max=t_max, gender=gender)
         room_n_good[idx] = n_good
         room_uniform[idx] = len(np.unique([int(i) for i in r.types.split("/")])) == 1
 
-    return data, room_n_good, room_uniform
+    return data_session, room_n_good, room_uniform
+
+
+def get_data(force=False):
+
+    if force or not os.path.exists(DATA_FILE):
+
+        data = _load__data_from_db()
+        backup.save(obj=data, file_name=DATA_FILE)
+
+    else:
+
+        data = backup.load(DATA_FILE)
+
+    return data

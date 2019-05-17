@@ -193,3 +193,21 @@ def phase_diagram(in_hand, desired, prod, cons, distribution, n_good):
         phases.append(scores.reshape(n_side, n_side).T)
 
     return phases, labels
+
+
+def boxplot(data_xp_session, n_split=3):
+
+    n_good = data_xp_session.n_good
+
+    n_agent = len(data_xp_session.prod)
+
+    for i in range(n_agent):
+
+        dir_ex, ind_ex, n = exchange(
+            n_good=n_good,
+            in_hand=data_xp_session.n_good.in_hand[i],
+            desired=data_xp_session.in_hand[i],
+            cons=data_xp_session.cons[i],
+            prod=data_xp_session.prod[i])
+
+        get_windowed_observation(dir_ex=dir_ex, ind_ex=ind_ex, n=n, n_split=n_split, n_good=n_good)

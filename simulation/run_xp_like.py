@@ -7,6 +7,8 @@ from simulation.run import _run
 
 def get_data(xp_data, economy_model='prod: i-1'):
 
+    np.random.seed(1234)
+
     n_rooms = len(xp_data)
 
     # list of DataXpSession

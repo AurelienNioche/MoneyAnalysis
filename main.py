@@ -85,7 +85,7 @@ def phase_diagram(f_name='phase.pdf'):
 
 def sim_and_xp(n_split=3):
 
-    xp_data, xp_room_n_good, xp_room_uniform = xp.load_individual_data_from_db()
+    xp_data, xp_room_n_good, xp_room_uniform = xp.get_data()
 
     sim_data = simulation.run_xp_like.get_data(xp_data=xp_data)
 
