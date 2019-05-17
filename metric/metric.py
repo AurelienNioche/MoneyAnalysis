@@ -2,7 +2,7 @@ import numpy as np
 from tqdm import tqdm
 
 
-def get_windowed_observation(dir_ex, ind_ex, n, n_split, n_good, slice_idx=-1):
+def get_windowed_observation(n_ex, n_prod_in_hand, n_split, n_good, slice_idx=-1):
 
     tmax = len(n)
     step = tmax // n_split
@@ -195,7 +195,19 @@ def phase_diagram(in_hand, desired, prod, cons, distribution, n_good):
     return phases, labels
 
 
-def boxplot(data_xp_session, n_split=3):
+def boxplot(data_xp_session, n_split=3, agent_types=(2, ), obs_type='ind_0'):
+
+    """
+    :param agent_types:
+    :param obs_type:
+    :param data_xp_session:
+    :param n_split:
+    :return: for one xp session, return dictionary:
+    key: agent_type
+    value: average for each subject able to use the
+    """
+
+    assert obs_type in ('ind_0', 'ind_1', 'ind_2', 'ind_3', 'dir'), 'Observation type not recognized'
 
     n_good = data_xp_session.n_good
 
@@ -210,4 +222,6 @@ def boxplot(data_xp_session, n_split=3):
             cons=data_xp_session.cons[i],
             prod=data_xp_session.prod[i])
 
-        get_windowed_observation(dir_ex=dir_ex, ind_ex=ind_ex, n=n, n_split=n_split, n_good=n_good)
+        if obs_type == 'ind_0':
+
+            d = get_windowed_observation(dir_ex=dir_ex, ind_ex=ind_ex, n=n, n_split=n_split, n_good=n_good)
