@@ -61,7 +61,7 @@ def phase_diagram(f_name='phase.pdf'):
         data = []
 
         for n_good in 3, 4:
-            d = simulation.run.get_data(phase=True, n_good=n_good)
+            d = simulation.run.get_data(n_good=n_good)
 
             formatted_data, labels = metric.phase_diagram(
                 in_hand=d.in_hand,
@@ -103,10 +103,12 @@ def sim_and_xp(n_split=3):
 
             n_agent = len(xp_d.prod)
             for i in range(n_agent):
-                dir_ex, ind_ex, n = metric.exchange(n_good=n_good, in_hand=xp_d.in_hand[i],
-                                                    desired=xp_d.in_hand[i], cons=xp_d.cons[i],
-                                                    prod=xp_d.prod[i])
-                metric.get_windowed_observation(dir_ex=dir_ex, ind_ex=ind_ex, n=n, n_split=n_split, n_good=n_good)
+                dir_ex, ind_ex, n = metric.exchange(
+                    n_good=n_good, in_hand=xp_d.in_hand[i],
+                    desired=xp_d.in_hand[i], cons=xp_d.cons[i],
+                    prod=xp_d.prod[i])
+                metric.get_windowed_observation(
+                    dir_ex=dir_ex, ind_ex=ind_ex, n=n, n_split=n_split, n_good=n_good)
 
 
 if __name__ == '__main__':
