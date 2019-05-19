@@ -24,23 +24,22 @@ def _boxplot(
     x_scatter = []
     y_scatter = []
     colors_scatter = []
-    values_box_plot = []
+    values_box_plot = [[] for _ in range(n)]
 
     for i, cond in enumerate(results.keys()):
 
-        values_box_plot += [],
-
-        for values in results[cond].values():
+        # for values in results[cond].values():
             # For box plot
-            for v in values:
-                values_box_plot[-1].append(values)
+        for v in results[cond]:
 
-                # For scatter
-                y_scatter.append(v)
+            values_box_plot[i].append(v)
 
-                colors_scatter.append(colors[i])
+            # For scatter
+            y_scatter.append(v)
 
-                x_scatter.append(i)
+            colors_scatter.append(colors[i])
+
+            x_scatter.append(i)
 
     assert np.all(np.asarray(y_scatter) >= 0)
     ax.scatter(x_scatter, y_scatter, c=colors_scatter, s=30, alpha=0.5, linewidth=0.0, zorder=1)
@@ -58,6 +57,8 @@ def _boxplot(
     if y_lim is not None:
         ax.set_ylim(y_lim)
 
+    print(values_box_plot)
+
     # Boxplot
     bp = ax.boxplot(values_box_plot, positions=positions, labels=tick_labels, showfliers=False, zorder=2)
 
@@ -69,32 +70,32 @@ def _boxplot(
     ax.set_aspect(aspect)
 
 
-def plot(data, labels, f_name, max_col=None):
-
-    fig = plt.figure(figsize=(7, 9))
-
-    gs = grd.GridSpec(ncols=max_col if max_col else 4, nrows=2)
-
-    for row, n_good in enumerate((3, 4)):
-
-        for col in range(n_good):
-
-            if max_col and col >= max_col:
-                break
-
-            vmax = np.max(data[:][col])
-
-            _phase_diagram(
-                data=data[row][col],
-                labels=labels,
-                ax=fig.add_subplot(gs[row, col]),
-                col=col,
-                n_good=n_good,
-                vmax=vmax,
-            )
-
-    plt.tight_layout()
-
-    os.makedirs(os.path.dirname(f_name), exist_ok=True)
-    plt.savefig(f_name)
-    print(f"Figure '{f_name}' created.\n")
+# def plot(data, labels, f_name, max_col=None):
+#
+#     fig = plt.figure(figsize=(7, 9))
+#
+#     gs = grd.GridSpec(ncols=max_col if max_col else 4, nrows=2)
+#
+#     for row, n_good in enumerate((3, 4)):
+#
+#         for col in range(n_good):
+#
+#             if max_col and col >= max_col:
+#                 break
+#
+#             vmax = np.max(data[:][col])
+#
+#             _phase_diagram(
+#                 data=data[row][col],
+#                 labels=labels,
+#                 ax=fig.add_subplot(gs[row, col]),
+#                 col=col,
+#                 n_good=n_good,
+#                 vmax=vmax,
+#             )
+#
+#     plt.tight_layout()
+#
+#     os.makedirs(os.path.dirname(f_name), exist_ok=True)
+#     plt.savefig(f_name)
+#     print(f"Figure '{f_name}' created.\n")

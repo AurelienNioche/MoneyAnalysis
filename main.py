@@ -89,18 +89,22 @@ def phase_diagram(f_name='phase.pdf'):
     )
 
 
-def sim_and_xp(n_split=3):
+def sim_and_xp():
 
-    xp_data, room_n_good, room_uniform = xp.get_data()
+    data = {}
 
-    sim_data = simulation.run_xp_like.get_data(xp_data=xp_data)
+    data['HUMAN'], room_n_good, room_uniform = xp.get_data()
 
-    n_good_cond = 3, 4
-    category = 'SIM', 'HUMAN'
+    data['SIM'] = simulation.run_xp_like.get_data(xp_data=data['HUMAN'])
+
+    category = data.keys()
+    n_good_cond = np.unique(room_n_good)
     cond_labels = "NON-UNIF", "UNIF"
 
     fig_data = {n_good: {
-        cat: {} for cat in category
+        cat: {
+
+        } for cat in category
     } for n_good in n_good_cond}
 
     for n_good in n_good_cond:
@@ -115,22 +119,26 @@ def sim_and_xp(n_split=3):
             assert(np.sum(xp_cond) == 1)
             d_idx = np.where(xp_cond == 1)[0][0]
 
-            # Get formatted data for xp
-            xp_d = xp_data[d_idx]
-            xp_d_formatted = metric.boxplot(data_xp_session=xp_d)
+            for cat in category:
 
-            # Get formatted data for sim
-            sim_d = sim_data[d_idx]
-            sim_d_formatted = metric.boxplot(data_xp_session=sim_d)
+                # Get formatted data
+                d = data[cat][d_idx]
+                d_formatted = metric.boxplot(data_xp_session=d)
 
-            fig_data[n_good]['SIM'][cond_labels[int(uniform)]] = xp_d_formatted
-            fig_data[n_good]['HUMAN'][cond_labels[int(uniform)]] = sim_d_formatted
+                for agent_type in d_formatted.keys():
+                    if agent_type not in fig_data[n_good][cat].keys():
+                        fig_data[n_good][cat][agent_type] = {}
+
+                    fig_data[n_good][cat][agent_type][cond_labels[int(uniform)]] = d_formatted[agent_type]
 
     for n_good in n_good_cond:
         for cat in category:
-            fig, ax = plt.subplots()
-            _boxplot(results=fig_data[n_good][cat], ax=ax, y_label='Freq. ind. ex. with good 0')
-            plt.savefig(f'fig/xp_{n_good}_{cat}.pdf')
+
+            for agent_type in fig_data[n_good][cat].keys():
+                fig, ax = plt.subplots()
+                print(fig_data[n_good][cat][agent_type].keys())
+                _boxplot(results=fig_data[n_good][cat][agent_type], ax=ax, y_label='Freq. ind. ex. with good 0')
+                plt.savefig(f'fig/xp_{n_good}_{cat}_{agent_type}.pdf')
 
 
 if __name__ == '__main__':
