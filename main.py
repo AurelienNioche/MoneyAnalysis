@@ -31,7 +31,7 @@ import simulation.economy
 import simulation.run
 import simulation.run_xp_like
 
-import graph
+import graph.boxplot
 import graph.phase_diagram
 
 from xp import xp
@@ -131,15 +131,8 @@ def sim_and_xp():
 
                     fig_data[n_good][cat][agent_type][cond_labels[int(uniform)]] = d_formatted[agent_type]
 
-    for n_good in n_good_cond:
-        for cat in category:
 
-            for agent_type in fig_data[n_good][cat].keys():
-                fig, ax = plt.subplots()
-                print(fig_data[n_good][cat][agent_type].keys())
-                _boxplot(results=fig_data[n_good][cat][agent_type], ax=ax, y_label='Freq. ind. ex. with good 0')
-                plt.savefig(f'fig/xp_{n_good}_{cat}_{agent_type}.pdf')
-
+    graph.boxplot.plot(fig_data)
 
 if __name__ == '__main__':
 

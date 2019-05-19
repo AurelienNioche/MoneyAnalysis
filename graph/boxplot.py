@@ -57,8 +57,6 @@ def _boxplot(
     if y_lim is not None:
         ax.set_ylim(y_lim)
 
-    print(values_box_plot)
-
     # Boxplot
     bp = ax.boxplot(values_box_plot, positions=positions, labels=tick_labels, showfliers=False, zorder=2)
 
@@ -70,32 +68,54 @@ def _boxplot(
     ax.set_aspect(aspect)
 
 
-# def plot(data, labels, f_name, max_col=None):
-#
-#     fig = plt.figure(figsize=(7, 9))
-#
-#     gs = grd.GridSpec(ncols=max_col if max_col else 4, nrows=2)
-#
-#     for row, n_good in enumerate((3, 4)):
-#
-#         for col in range(n_good):
-#
-#             if max_col and col >= max_col:
-#                 break
-#
-#             vmax = np.max(data[:][col])
-#
-#             _phase_diagram(
-#                 data=data[row][col],
-#                 labels=labels,
-#                 ax=fig.add_subplot(gs[row, col]),
-#                 col=col,
-#                 n_good=n_good,
-#                 vmax=vmax,
-#             )
-#
-#     plt.tight_layout()
-#
-#     os.makedirs(os.path.dirname(f_name), exist_ok=True)
-#     plt.savefig(f_name)
-#     print(f"Figure '{f_name}' created.\n")
+def plot(fig_data):
+
+    n_good_cond = fig_data.keys()
+
+    for n_good in n_good_cond:
+
+        category = fig_data[n_good].keys()
+
+        fig = plt.figure(figsize=(7, 9))
+        gs = grd.GridSpec(ncols=len(category), nrows=n_good-2)
+
+        for col, cat in enumerate(category):
+
+            agent_type = fig_data[n_good][cat].keys()
+            for row, at in enumerate(agent_type):
+                print(row, col)
+                ax = fig.add_subplot(gs[row, col])
+                ax.set_title(f'{cat} - type {at}')
+
+                _boxplot(results=fig_data[n_good][cat][at], ax=ax, y_label='Freq. ind. ex. with good 0')
+
+        plt.tight_layout()
+        plt.savefig(f'fig/xp_{n_good}.pdf')
+
+    # fig = plt.figure(figsize=(7, 9))
+    #
+    # gs = grd.GridSpec(ncols=max_col if max_col else 4, nrows=2)
+    #
+    # for row, n_good in enumerate((3, 4)):
+    #
+    #     for col in range(n_good):
+    #
+    #         if max_col and col >= max_col:
+    #             break
+    #
+    #         vmax = np.max(data[:][col])
+    #
+    #         _phase_diagram(
+    #             data=data[row][col],
+    #             labels=labels,
+    #             ax=fig.add_subplot(gs[row, col]),
+    #             col=col,
+    #             n_good=n_good,
+    #             vmax=vmax,
+    #         )
+    #
+    # plt.tight_layout()
+    #
+    # os.makedirs(os.path.dirname(f_name), exist_ok=True)
+    # plt.savefig(f_name)
+    # print(f"Figure '{f_name}' created.\n")
