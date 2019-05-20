@@ -28,8 +28,6 @@ def _boxplot(
 
     for i, cond in enumerate(results.keys()):
 
-        # for values in results[cond].values():
-            # For box plot
         for v in results[cond]:
 
             values_box_plot[i].append(v)
@@ -50,8 +48,6 @@ def _boxplot(
 
     ax.tick_params(axis='both', labelsize=fontsize)
 
-    # ax.set_xlabel("Type of control\nMonkey {}.".format(monkey), fontsize=fontsize)
-    # ax.set_xlabel("Control type", fontsize=fontsize)
     ax.set_ylabel(y_label, fontsize=fontsize)
 
     if y_lim is not None:

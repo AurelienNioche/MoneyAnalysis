@@ -198,9 +198,10 @@ def phase_diagram(in_hand, desired, prod, cons, distribution, n_good):
     return phases, labels
 
 
-def boxplot(data_xp_session, n_split=3, obs_type='ind_0'):
+def dynamic_data(data_xp_session, n_split=3, obs_type='ind_0', slice_idx=-1):
 
     """
+    :param slice_idx: integer or 'all'
     :param agent_types:
     :param obs_type:
     :param data_xp_session:
@@ -238,14 +239,25 @@ def boxplot(data_xp_session, n_split=3, obs_type='ind_0'):
                 prod=data_xp_session.prod[i])
 
             _dir, _ind = get_windowed_observation(
-                    dir_ex=dir_ex, ind_ex=ind_ex, n=n, n_split=n_split, n_good=n_good)
+                    dir_ex=dir_ex, ind_ex=ind_ex, n=n, n_split=n_split, n_good=n_good, slice_idx=slice_idx)
 
-            if obs_type in ('ind_0', 'ind_1', 'ind_2', 'ind_3'):
-                good = int(obs_type[-1])
+            if slice_idx != 'all':
 
-                formatted_data[agent_type].append(_ind[good])
+                if obs_type in ('ind_0', 'ind_1', 'ind_2', 'ind_3'):
+                    good = int(obs_type[-1])
+                    to_append = _ind[good]
+
+                else:
+                    to_append = _dir
 
             else:
-                formatted_data[agent_type].append(_dir)
+                if obs_type in ('ind_0', 'ind_1', 'ind_2', 'ind_3'):
+                    good = int(obs_type[-1])
+                    to_append = _ind[:, good]
+
+                else:
+                    to_append = _dir[:]
+
+            formatted_data[agent_type].append(to_append)
 
     return formatted_data
