@@ -99,4 +99,7 @@ def plot(fig_data):
                 # _plot(results=fig_data[n_good][cat][at], ax=ax, y_label='Freq. ind. ex. with good 0')
 
         plt.tight_layout()
-        plt.savefig(f'fig/supplementary_indirect_{n_good}.pdf')
+
+        f_name = f'fig/supplementary_indirect_{n_good}.pdf'
+        plt.savefig(f_name)
+        print(f'{f_name} has been produced')
