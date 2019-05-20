@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as grd
-import numpy as np
 
 import os
 
