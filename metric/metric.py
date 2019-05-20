@@ -202,11 +202,10 @@ def dynamic_data(data_xp_session, n_split=3, obs_type='ind_0', slice_idx=-1):
 
     """
     :param slice_idx: integer or 'all'
-    :param agent_types:
-    :param obs_type:
-    :param data_xp_session:
-    :param n_split:
-    :return: for one xp session, return dictionary:
+    :param obs_type: 'ind_0', 'ind_1', 'ind_2', 'ind_3', 'dir'
+    :param data_xp_session: DataXPSession object
+    :param n_split: integer
+    :return: dictionary:
     key: agent_type
     value: average for each subject able to use the
     """

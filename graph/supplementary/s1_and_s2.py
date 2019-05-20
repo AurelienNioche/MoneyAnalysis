@@ -29,7 +29,6 @@ def _plot(
     for data_ind in results:
         for idx_split, split_value in enumerate(data_ind):
 
-            # For scatter
             x_scatter.append(idx_split)
             y_scatter.append(split_value)
 
@@ -63,8 +62,6 @@ def plot(fig_data):
         n_cols = 2*len(category)  # '2' because 2 conditions
         n_rows = n_good-2
 
-        print(n_good, "col, row", n_cols, n_rows)
-
         fig = plt.figure(figsize=(15, 15), dpi=200)
         gs = grd.GridSpec(ncols=n_cols, nrows=n_rows)
 
@@ -81,9 +78,6 @@ def plot(fig_data):
 
                 for cond in conditions:
 
-                    # print('row, col', row, col+col)
-                    # print(n_good, cat, at, cond)
-
                     ax = fig.add_subplot(gs[row, col])
                     ax.set_title(f'{cat} - {cond} - type {at}')
 
@@ -91,11 +85,6 @@ def plot(fig_data):
                           tick_labels=('1/3', '2/3', '3/3'))
 
                     col += 1
-
-                # ax = fig.add_subplot(gs[row, col])
-                # ax.set_title(f'{cat} - type {at}')
-
-                # _plot(results=fig_data[n_good][cat][at], ax=ax, y_label='Freq. ind. ex. with good 0')
 
         plt.tight_layout()
 

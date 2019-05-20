@@ -183,10 +183,10 @@ def supplementary_sim_and_xp():
 if __name__ == '__main__':
 
     # # Uncomment for running simulations used for phase diagram
-    # phase_diagram()
+    phase_diagram()
 
     # # Uncomment for experiment analysis and experiment-like simulations
-    # sim_and_xp()
+    sim_and_xp()
 
     # # Uncomment for supplementary analysis
     supplementary_sim_and_xp()
