@@ -54,10 +54,6 @@ def phase_diagram(f_name='phase.pdf'):
     with 3 and 4 goods
     """
 
-    # Number of column
-    # (Plot for each good considered as money if max_col == None)
-    max_col = 1
-
     data_file = f'{DATA_FOLDER}/formatted_phase_diagram.p'
 
     if os.path.exists(data_file):
@@ -85,8 +81,7 @@ def phase_diagram(f_name='phase.pdf'):
     graph.phase_diagram.plot(
         data=data,
         labels=labels,
-        f_name=f_name,
-        max_col=max_col
+        f_name=f_name
     )
 
 
