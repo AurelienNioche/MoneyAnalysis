@@ -144,10 +144,9 @@ def get_economy_measure(in_hand, desired, prod, cons, n_split=3):
                                          desired=desired[i_eco][i_agent],
                                          prod=prod[i_eco][i_agent],
                                          cons=cons[i_eco][i_agent])
-            obs_eco[i_agent] = get_windowed_observation(dir_ex=dir_ex, ind_ex=ind_ex, n=n,
-                                                        n_good=n_good, n_split=n_split, slice_idx=-1)  # np.random.random(n_good)
-
-            # obs_eco[i_agent, :] = [0.5 for _ in range(n_good)]
+            _dir, _ind = get_windowed_observation(dir_ex=dir_ex, ind_ex=ind_ex, n=n,
+                                                  n_good=n_good, n_split=n_split, slice_idx=-1)
+            obs_eco[i_agent] = _ind
 
         to_add = []
         for i_good in range(n_good):
