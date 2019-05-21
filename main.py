@@ -33,14 +33,12 @@ import graph.boxplot
 import graph.phase_diagram
 import graph.supplementary.s1_and_s2
 import graph.supplementary.age
+import graph.supplementary.gender
 
 from xp import xp
 
 from metric import metric
 
-
-
-import matplotlib.pyplot as plt
 
 SCRIPT_FOLDER = os.path.dirname(os.path.abspath(__file__))
 DATA_FOLDER = f'{SCRIPT_FOLDER}/data'
@@ -197,10 +195,7 @@ def supplementary_gender(obs_type='dir', n_split=3):
 
             data_gender[categories[int(g)]].append(to_append)
 
-    fig = plt.figure()
-    ax = fig.add_subplot()
-    graph.boxplot.boxplot(data_gender, ax=ax, y_label="Freq. dir. ex.")
-    plt.savefig("fig/supplementary_gender.pdf")
+    graph.supplementary.gender.plot(data_gender)
 
 
 def supplementary_age(obs_type='dir', n_split=3):
