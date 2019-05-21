@@ -65,7 +65,6 @@ def _phase_diagram(
         # Create colorbar
         # ax.figure.colorbar(im, ax=ax)
 
-
     ax.set_aspect(1)
 
 
