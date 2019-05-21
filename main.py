@@ -15,8 +15,6 @@
 # Django specific settings
 import os
 
-import metric.metric as metric
-
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "MoneyAnalysis.settings")
 
 # Ensure settings are read
