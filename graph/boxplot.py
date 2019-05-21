@@ -9,7 +9,7 @@ FIG_FOLDER = "fig"
 os.makedirs(FIG_FOLDER, exist_ok=True)
 
 
-def _boxplot(
+def boxplot(
         results, ax, colors=None, tick_labels=None, y_label="y_label", y_lim=None, y_ticks=None,
         fontsize=10, aspect=3):
 
@@ -84,7 +84,7 @@ def plot(fig_data):
                 ax = fig.add_subplot(gs[row, col])
                 ax.set_title(f'{cat} - type {at}')
 
-                _boxplot(results=fig_data[n_good][cat][at], ax=ax, y_label='Freq. ind. ex. with good 0')
+                boxplot(results=fig_data[n_good][cat][at], ax=ax, y_label='Freq. ind. ex. with good 0')
 
         plt.tight_layout()
         f_name = f'fig/xp_{n_good}.pdf'

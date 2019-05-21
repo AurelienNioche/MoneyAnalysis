@@ -34,12 +34,13 @@ import simulation.run_xp_like
 import graph.boxplot
 import graph.phase_diagram
 import graph.supplementary.s1_and_s2
+import graph.supplementary.age
 
 from xp import xp
 
 from metric import metric
 
-from graph.boxplot import _boxplot
+
 
 import matplotlib.pyplot as plt
 
@@ -179,13 +180,62 @@ def supplementary_sim_and_xp():
         graph.supplementary.s1_and_s2.plot(fig_data, obs_type=ot)
 
 
+def supplementary_gender(obs_type='dir', n_split=3):
+
+    data, room_n_good, room_uniform = xp.get_data()
+
+    categories = "FEMALE", "MALE"
+
+    data_gender = {
+        cat: [] for cat in categories
+    }
+
+    for d in data:
+
+        for i, g in enumerate(d.gender):
+
+            to_append = metric.get_individual_measure(
+                data_xp_session=d, i=i, n_split=n_split, slice_idx=-1, obs_type=obs_type)
+
+            data_gender[categories[int(g)]].append(to_append)
+
+    fig = plt.figure()
+    ax = fig.add_subplot()
+    graph.boxplot.boxplot(data_gender, ax=ax, y_label="Freq. dir. ex.")
+    plt.savefig("fig/supplementary_gender.pdf")
+
+
+def supplementary_age(obs_type='dir', n_split=3):
+
+    data, room_n_good, room_uniform = xp.get_data()
+
+    age = []
+    data_age = []
+
+    for d in data:
+
+        for i, a in enumerate(d.age):
+
+            to_append = metric.get_individual_measure(
+                data_xp_session=d, i=i, n_split=n_split, slice_idx=-1, obs_type=obs_type)
+            data_age.append(to_append)
+            age.append(a)
+
+    graph.supplementary.age.plot(age=age, y=data_age)
+
+
 if __name__ == '__main__':
 
     # # Uncomment for running simulations used for phase diagram
-    phase_diagram()
+    # phase_diagram()
 
     # # Uncomment for experiment analysis and experiment-like simulations
-    sim_and_xp()
+    # sim_and_xp()
 
     # # Uncomment for supplementary analysis
-    supplementary_sim_and_xp()
+    # upplementary_sim_and_xp()
+
+    # # Uncomment for supplementary analysis concerning gender
+    supplementary_gender()
+
+    supplementary_age()

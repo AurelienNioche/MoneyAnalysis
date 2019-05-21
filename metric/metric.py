@@ -63,9 +63,6 @@ def get_windowed_observation(dir_ex, ind_ex, n, n_split, n_good, slice_idx=-1):
     return (m_dir_ex[slice_idx], m_ind_ex[slice_idx, :]) if slice_idx != 'all' else (m_dir_ex, m_ind_ex)
 
 
-# def _get_windowed_observation
-
-
 def exchange(n_good, in_hand, desired, prod, cons):
 
     """
@@ -105,9 +102,9 @@ def exchange(n_good, in_hand, desired, prod, cons):
         if ih == prod:
             _n += 1
 
-            c = int(desired[t])
+            c = desired[t]
 
-            if int(c == cons):
+            if c == cons:
                 _dir_ex += 1
             else:
                 _ind_ex[c] += 1
@@ -119,7 +116,7 @@ def exchange(n_good, in_hand, desired, prod, cons):
     return dir_ex, ind_ex, n
 
 
-def get_observation(in_hand, desired, prod, cons, n_split=3):
+def get_economy_measure(in_hand, desired, prod, cons, n_split=3):
 
     """
     :param n_split: integer
@@ -173,7 +170,7 @@ def phase_diagram(in_hand, desired, prod, cons, distribution, n_good):
 
     n = len(distribution)  # Number of economies in this batch
 
-    observation = get_observation(in_hand=in_hand, desired=desired, prod=prod, cons=cons)
+    observation = get_economy_measure(in_hand=in_hand, desired=desired, prod=prod, cons=cons)
 
     money = np.array([
         [observation[i][good] for good in range(n_good)] for i in range(n)
@@ -196,6 +193,39 @@ def phase_diagram(in_hand, desired, prod, cons, distribution, n_good):
         phases.append(scores.reshape(n_side, n_side).T)
 
     return phases, labels
+
+
+def get_individual_measure(data_xp_session, i, n_split, slice_idx, obs_type):
+
+    dir_ex, ind_ex, n = exchange(
+        n_good=data_xp_session.n_good,
+        in_hand=data_xp_session.in_hand[i],
+        desired=data_xp_session.desired[i],
+        cons=data_xp_session.cons[i],
+        prod=data_xp_session.prod[i])
+
+    _dir, _ind = get_windowed_observation(
+        dir_ex=dir_ex, ind_ex=ind_ex, n=n, n_split=n_split,
+        n_good=data_xp_session.n_good, slice_idx=slice_idx)
+
+    if slice_idx != 'all':
+
+        if obs_type in ('ind_0', 'ind_1', 'ind_2', 'ind_3'):
+            good = int(obs_type[-1])
+            d = _ind[good]
+
+        else:
+            d = _dir
+
+    else:
+        if obs_type in ('ind_0', 'ind_1', 'ind_2', 'ind_3'):
+            good = int(obs_type[-1])
+            d = _ind[:, good]
+
+        else:
+            d = _dir[:]
+
+    return d
 
 
 def dynamic_data(data_xp_session, n_split=3, obs_type='ind_0', slice_idx=-1):
@@ -230,33 +260,7 @@ def dynamic_data(data_xp_session, n_split=3, obs_type='ind_0', slice_idx=-1):
 
         if agent_type in agent_types:
 
-            dir_ex, ind_ex, n = exchange(
-                n_good=n_good,
-                in_hand=data_xp_session.in_hand[i],
-                desired=data_xp_session.desired[i],
-                cons=agent_type,
-                prod=data_xp_session.prod[i])
-
-            _dir, _ind = get_windowed_observation(
-                    dir_ex=dir_ex, ind_ex=ind_ex, n=n, n_split=n_split, n_good=n_good, slice_idx=slice_idx)
-
-            if slice_idx != 'all':
-
-                if obs_type in ('ind_0', 'ind_1', 'ind_2', 'ind_3'):
-                    good = int(obs_type[-1])
-                    to_append = _ind[good]
-
-                else:
-                    to_append = _dir
-
-            else:
-                if obs_type in ('ind_0', 'ind_1', 'ind_2', 'ind_3'):
-                    good = int(obs_type[-1])
-                    to_append = _ind[:, good]
-
-                else:
-                    to_append = _dir[:]
-
-            formatted_data[agent_type].append(to_append)
+            d = get_individual_measure(data_xp_session, i, n_split, slice_idx, obs_type)
+            formatted_data[agent_type].append(d)
 
     return formatted_data
