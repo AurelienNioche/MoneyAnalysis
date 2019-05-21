@@ -72,14 +72,14 @@ def plot(fig_data):
 
     for n_good in n_good_cond:
 
-        category = fig_data[n_good].keys()
+        category = sorted(fig_data[n_good].keys())
 
         fig = plt.figure(figsize=(7, 9))
         gs = grd.GridSpec(ncols=len(category), nrows=n_good-2)
 
         for col, cat in enumerate(category):
 
-            agent_type = fig_data[n_good][cat].keys()
+            agent_type = sorted(fig_data[n_good][cat].keys())
             for row, at in enumerate(agent_type):
                 ax = fig.add_subplot(gs[row, col])
                 ax.set_title(f'{cat} - type {at}')

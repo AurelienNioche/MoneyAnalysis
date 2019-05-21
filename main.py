@@ -126,7 +126,7 @@ def sim_and_xp():
                 d = data[cat][d_idx]
                 d_formatted = metric.dynamic_data(data_xp_session=d)
 
-                for agent_type in d_formatted.keys():
+                for agent_type in sorted(d_formatted.keys()):
                     if agent_type not in fig_data[n_good][cat].keys():
                         fig_data[n_good][cat][agent_type] = {}
 
@@ -175,7 +175,7 @@ def supplementary_sim_and_xp():
                                                       obs_type=ot,
                                                       slice_idx='all')
 
-                    for agent_type in d_formatted.keys():
+                    for agent_type in sorted(d_formatted.keys()):
                         if agent_type not in fig_data[n_good][cat].keys():
                             fig_data[n_good][cat][agent_type] = {}
 
