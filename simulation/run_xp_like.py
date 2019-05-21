@@ -27,9 +27,12 @@ def get_data(xp_data, economy_model='prod: i-1'):
         for g in range(n_good):
             dist.append(np.sum(cons == g))
 
-        alpha = np.random.uniform(0.1, 0.25)
-        beta = np.random.uniform(0.8, 1.2)
-        gamma = np.random.uniform(0.1, 0.15)
+        # alpha = np.random.uniform(0.1, 0.25)
+        # beta = np.random.uniform(0.8, 1.2)
+        # gamma = np.random.uniform(0.1, 0.15)
+        alpha = .175
+        beta = 1
+        gamma = .125
 
         agent_model = 'RLAgent'
 
