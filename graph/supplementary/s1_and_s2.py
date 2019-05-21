@@ -51,7 +51,7 @@ def _plot(
     ax.set_aspect(aspect)
 
 
-def plot(fig_data, obs_type=""):
+def plot(fig_data, obs_type):
 
     n_good_cond = fig_data.keys()
 
@@ -62,10 +62,12 @@ def plot(fig_data, obs_type=""):
         n_cols = 2*len(category)  # '2' because 2 conditions
         n_rows = n_good - 2 if 'ind' in obs_type else n_good
 
+        y_label = 'Freq. ind. ex. with good 0' if 'ind' in obs_type else "Freq. dir. ex."
+
         fig = plt.figure(figsize=(15, 15), dpi=200)
         gs = grd.GridSpec(ncols=n_cols, nrows=n_rows)
 
-        agent_type = fig_data[n_good][list(category)[0]].keys()
+        agent_type = sorted(fig_data[n_good][list(category)[0]].keys())
 
         for row, at in enumerate(agent_type):
 
