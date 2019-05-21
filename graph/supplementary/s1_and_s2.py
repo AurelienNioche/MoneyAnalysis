@@ -83,7 +83,7 @@ def plot(fig_data, obs_type):
                     ax = fig.add_subplot(gs[row, col])
                     ax.set_title(f'{cat} - {cond} - type {at}')
 
-                    _plot(results=fig_data[n_good][cat][at][cond], ax=ax, y_label='Freq. ind. ex. with good 0',
+                    _plot(results=fig_data[n_good][cat][at][cond], ax=ax, y_label=y_label,
                           tick_labels=('1/3', '2/3', '3/3'))
 
                     col += 1
