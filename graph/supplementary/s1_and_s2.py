@@ -51,7 +51,7 @@ def _plot(
     ax.set_aspect(aspect)
 
 
-def plot(fig_data):
+def plot(fig_data, obs_type=""):
 
     n_good_cond = fig_data.keys()
 
@@ -60,7 +60,7 @@ def plot(fig_data):
         category = fig_data[n_good].keys()
 
         n_cols = 2*len(category)  # '2' because 2 conditions
-        n_rows = n_good-2
+        n_rows = n_good - 2 if 'ind' in obs_type else n_good
 
         fig = plt.figure(figsize=(15, 15), dpi=200)
         gs = grd.GridSpec(ncols=n_cols, nrows=n_rows)
@@ -88,6 +88,6 @@ def plot(fig_data):
 
         plt.tight_layout()
 
-        f_name = f'fig/supplementary_indirect_{n_good}.pdf'
+        f_name = f'fig/supplementary_indirect_{n_good}_{obs_type}.pdf'
         plt.savefig(f_name)
         print(f'{f_name} has been produced')

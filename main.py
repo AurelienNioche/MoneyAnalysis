@@ -140,7 +140,6 @@ def supplementary_sim_and_xp():
     data = {}
 
     data['HUMAN'], room_n_good, room_uniform = xp.get_data()
-
     data['SIM'] = simulation.run_xp_like.get_data(xp_data=data['HUMAN'])
 
     category = data.keys()
@@ -153,31 +152,36 @@ def supplementary_sim_and_xp():
         } for cat in category
     } for n_good in n_good_cond}
 
-    for n_good in n_good_cond:
+    obs_type = 'ind_0', 'dir'
 
-        for uniform in True, False:
+    for ot in obs_type:
+        for n_good in n_good_cond:
 
-            # Find the good indexes
-            cond_n_good = room_n_good == n_good
-            cond_uniform = room_uniform == uniform
+            for uniform in True, False:
 
-            xp_cond = cond_n_good * cond_uniform
-            assert(np.sum(xp_cond) == 1)
-            d_idx = np.where(xp_cond == 1)[0][0]
+                # Find the good indexes
+                cond_n_good = room_n_good == n_good
+                cond_uniform = room_uniform == uniform
 
-            for cat in category:
+                xp_cond = cond_n_good * cond_uniform
+                assert(np.sum(xp_cond) == 1)
+                d_idx = np.where(xp_cond == 1)[0][0]
 
-                # Get formatted data
-                d = data[cat][d_idx]
-                d_formatted = metric.dynamic_data(data_xp_session=d, slice_idx='all')
+                for cat in category:
 
-                for agent_type in d_formatted.keys():
-                    if agent_type not in fig_data[n_good][cat].keys():
-                        fig_data[n_good][cat][agent_type] = {}
+                    # Get formatted data
+                    d = data[cat][d_idx]
+                    d_formatted = metric.dynamic_data(data_xp_session=d,
+                                                      obs_type=ot,
+                                                      slice_idx='all')
 
-                    fig_data[n_good][cat][agent_type][cond_labels[int(uniform)]] = d_formatted[agent_type]
+                    for agent_type in d_formatted.keys():
+                        if agent_type not in fig_data[n_good][cat].keys():
+                            fig_data[n_good][cat][agent_type] = {}
 
-    graph.supplementary.s1_and_s2.plot(fig_data)
+                        fig_data[n_good][cat][agent_type][cond_labels[int(uniform)]] = d_formatted[agent_type]
+
+        graph.supplementary.s1_and_s2.plot(fig_data, obs_type=ot)
 
 
 if __name__ == '__main__':
