@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 
-import graph.boxplot
+import graph.sim_and_xp
 
 
 import os
@@ -14,5 +14,5 @@ def plot(data_gender):
 
     fig = plt.figure()
     ax = fig.add_subplot()
-    graph.boxplot.boxplot(data_gender, ax=ax, y_label="Freq. dir. ex.")
+    graph.sim_and_xp.boxplot(data_gender, ax=ax, y_label="Freq. dir. ex.")
     plt.savefig("fig/supplementary_gender.pdf")

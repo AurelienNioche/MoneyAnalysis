@@ -51,45 +51,49 @@ def _plot(
     ax.set_aspect(aspect)
 
 
-def plot(fig_data, obs_type):
+def plot(fig_data):
 
-    n_good_cond = fig_data.keys()
+    obs_type = fig_data.keys()
 
-    for n_good in n_good_cond:
+    for ot in obs_type:
 
-        category = fig_data[n_good].keys()
+        n_good_cond = fig_data[ot].keys()
 
-        n_cols = 2*len(category)  # '2' because 2 conditions
-        n_rows = n_good - 2 if 'ind' in obs_type else n_good
+        for n_good in n_good_cond:
 
-        y_label = 'Freq. ind. ex. with good 0' if 'ind' in obs_type else "Freq. dir. ex."
+            category = fig_data[ot][n_good].keys()
 
-        fig = plt.figure(figsize=(15, 15), dpi=200)
-        gs = grd.GridSpec(ncols=n_cols, nrows=n_rows)
+            n_cols = 2*len(category)  # '2' because 2 conditions
+            n_rows = n_good - 2 if 'ind' in obs_type else n_good
 
-        agent_type = sorted(fig_data[n_good][list(category)[0]].keys())
+            y_label = 'Freq. ind. ex. with good 0' if 'ind' in obs_type else "Freq. dir. ex."
 
-        for row, at in enumerate(agent_type):
+            fig = plt.figure(figsize=(15, 15), dpi=200)
+            gs = grd.GridSpec(ncols=n_cols, nrows=n_rows)
 
-            col = 0
+            agent_type = sorted(fig_data[ot][n_good][list(category)[0]].keys())
 
-            for cat in category:
+            for row, at in enumerate(agent_type):
 
-                conditions = fig_data[n_good][cat][at].keys()
-                assert len(conditions) == 2
+                col = 0
 
-                for cond in conditions:
+                for cat in category:
 
-                    ax = fig.add_subplot(gs[row, col])
-                    ax.set_title(f'{cat} - {cond} - type {at}')
+                    conditions = fig_data[ot][n_good][cat][at].keys()
+                    assert len(conditions) == 2
 
-                    _plot(results=fig_data[n_good][cat][at][cond], ax=ax, y_label=y_label,
-                          tick_labels=('1/3', '2/3', '3/3'))
+                    for cond in conditions:
 
-                    col += 1
+                        ax = fig.add_subplot(gs[row, col])
+                        ax.set_title(f'{cat} - {cond} - type {at}')
 
-        plt.tight_layout()
+                        _plot(results=fig_data[ot][n_good][cat][at][cond], ax=ax, y_label=y_label,
+                              tick_labels=('1/3', '2/3', '3/3'))
 
-        f_name = f'fig/supplementary_indirect_{n_good}_{obs_type}.pdf'
-        plt.savefig(f_name)
-        print(f'{f_name} has been produced')
+                        col += 1
+
+            plt.tight_layout()
+
+            f_name = f'fig/supplementary_indirect_{n_good}_{obs_type}.pdf'
+            plt.savefig(f_name)
+            print(f'{f_name} has been produced')
