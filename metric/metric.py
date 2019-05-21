@@ -102,7 +102,7 @@ def exchange(n_good, in_hand, desired, prod, cons):
         if ih == prod:
             _n += 1
 
-            c = desired[t]
+            c = int(desired[t])
 
             if c == cons:
                 _dir_ex += 1
