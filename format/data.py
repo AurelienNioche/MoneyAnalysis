@@ -14,7 +14,51 @@ SCRIPT_FOLDER = os.path.dirname(os.path.abspath(__file__))
 DATA_FOLDER = f'{SCRIPT_FOLDER}/../data'
 
 
-def sim_and_xp(alpha=.175, beta=1, gamma=.125, unif_cognitive_param=False):
+def sim_and_xp():
+    raw_data = {}
+
+    raw_data['HUMAN'], room_n_good, room_uniform = xp.get_data()
+
+    raw_data['SIM'] = simulation.run_xp_like.get_data(xp_data=raw_data['HUMAN'])
+
+    category = raw_data.keys()
+    n_good_cond = np.unique(room_n_good)
+    cond_labels = "NON-UNIF", "UNIF"
+
+    fig_data = {n_good: {
+        cat: {
+
+        } for cat in category
+    } for n_good in n_good_cond}
+
+    for n_good in n_good_cond:
+
+        for uniform in True, False:
+
+            # Find the good indexes
+            cond_n_good = room_n_good == n_good
+            cond_uniform = room_uniform == uniform
+
+            xp_cond = cond_n_good * cond_uniform
+            assert (np.sum(xp_cond) == 1)
+            d_idx = np.where(xp_cond == 1)[0][0]
+
+            for cat in category:
+
+                # Get formatted data
+                d = raw_data[cat][d_idx]
+                d_formatted = metric.dynamic_data(data_xp_session=d)
+
+                for agent_type in sorted(d_formatted.keys()):
+                    if agent_type not in fig_data[n_good][cat].keys():
+                        fig_data[n_good][cat][agent_type] = {}
+
+                    fig_data[n_good][cat][agent_type][cond_labels[int(uniform)]] = d_formatted[agent_type]
+
+    return fig_data
+
+
+def sim_and_xp_exploration(alpha=.175, beta=1, gamma=.125, unif_cognitive_param=False):
     raw_data = {}
 
     raw_data['HUMAN'], room_n_good, room_uniform = xp.get_data()
@@ -89,14 +133,12 @@ def phase_diagram():
     return data, labels
 
 
-def supplementary_sim_and_xp(alpha=.175, beta=1, gamma=.125, unif_cognitive_param=False):
+def supplementary_sim_and_xp():
     raw_data = {}
 
     raw_data['HUMAN'], room_n_good, room_uniform = xp.get_data()
 
-    raw_data['SIM'] = simulation.run_xp_like.get_data(xp_data=raw_data['HUMAN'],
-                                                      gamma=gamma, beta=beta, alpha=alpha,
-                                                      unif_cognitive_param=unif_cognitive_param)
+    raw_data['SIM'] = simulation.run_xp_like.get_data(xp_data=raw_data['HUMAN'])
 
     category = raw_data.keys()
     n_good_cond = np.unique(room_n_good)
