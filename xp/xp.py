@@ -66,6 +66,7 @@ def _load__data_from_db():
         gender = np.zeros(n, dtype=bool)
         in_hand = np.zeros((n, t_max), dtype=int)
         desired = np.zeros((n, t_max), dtype=int)
+        success = np.zeros((n, t_max), dtype=bool)
         prod = np.zeros(n, dtype=int)
         cons = np.zeros(n, dtype=int)
 
@@ -87,11 +88,12 @@ def _load__data_from_db():
 
                 in_hand[i, t] = Converter.convert_value(c.good_in_hand, n_good=n_good)
                 desired[i, t] = Converter.convert_value(c.desired_good, n_good=n_good)
+                success[i, t] = c.success
 
         data_session[idx] = \
             structure.DataXPSession(
                 age=age, in_hand=in_hand, desired=desired, prod=prod, cons=cons,
-                n_good=n_good, t_max=t_max, gender=gender)
+                n_good=n_good, t_max=t_max, gender=gender, success=success)
         room_n_good[idx] = n_good
         room_uniform[idx] = len(np.unique([int(i) for i in r.types.split("/")])) == 1
 

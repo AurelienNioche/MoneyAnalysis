@@ -30,21 +30,20 @@ class RLAgent(StupidAgent):
 
         return acceptance
 
+    # def choose(self, in_hand):
+    #     exchanges, values = self.which_exchange_do_you_want_to_try(in_hand)
+    #     self.epsilon_rule(exchanges=exchanges, values=values)
+
     def which_exchange_do_you_want_to_try(self):
 
         exchanges, values = self.get_exchanges_and_values(in_hand=self.H)
-        return self.epsilon_rule(values=values, exchanges=exchanges)
 
-    def p_choice(self, in_hand, desired):
-        
-        exchanges, values = self.get_exchanges_and_values(in_hand=int(in_hand))
-        max_idx = np.argmax(values)
-        if exchanges[int(max_idx)] == (in_hand, desired):
-            p = 1 - self.gamma
-        else:
-            p = self.gamma / (len(exchanges)-1)
+        # p = self.softmax(np.asarray(values), temp=self.gamma)
+        # {idx_ex = np.random.choice(np.arange(len(exchanges)), p=p)
 
-        return p
+        return self.epsilon_rule(values, exchanges)
+
+        # self.attempted_exchange = exchanges[idx_ex]
 
     def get_exchanges_and_values(self, in_hand):
 
@@ -93,17 +92,71 @@ class RLAgent(StupidAgent):
 
         return self.attempted_exchange
 
+    # def learn_from_human_choice(self, in_hand, desired, successful):
+    #
+    #     self.attempted_exchange = (in_hand, desired)
+    #
+    #     diff = self.alpha * (successful - self.acceptance[self.attempted_exchange])
+    #
+    #     if diff >= 0:
+    #         self.acceptance[self.attempted_exchange] += diff
+
+    # def get_p_choose(self, in_hand, desired):
+    #
+    #     exchanges, values = self.get_exchanges_and_values(in_hand)
+    #
+    #     self.softmax(np.asarray(values), temp=self.gamma)
+    #
+    #     # max_value = np.max(values)
+    #
+    #     # idx_max_values = [i for i in range(len(values)) if values[i] == max_value]
+    #
+    #     idx_ex = -1
+    #     for i, ex in enumerate(exchanges):
+    #         if ex == (in_hand, desired):
+    #             idx_ex = i
+    #             break
+    #
+    #     assert idx_ex != -1
+    #
+    #     soft = self.softmax(np.asarray(values), temp=self.gamma)
+    #     return soft[idx_ex]
+
+        # max_value = np.max(values)
+        #
+        # idx_max_values = [i for i in range(len(values)) if values[i] == max_value]
+        #
+        # idx_ex = -1
+        # for i, ex in enumerate(exchanges):
+        #     if ex == (in_hand, desired):
+        #         idx_ex = i
+        #         break
+        #
+        # assert idx_ex != -1
+        #
+        # if idx_ex in idx_max_values:
+        #     return 1 - self.gamma
+        #
+        # else:
+        #     return self.gamma / (len(exchanges) - len(idx_max_values))
+
     def consume(self):
 
         self.learn_from_result()
         super().consume()
 
-    def learn_from_result(self, in_hand=None, desired=None, successful=None):
+    def learn_from_result(self):
 
-        if successful is None:
-            successful = int(self.H != self.attempted_exchange[0])
-        else:
-            self.attempted_exchange = in_hand, desired
+        successful = int(self.H != self.attempted_exchange[0])
 
         self.acceptance[self.attempted_exchange] += \
             self.alpha * (successful - self.acceptance[self.attempted_exchange])
+
+    # @staticmethod
+    # def softmax(x, temp):
+    #
+    #     try:
+    #         return np.exp(x / temp) / np.sum(np.exp(x / temp))
+    #     except (Warning, FloatingPointError) as w:
+    #         print(x, temp)
+    #         raise Exception(f'{w} [x={x}, temp={temp}]')
