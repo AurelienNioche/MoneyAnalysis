@@ -6,7 +6,8 @@ from backup import structure
 from simulation.run import _run
 
 
-def get_data(xp_data, economy_model='prod: i-1'):
+def get_data(xp_data, economy_model='prod: i-1',
+             alpha=.175, beta=1, gamma=.125, unif_cognitive_param=False):
 
     np.random.seed(1234)
 
@@ -27,12 +28,10 @@ def get_data(xp_data, economy_model='prod: i-1'):
         for g in range(n_good):
             dist.append(np.sum(cons == g))
 
-        # alpha = np.random.uniform(0.1, 0.25)
-        # beta = np.random.uniform(0.8, 1.2)
-        # gamma = np.random.uniform(0.1, 0.15)
-        alpha = .175
-        beta = 1
-        gamma = .125
+        if unif_cognitive_param:
+            alpha = np.random.uniform(0.1, 0.25)
+            beta = np.random.uniform(0.8, 1.2)
+            gamma = np.random.uniform(0.1, 0.15)
 
         agent_model = 'RLAgent'
 
