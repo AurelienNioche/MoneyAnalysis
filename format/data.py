@@ -14,12 +14,14 @@ SCRIPT_FOLDER = os.path.dirname(os.path.abspath(__file__))
 DATA_FOLDER = f'{SCRIPT_FOLDER}/../data'
 
 
-def sim_and_xp():
+def sim_and_xp(alpha=.175, beta=1, gamma=.125, unif_cognitive_param=False):
     raw_data = {}
 
     raw_data['HUMAN'], room_n_good, room_uniform = xp.get_data()
 
-    raw_data['SIM'] = simulation.run_xp_like.get_data(xp_data=raw_data['HUMAN'])
+    raw_data['SIM'] = simulation.run_xp_like.get_data(xp_data=raw_data['HUMAN'],
+                                                      gamma=gamma, beta=beta, alpha=alpha,
+                                                      unif_cognitive_param=unif_cognitive_param)
 
     category = raw_data.keys()
     n_good_cond = np.unique(room_n_good)
@@ -87,12 +89,14 @@ def phase_diagram():
     return data, labels
 
 
-def supplementary_sim_and_xp():
-
+def supplementary_sim_and_xp(alpha=.175, beta=1, gamma=.125, unif_cognitive_param=False):
     raw_data = {}
 
     raw_data['HUMAN'], room_n_good, room_uniform = xp.get_data()
-    raw_data['SIM'] = simulation.run_xp_like.get_data(xp_data=raw_data['HUMAN'])
+
+    raw_data['SIM'] = simulation.run_xp_like.get_data(xp_data=raw_data['HUMAN'],
+                                                      gamma=gamma, beta=beta, alpha=alpha,
+                                                      unif_cognitive_param=unif_cognitive_param)
 
     category = raw_data.keys()
     n_good_cond = np.unique(room_n_good)

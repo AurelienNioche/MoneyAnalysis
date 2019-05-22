@@ -45,7 +45,8 @@ def phase_diagram(f_name='phase.pdf'):
 
 def sim_and_xp():
 
-    data = format.data.sim_and_xp()
+    # With gamma = 0.225 simulations fail with 4 goods
+    data = format.data.sim_and_xp(gamma=.225)
     graph.sim_and_xp.plot(data)
     stats.stats.sim_and_xp(data)
 
