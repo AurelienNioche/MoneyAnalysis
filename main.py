@@ -27,6 +27,8 @@ import graph.supplementary.s1_and_s2
 import graph.supplementary.age
 import graph.supplementary.gender
 
+import stats.stats
+
 import format.data
 
 
@@ -45,6 +47,7 @@ def sim_and_xp():
 
     data = format.data.sim_and_xp()
     graph.sim_and_xp.plot(data)
+    stats.stats.sim_and_xp(data)
 
 
 def supplementary_sim_and_xp():
@@ -57,12 +60,14 @@ def supplementary_gender():
 
     data = format.data.supplementary_gender()
     graph.supplementary.gender.plot(data)
+    stats.stats.supplementary_gender(data)
 
 
 def supplementary_age():
 
     age, data = format.data.supplementary_age()
     graph.supplementary.age.plot(age=age, y=data)
+    stats.stats.supplementary_age(age=age, y=data)
 
 
 if __name__ == '__main__':
