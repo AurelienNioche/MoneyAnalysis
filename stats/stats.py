@@ -40,14 +40,11 @@ def _mw(to_compare, print_latex=False, **kwargs):
     us = []
 
     for dic in to_compare:
-        try:
-            u, p = scipy.stats.mannwhitneyu(dic["data"][0], dic["data"][1])  # , alternative="two-sided")
-            n = len(dic["data"][0]) + len(dic["data"][1])
-            ps.append(p)
-            us.append(u)
-            ns.append(n)
-        except ValueError as e:
-            print(e)
+        u, p = scipy.stats.mannwhitneyu(dic["data"][0], dic["data"][1], alternative="two-sided")
+        n = len(dic["data"][0]) + len(dic["data"][1])
+        ps.append(p)
+        us.append(u)
+        ns.append(n)
 
     if not len(ns):
         return
@@ -95,7 +92,12 @@ def sim_and_xp(data):
                 data[3]['SIM'][2]['NON-UNIF'],
             ]),
             'name': 'SIM, 3 GOODS, UNIF vs. NON-UNIF, agent_type=2, obs=ind_0'
-        },
+        }
+    ]
+
+    _mw(to_compare=to_compare)
+
+    to_compare = [
         {
             'data': np.array([
                 data[4]['HUMAN'][2]['UNIF'],
