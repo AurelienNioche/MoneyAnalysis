@@ -6,8 +6,8 @@ from backup import structure
 from simulation.run import _run
 
 
-def get_data(xp_data, alpha, beta, gamma,
-             unif_cognitive_param, economy_model='prod: i-1'):
+def get_data(xp_data, alpha=.175, beta=1, gamma=.125,
+             unif_cognitive_param=False, economy_model='prod: i-1'):
 
     np.random.seed(1234)
 

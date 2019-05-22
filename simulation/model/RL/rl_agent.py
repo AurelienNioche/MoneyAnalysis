@@ -30,10 +30,6 @@ class RLAgent(StupidAgent):
 
         return acceptance
 
-    # def choose(self, in_hand):
-    #     exchanges, values = self.which_exchange_do_you_want_to_try(in_hand)
-    #     self.epsilon_rule(exchanges=exchanges, values=values)
-
     def which_exchange_do_you_want_to_try(self):
 
         exchanges, values = self.get_exchanges_and_values(in_hand=self.H)
