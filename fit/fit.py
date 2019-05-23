@@ -55,9 +55,9 @@ class Fit:
             return to_return
 
         if self.method == 'tpe':  # Tree of Parzen Estimators
-
-            space = [hp.uniform(*b) for b in bounds]
-            best_param = fmin(fn=objective, space=space, algo=tpe.suggest, max_evals=MAX_EVALS)
+            raise NotImplementedError
+            # space = [hp.uniform(*b) for b in bounds]
+            # best_param = fmin(fn=objective, space=space, algo=tpe.suggest, max_evals=MAX_EVALS)
 
         elif self.method in ('de', 'L-BFGS-B', 'TNC', 'COBYLA', 'SLSQP'):  # Differential evolution
 

@@ -7,33 +7,91 @@ from simulation.model.RL.rl_agent import RLAgent
 
 class Economy(object):
 
-    def __init__(self, **kwargs):
+    def __init__(self, t_max, cognitive_parameters, agent_model='RLAgent', distribution=None,
+                 economy_model='prod: i-1', seed=123, heterogeneous=False, prod=None, cons=None):
 
-        np.random.seed(kwargs.get('seed'))
-        self.t_max = kwargs.get('t_max')
-        self.cognitive_parameters = kwargs.get('cognitive_parameters')
-        self.agent_model = kwargs.get('agent_model')
-        self.repartition = np.asarray(kwargs.get('distribution'))
+        np.random.seed(seed)
+        self.t_max = t_max
+        self.cognitive_parameters = cognitive_parameters
+        self.agent_model = agent_model
 
-        self.n_goods = len(self.repartition)
-        self.roles = self.get_roles(self.n_goods, kwargs.get('economy_model'))
-
-        self.n_agent = sum(self.repartition)
+        self.n_goods, self.n_agent, self.agents, self.prod, self.cons = \
+            self.create_agents(economy_model, heterogeneous, distribution, prod, cons)
 
         # ---- For backup ----- #
-        self.bkp_in_hand = np.zeros((self.n_agent, self.t_max))
-        self.bkp_desired = np.zeros((self.n_agent, self.t_max))
-        self.bkp_prod = np.zeros(self.n_agent)
-        self.bkp_cons = np.zeros(self.n_agent)
+        self.in_hand = np.zeros((self.n_agent, self.t_max))
+        self.desired = np.zeros((self.n_agent, self.t_max))
 
         # ---------- #
-
-        self.agents = self.create_agents(kwargs.get('heterogeneous'))
 
         self.t = 0
 
         self.markets = self.get_markets(self.n_goods)
         self.exchange_types = list(it.combinations(range(self.n_goods), r=2))
+
+    def create_agents(self, economy_model, heterogeneous, distribution, prod, cons):
+
+        if distribution is not None:
+
+            n_goods = len(distribution)
+            n_agent = sum(distribution)
+
+            roles = np.zeros((n_goods, 2), dtype=int)
+            if economy_model == 'prod: i+1':
+                for i in range(n_goods):
+                    roles[i] = (i + 1) % n_goods, i
+
+            elif economy_model == 'prod: i-1':
+                for i in range(n_goods):
+                    roles[i] = (i - 1) % n_goods, i
+
+            else:
+                raise Exception(f'Model "{economy_model}" is not defined.')
+
+            idx = 0
+
+            agents = np.zeros(n_agent, dtype=object)
+            prod, cons = np.zeros(n_agent, dtype=int), np.zeros(n_agent, dtype=int)
+
+            for agent_type, n in enumerate(distribution):
+
+                i, j = roles[agent_type]
+
+                cognitive_parameters = self.cognitive_parameters \
+                    if not heterogeneous else self.cognitive_parameters[idx]
+
+                for ind in range(n):
+                    a = eval(self.agent_model)(
+                        prod=i, cons=j,
+                        cognitive_parameters=cognitive_parameters,
+                        n_goods=n_goods,
+                        idx=idx
+                    )
+
+                    agents[idx], prod[idx], cons[idx] = a, i, j
+
+                    idx += 1
+
+        else:
+            assert cons is not None and prod is not None
+            n_goods = max(cons) + 1
+            n_agent = len(cons)
+
+            agents = np.zeros(n_agent, dtype=object)
+
+            for i in range(n_agent):
+
+                cognitive_parameters = self.cognitive_parameters if not heterogeneous else \
+                    self.cognitive_parameters[i]
+
+                agents[i] = eval(self.agent_model)(
+                    prod=prod[i], cons=cons[i],
+                    cognitive_parameters=cognitive_parameters,
+                    n_goods=n_goods,
+                    idx=i
+                )
+
+        return n_goods, n_agent, agents, prod, cons
 
     @staticmethod
     def get_markets(n_goods):
@@ -43,66 +101,16 @@ class Economy(object):
             markets[i] = []
         return markets
 
-    @staticmethod
-    def get_roles(n_goods, model):
-        """
-        :param n_goods: int
-        :param model: string: 'prod: i+1' or 'prod: i-1'
-        :return: array of size n_goods:2 (prod / cons)
-        """
-
-        roles = np.zeros((n_goods, 2), dtype=int)
-        if model == 'prod: i+1':
-            for i in range(n_goods):
-                roles[i] = (i+1) % n_goods, i
-
-        elif model == 'prod: i-1':
-            for i in range(n_goods):
-                roles[i] = (i-1) % n_goods, i
-
-        else:
-            raise Exception(f'Model "{model}" is not defined.')
-
-        return roles
-
-    def create_agents(self, heterogeneous):
-
-        agents = np.zeros(self.n_agent, dtype=object)
-
-        idx = 0
-
-        for agent_type, n in enumerate(self.repartition):
-
-            i, j = self.roles[agent_type]
-
-            for ind in range(n):
-                a = eval(self.agent_model)(
-                    prod=i, cons=j,
-                    cognitive_parameters=
-                    self.cognitive_parameters if not heterogeneous else self.cognitive_parameters[idx],
-                    n_goods=self.n_goods,
-                    idx=idx
-                )
-
-                agents[idx] = a
-
-                self.bkp_prod[idx] = i
-                self.bkp_cons[idx] = j
-
-                idx += 1
-
-        return agents
-
     def run(self):
 
         for t in range(self.t_max):
             self.time_step(t)
 
         return {
-            'in_hand': self.bkp_in_hand,
-            'desired': self.bkp_desired,
-            'prod': self.bkp_prod,
-            'cons': self.bkp_cons
+            'in_hand': self.in_hand,
+            'desired': self.desired,
+            'prod': self.prod,
+            'cons': self.cons
         }
 
     def time_step(self, t):
@@ -126,8 +134,8 @@ class Economy(object):
             self.markets[agent_choice].append(agent.idx)
 
             # Bkp
-            self.bkp_in_hand[agent.idx, self.t], \
-                self.bkp_desired[agent.idx, self.t] = agent_choice
+            self.in_hand[agent.idx, self.t], \
+                self.desired[agent.idx, self.t] = agent_choice
 
         success_idx = []
 

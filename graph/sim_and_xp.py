@@ -66,7 +66,7 @@ def boxplot(
     ax.set_aspect(aspect)
 
 
-def plot(fig_data):
+def plot(fig_data, name_extension=''):
 
     n_good_cond = fig_data.keys()
 
@@ -87,6 +87,6 @@ def plot(fig_data):
                 boxplot(results=fig_data[n_good][cat][at], ax=ax, y_label='Freq. ind. ex. with good 0')
 
         plt.tight_layout()
-        f_name = f'fig/xp_{n_good}.pdf'
+        f_name = f'fig/xp_{n_good}_{name_extension}.pdf'
         plt.savefig(f_name)
         print(f'{f_name} has been produced')
