@@ -19,6 +19,8 @@ def plot(mean, sem, cond='', n_good='', agent_type=''):
     ax.set_xlabel('trials')
     ax.set_ylabel('p(choose ind. ex. with good 0)')
 
+    ax.set_ylim((0,1))
+
     plt.title(f'{n_good} - {cond} - type{agent_type}')
     f_name = f"fig/learning_curves_{n_good}_{cond}_{agent_type}.pdf"
     plt.savefig(f_name)
