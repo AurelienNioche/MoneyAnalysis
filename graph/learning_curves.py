@@ -9,7 +9,7 @@ def plot(mean, std, cond='', n_good='', agent_type=''):
     ax.plot(mean, lw=1.5)
     ax.fill_between(
         range(len(mean)),
-        y1=mean+std,
+        y1=mean - std,
         y2=mean + std,
         alpha=0.5
     )
