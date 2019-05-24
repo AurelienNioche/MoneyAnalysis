@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 
 
-def plot(mean, std, cond='', n_good='', agent_type=''):
+def plot(mean, sem, cond='', n_good='', agent_type=''):
 
     fig = plt.figure(figsize=(15, 12))
     ax = fig.subplots()
@@ -9,8 +9,8 @@ def plot(mean, std, cond='', n_good='', agent_type=''):
     ax.plot(mean, lw=1.5)
     ax.fill_between(
         range(len(mean)),
-        y1=mean - std,
-        y2=mean + std,
+        y1=mean - sem,
+        y2=mean + sem,
         alpha=0.5
     )
 

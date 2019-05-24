@@ -1,13 +1,13 @@
 import fit.data
 
 import numpy as np
+import scipy.stats
 
 from xp import xp
-import simulation.run_based_on_fit
 
 from simulation.model.RL.rl_agent import RLAgent
 
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import graph.learning_curves
 
 import os
@@ -71,7 +71,7 @@ def main(m=0):
             agent_types = tuple(range(2, n_good))  # 2: prod + cons of m
 
             p_choices_mean = {at: np.zeros(t_max) for at in agent_types}
-            p_choices_std = {at: np.zeros(t_max) for at in agent_types}
+            p_choices_sem = {at: np.zeros(t_max) for at in agent_types}
 
             agents = []
 
@@ -107,13 +107,13 @@ def main(m=0):
 
                 for at in agent_types:
                     p_choices_mean[at][t] = np.mean(p_choices_t[at])
-                    p_choices_std[at][t] = np.std(p_choices_t[at])
+                    p_choices_sem[at][t] = np.std(p_choices_t[at])
 
             for at in agent_types:
                 fig_data[n_good][cond_labels[uniform]][at] = \
                     {
                         'mean': p_choices_mean[at],
-                        'std': p_choices_std[at]
+                        'sem': p_choices_sem[at]
                     }
 
     for n_good in room_n_good:
@@ -125,7 +125,7 @@ def main(m=0):
             for at in agent_types:
 
                 graph.learning_curves.plot(fig_data[n_good][cond][at]['mean'],
-                                           fig_data[n_good][cond][at]['std'],
+                                           fig_data[n_good][cond][at]['sem'],
                                            n_good=n_good, cond=cond, agent_type=at)
 
 
