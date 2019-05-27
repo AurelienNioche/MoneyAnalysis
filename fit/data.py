@@ -10,8 +10,6 @@ from xp import xp
 SCRIPT_FOLDER = os.path.dirname(os.path.abspath(__file__))
 DATA_FOLDER = f'{SCRIPT_FOLDER}/../data'
 
-FILE_PATH = f'{DATA_FOLDER}/fit.p'
-
 
 class PProvider:
 
@@ -55,9 +53,7 @@ class PProvider:
         return "RL"
 
 
-def produce_fit():
-
-    xp_data_list, room_n_good, room_uniform = xp.get_data()
+def produce_fit(xp_data_list, room_n_good, room_uniform):
 
     bounds = (
         ('alpha', 0.01, 0.9),  # Learning rate
@@ -95,13 +91,19 @@ def produce_fit():
     return alpha, beta, gamma, mean_p, lls, bic, eco
 
 
-def get():
+def get(xp_data_list=None, room_n_good=None, room_uniform=None, extension=''):
 
-    if not os.path.exists(FILE_PATH):
-        alpha, beta, gamma, mean_p, lls, bic, eco = produce_fit()
-        backup.save(obj=(alpha, beta, gamma, mean_p, lls, bic, eco), file_name=FILE_PATH)
+    if xp_data_list is None:
+        xp_data_list, room_n_good, room_uniform = xp.get_data()
+
+    file_path = f'{DATA_FOLDER}/fit{extension}.p'
+
+    if not os.path.exists(file_path):
+        alpha, beta, gamma, mean_p, lls, bic, eco = \
+            produce_fit(xp_data_list, room_n_good, room_uniform)
+        backup.save(obj=(alpha, beta, gamma, mean_p, lls, bic, eco), file_name=file_path)
 
     else:
-        alpha, beta, gamma, mean_p, lls, bic, eco = backup.load(file_name=FILE_PATH)
+        alpha, beta, gamma, mean_p, lls, bic, eco = backup.load(file_name=file_path)
 
     return alpha, beta, gamma, mean_p, lls, bic, eco
