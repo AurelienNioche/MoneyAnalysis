@@ -242,11 +242,8 @@ def supplementary_age(obs_type='dir', n_split=3):
 
     n_good_cond = np.unique(room_n_good)
 
-    age = {
-        n_good: [] for n_good in n_good_cond
-    }
-    data_age = {
-        n_good: [] for n_good in n_good_cond
+    fig_data = {
+        n_good: {"age": [], "obs": []} for n_good in n_good_cond
     }
 
     for d, n_good in zip(data, room_n_good):
@@ -255,10 +252,10 @@ def supplementary_age(obs_type='dir', n_split=3):
 
             to_append = metric.get_individual_measure(
                 data_xp_session=d, i=i, n_split=n_split, slice_idx=-1, obs_type=obs_type)
-            data_age[n_good].append(to_append)
-            age[n_good].append(a)
+            fig_data[n_good]['obs'].append(to_append)
+            fig_data[n_good]['age'].append(a)
 
-    return age, data_age
+    return fig_data
 
 
 def parameter_recovery():

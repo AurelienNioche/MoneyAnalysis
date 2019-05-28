@@ -75,15 +75,16 @@ def supplementary_gender():
 
 def supplementary_age():
 
-    age, data = analysis.data.supplementary_age()
-    graph.supplementary.age.plot(age=age, y=data)
-    analysis.stats.stats.supplementary_age(age=age, y=data)
+    data = analysis.data.supplementary_age()
+    graph.supplementary.age.plot(data)
+    analysis.stats.stats.supplementary_age(data)
 
 
 def parameter_recovery():
 
     fig_data = analysis.data.parameter_recovery()
     graph.parameter_recovery.plot(fig_data)
+    analysis.stats.stats.parameter_recovery(fig_data)
 
 
 def fit():

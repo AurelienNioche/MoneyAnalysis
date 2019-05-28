@@ -131,16 +131,16 @@ def sim_and_xp(data, name_extension=''):
     _mw(to_compare=to_compare)
 
 
-def supplementary_age(age, y):
+def supplementary_age(data):
 
-    for n_good in age.keys():
+    for n_good in data.keys():
         print(SEP)
         print(f'SUPPLEMENTARY AGE TEST FOR N_GOOD = {n_good}')
         print(SEP)
 
         cor, p = scipy.stats.pearsonr(
-            age[n_good],
-            y[n_good]
+            data[n_good]['age'],
+            data[n_good]['obs']
         )
 
         print(f'Pearson corr age - measure : $r_pearson={cor:.2f}$, $p={p:.3f}$')
@@ -161,19 +161,19 @@ def supplementary_gender(data):
         print(SEP)
 
 
-def parameter_recovery(age, y):
+def parameter_recovery(data):
 
-    for n_good in age.keys():
+    for param, (value, r_value) in sorted(data.items()):
         print(SEP)
-        print(f'SUPPLEMENTARY AGE TEST FOR N_GOOD = {n_good}')
+        print(f'SUPPLEMENTARY PARAM RECOVERY TEST FOR PARAM = {param}')
         print(SEP)
 
         cor, p = scipy.stats.pearsonr(
-            age[n_good],
-            y[n_good]
+            value,
+            r_value
         )
 
-        print(f'Pearson corr age - measure : $r_pearson={cor:.2f}$, $p={p:.3f}$')
+        print(f'Pearson corr: $r_pearson={cor:.2f}$, $p={p:.3f}$')
 
 
 if __name__ == "__main__":
