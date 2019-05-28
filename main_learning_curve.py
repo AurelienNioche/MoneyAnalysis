@@ -7,11 +7,12 @@ from xp import xp
 
 from simulation.model.RL.rl_agent import RLAgent
 
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
+import matplotlib.gridspec as grd
+
 import graph.learning_curves
 
 import os
-
 
 FIG_FOLDER = "fig"
 os.makedirs(FIG_FOLDER, exist_ok=True)
@@ -36,7 +37,7 @@ def main(m=0):
         } for cond in cond_labels
     } for n_good in n_good_cond}
 
-    for n_good in room_n_good:
+    for n_good in n_good_cond:
 
         for uniform in True, False:
 
@@ -56,7 +57,7 @@ def main(m=0):
             cons = xp_data.cons
             desired = xp_data.desired
             in_hand = xp_data.in_hand
-            successful = xp_data.success
+            success = xp_data.success
 
             n_good = xp_data.n_good
             n_agent = len(xp_data.prod)
@@ -100,7 +101,7 @@ def main(m=0):
 
                     p = agents[i].p_choice(in_hand=prod[i], desired=m)
                     agents[i].learn_from_result(in_hand=in_hand[i, t], desired=desired[i, t],
-                                                successful=successful[i, t])
+                                                success=success[i, t])
 
                     at = cons[i]
                     p_choices_t[at].append(p)
@@ -116,17 +117,29 @@ def main(m=0):
                         'sem': p_choices_sem[at]
                     }
 
-    for n_good in room_n_good:
+    for n_good in n_good_cond:
 
-        for cond in cond_labels:
+        n_rows = n_good-2
 
-            agent_types = fig_data[n_good][cond].keys()
+        fig = plt.figure(figsize=(10, 4*n_rows))
+        gs = grd.GridSpec(ncols=2, nrows=n_rows)
 
-            for at in agent_types:
+        for col, cond in enumerate(cond_labels[::-1]):
 
+            agent_types = sorted(fig_data[n_good][cond].keys())
+
+            for row, at in enumerate(agent_types):
+
+                ax = fig.add_subplot(gs[row, col])
                 graph.learning_curves.plot(fig_data[n_good][cond][at]['mean'],
                                            fig_data[n_good][cond][at]['sem'],
-                                           n_good=n_good, cond=cond, agent_type=at)
+                                           n_good=n_good, cond=cond, agent_type=at,
+                                           ax=ax)
+
+        plt.tight_layout()
+        f_name = f"fig/learning_curves_{n_good}.pdf"
+        plt.savefig(f_name)
+        print(f'{f_name} has been produced')
 
 
 if __name__ == "__main__":

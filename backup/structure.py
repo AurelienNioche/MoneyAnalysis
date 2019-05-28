@@ -25,8 +25,8 @@ class Data:
         self.desired.append(bkp['desired'])
         self.prod.append(bkp['prod'])
         self.cons.append(bkp['cons'])
+        self.n_good.append(bkp['n_good'])
 
-        self.n_good.append(param['n_good'])
         self.distribution.append(param['distribution'])
         self.cognitive_parameters.append(param['cognitive_parameters'])
         self.seed.append(param['seed'])

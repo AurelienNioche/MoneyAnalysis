@@ -60,10 +60,7 @@ def _get_phase_parameters(
             't_max': t_max,
             'economy_model': economy_model,
             'agent_model': agent_model,
-            'n_good': n_good,
-            'seed': np.random.randint(2**32-1),
-            'constant_x_index': constant_x_index,
-            'constant_x_value': constant_x_value
+            'seed': np.random.randint(2**32-1)
         }
         parameters.append(param)
 

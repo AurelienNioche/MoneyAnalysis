@@ -1,6 +1,7 @@
 import numpy as np
 import itertools as it
 import math
+
 from simulation.model.RL.stupid_agent import StupidAgent
 from simulation.model.RL.get_paths import get_paths
 
@@ -98,12 +99,12 @@ class RLAgent(StupidAgent):
         self.learn_from_result()
         super().consume()
 
-    def learn_from_result(self, in_hand=None, desired=None, successful=None):
+    def learn_from_result(self, in_hand=None, desired=None, success=None):
 
-        if successful is None:
-            successful = int(self.H != self.attempted_exchange[0])
+        if success is None:
+            success = int(self.H != self.attempted_exchange[0])
         else:
             self.attempted_exchange = in_hand, desired
 
         self.acceptance[self.attempted_exchange] += \
-            self.alpha * (successful - self.acceptance[self.attempted_exchange])
+            self.alpha * (success - self.acceptance[self.attempted_exchange])

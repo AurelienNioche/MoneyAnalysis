@@ -60,6 +60,7 @@ def get_data(xp_data_list, alpha, beta, gamma, eco):
         sim_d = structure.DataXPSession(
             in_hand=bkp['in_hand'],
             desired=bkp['desired'],
+            success=bkp['success'],
             prod=bkp['prod'],
             cons=bkp['cons'],
             n_good=n_good,

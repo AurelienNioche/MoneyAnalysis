@@ -23,7 +23,6 @@ def get_data(xp_data, alpha=.175, beta=1, gamma=.125,
         prod = xp_d.prod
         cons = xp_d.cons
 
-        # With gamma = 0.225 simulations fail with 4 goods
         if random_cognitive_param:
             alpha = np.random.uniform(0.1, 0.25)
             beta = np.random.uniform(0.8, 1.2)
@@ -34,7 +33,6 @@ def get_data(xp_data, alpha=.175, beta=1, gamma=.125,
             'cons': cons,
             'prod': prod,
             't_max': t_max,
-            'n_good': n_good,
             'seed': np.random.randint(2 ** 32 - 1)
         })
 
@@ -43,6 +41,7 @@ def get_data(xp_data, alpha=.175, beta=1, gamma=.125,
             desired=bkp['desired'],
             prod=bkp['prod'],
             cons=bkp['cons'],
+            success=bkp['success'],
             n_good=n_good,
             t_max=t_max
         )

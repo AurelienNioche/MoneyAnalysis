@@ -70,11 +70,11 @@ def _mw(to_compare, print_latex=False, **kwargs):
     return p_corr
 
 
-def sim_and_xp(data):
+def sim_and_xp(data, extension=''):
     # keys: ngood, HUMAN/SIM, agent_type, UNIF/NON-UNIF (1, 0)
     # Main tests
     print(SEP)
-    print('MAIN SIM AND XP TESTS')
+    print(f'MAIN SIM AND XP TESTS {extension}')
     print(SEP)
 
     to_compare = [
@@ -133,29 +133,32 @@ def sim_and_xp(data):
 
 def supplementary_age(age, y):
 
-    print(SEP)
-    print('SUPPLEMENTARY AGE TEST')
-    print(SEP)
+    for n_good in age.keys():
+        print(SEP)
+        print(f'SUPPLEMENTARY AGE TEST FOR N_GOOD = {n_good}')
+        print(SEP)
 
-    cor, p = scipy.stats.pearsonr(
-        age,
-        y
-    )
+        cor, p = scipy.stats.pearsonr(
+            age[n_good],
+            y[n_good]
+        )
 
-    print(f'Pearson corr age - measure : $r_pearson={cor:.2f}$, $p={p:.3f}$')
+        print(f'Pearson corr age - measure : $r_pearson={cor:.2f}$, $p={p:.3f}$')
 
 
 def supplementary_gender(data):
-    print(SEP)
-    print('SUPPLEMENTARY GENDER TEST')
-    print(SEP)
 
-    _mw(to_compare=[{
-        'data': np.array([data['MALE'], data['FEMALE']]),
-        'name': 'MALE VS FEMALE, obs=ind_0'
-    }])
+    for n_good in data.keys():
+        print(SEP)
+        print(f'SUPPLEMENTARY GENDER TEST FOR N_GOOD = {n_good}')
+        print(SEP)
 
-    print(SEP)
+        _mw(to_compare=[{
+            'data': np.array([data[n_good]['MALE'], data[n_good]['FEMALE']]),
+            'name': 'MALE VS FEMALE, obs=dir'
+        }])
+
+        print(SEP)
 
 
 if __name__ == "__main__":

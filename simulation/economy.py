@@ -16,11 +16,14 @@ class Economy(object):
         self.agent_model = agent_model
 
         self.n_goods, self.n_agent, self.agents, self.prod, self.cons = \
-            self.create_agents(economy_model, heterogeneous, distribution, prod, cons)
+            self.create_agents(economy_model=economy_model,
+                               heterogeneous=heterogeneous, distribution=distribution,
+                               prod=prod, cons=cons)
 
         # ---- For backup ----- #
-        self.in_hand = np.zeros((self.n_agent, self.t_max))
-        self.desired = np.zeros((self.n_agent, self.t_max))
+        self.in_hand = np.zeros((self.n_agent, self.t_max), dtype=int)
+        self.desired = np.zeros((self.n_agent, self.t_max), dtype=int)
+        self.success = np.zeros((self.n_agent, self.t_max), dtype=bool)
 
         # ---------- #
 
@@ -110,7 +113,8 @@ class Economy(object):
             'in_hand': self.in_hand,
             'desired': self.desired,
             'prod': self.prod,
-            'cons': self.cons
+            'cons': self.cons,
+            'success': self.success
         }
 
     def time_step(self, t):
@@ -159,6 +163,8 @@ class Economy(object):
 
             agent = self.agents[idx]
             agent.proceed_to_exchange()
+
+            self.success[idx, self.t] = True
 
 
 def launch(**kwargs):

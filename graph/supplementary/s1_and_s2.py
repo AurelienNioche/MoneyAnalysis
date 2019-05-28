@@ -94,6 +94,6 @@ def plot(fig_data):
 
             plt.tight_layout()
 
-            f_name = f'fig/supplementary_indirect_{n_good}_{obs_type}.pdf'
+            f_name = f'fig/supplementary_indirect_{n_good}_{ot}.pdf'
             plt.savefig(f_name)
             print(f'{f_name} has been produced')

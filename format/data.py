@@ -15,6 +15,7 @@ DATA_FOLDER = f'{SCRIPT_FOLDER}/../data'
 
 
 def sim_and_xp():
+
     raw_data = {}
 
     raw_data['HUMAN'], room_n_good, room_uniform = xp.get_data()
@@ -58,14 +59,14 @@ def sim_and_xp():
     return fig_data
 
 
-def sim_and_xp_exploration(alpha=.175, beta=1, gamma=.125, unif_cognitive_param=False):
+def sim_and_xp_exploration(alpha=.175, beta=1, gamma=.125, random_cognitive_param=False):
     raw_data = {}
 
     raw_data['HUMAN'], room_n_good, room_uniform = xp.get_data()
 
     raw_data['SIM'] = simulation.run_xp_like.get_data(xp_data=raw_data['HUMAN'],
                                                       gamma=gamma, beta=beta, alpha=alpha,
-                                                      random_cognitive_param=unif_cognitive_param)
+                                                      random_cognitive_param=random_cognitive_param)
 
     category = raw_data.keys()
     n_good_cond = np.unique(room_n_good)
@@ -192,18 +193,22 @@ def supplementary_gender(obs_type='dir', n_split=3):
 
     categories = "FEMALE", "MALE"
 
+    n_good_cond = np.unique(room_n_good)
+
     data_gender = {
-        cat: [] for cat in categories
+        n_good: {
+            cat: [] for cat in categories
+        } for n_good in n_good_cond
     }
 
-    for d in data:
+    for d, n_good in zip(data, room_n_good):
 
         for i, g in enumerate(d.gender):
 
             to_append = metric.get_individual_measure(
                 data_xp_session=d, i=i, n_split=n_split, slice_idx=-1, obs_type=obs_type)
 
-            data_gender[categories[int(g)]].append(to_append)
+            data_gender[n_good][categories[int(g)]].append(to_append)
 
     return data_gender
 
@@ -212,16 +217,22 @@ def supplementary_age(obs_type='dir', n_split=3):
 
     data, room_n_good, room_uniform = xp.get_data()
 
-    age = []
-    data_age = []
+    n_good_cond = np.unique(room_n_good)
 
-    for d in data:
+    age = {
+        n_good: [] for n_good in n_good_cond
+    }
+    data_age = {
+        n_good: [] for n_good in n_good_cond
+    }
+
+    for d, n_good in zip(data, room_n_good):
 
         for i, a in enumerate(d.age):
 
             to_append = metric.get_individual_measure(
                 data_xp_session=d, i=i, n_split=n_split, slice_idx=-1, obs_type=obs_type)
-            data_age.append(to_append)
-            age.append(a)
+            data_age[n_good].append(to_append)
+            age[n_good].append(a)
 
     return age, data_age

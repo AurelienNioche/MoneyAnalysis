@@ -37,10 +37,10 @@ class PProvider:
 
             in_hand = self.xp_data.in_hand[self.agent_idx, t]
             desired = self.xp_data.desired[self.agent_idx, t]
-            successful = self.xp_data.success[self.agent_idx, t]
+            success = self.xp_data.success[self.agent_idx, t]
 
             p = agent.p_choice(in_hand=in_hand, desired=desired)
-            agent.learn_from_result(in_hand=in_hand, desired=desired, successful=successful)
+            agent.learn_from_result(in_hand=in_hand, desired=desired, success=success)
 
             if p == 0:
                 return None
