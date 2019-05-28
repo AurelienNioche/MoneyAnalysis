@@ -7,7 +7,7 @@ import backup.structure
 import graph.old.supplementary
 
 
-import format.old.format
+import analysis.old.format
 import simulation.economy
 
 
@@ -117,7 +117,7 @@ def analyse(data):
 
             for j in range(n_sim):
 
-                mean, e = format.old.format.exp_monetary_bhv_bar_plot(monetary_bhv=b.monetary_bhv[j])
+                mean, e = analysis.old.format.exp_monetary_bhv_bar_plot(monetary_bhv=b.monetary_bhv[j])
                 y[i].append(mean[m])
 
         y = np.asarray(y).transpose()

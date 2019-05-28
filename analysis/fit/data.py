@@ -4,11 +4,11 @@ import numpy as np
 from simulation.model.RL.rl_agent import RLAgent
 
 from backup import backup
-from fit import fit
+from analysis.fit import fit
 from xp import xp
 
-SCRIPT_FOLDER = os.path.dirname(os.path.abspath(__file__))
-DATA_FOLDER = f'{SCRIPT_FOLDER}/../data'
+# SCRIPT_FOLDER = os.path.dirname(os.path.abspath(__file__))
+DATA_FOLDER = f'data'
 
 
 class PProvider:

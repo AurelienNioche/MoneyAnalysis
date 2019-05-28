@@ -6,7 +6,7 @@ from simulation.run import _run
 
 
 def get_data(xp_data, alpha=.175, beta=1, gamma=.125,
-             random_cognitive_param=False, seed=1234):
+             random_cognitive_param=False, seed=123):
 
     np.random.seed(seed)
 
@@ -33,7 +33,7 @@ def get_data(xp_data, alpha=.175, beta=1, gamma=.125,
             'cons': cons,
             'prod': prod,
             't_max': t_max,
-            'seed': np.random.randint(2 ** 32 - 1)
+            'seed': seed
         })
 
         sim_d = structure.DataXPSession(

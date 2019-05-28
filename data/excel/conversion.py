@@ -23,11 +23,11 @@ def write_worksheet(workbook, data, worksheet_name):
 
     worksheet = workbook.add_worksheet(worksheet_name)
 
-    # prepare column title format
+    # prepare column title analysis
     title = workbook.add_format({'bold': True})
     title.set_bottom()
 
-    # prepare data format (alignment)
+    # prepare data analysis (alignment)
     align = workbook.add_format()
     align.set_align("left")
 

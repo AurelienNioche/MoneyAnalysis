@@ -1,8 +1,9 @@
 import matplotlib.pyplot as plt
+import matplotlib.gridspec as grd
 import numpy as np
 
 
-def plot(mean, sem, cond='', n_good='', agent_type='', ax=None):
+def curve(mean, sem, cond='', n_good='', agent_type='', ax=None):
 
     if ax is None:
         fig = plt.figure(figsize=(15, 12))
@@ -42,3 +43,33 @@ def plot(mean, sem, cond='', n_good='', agent_type='', ax=None):
     ax.axhline(chance_level, linestyle='--', color='0.3', zorder=-10, linewidth=0.5)
 
     ax.set_title(f'{n_good} - {cond} - type{agent_type}')
+
+
+def plot(fig_data):
+
+    n_good_cond = fig_data.keys()
+
+    for n_good in n_good_cond:
+
+        n_rows = n_good - 2
+
+        fig = plt.figure(figsize=(10, 4 * n_rows))
+        gs = grd.GridSpec(ncols=2, nrows=n_rows)
+
+        cond_labels = sorted(fig_data[n_good].keys())
+
+        for col, cond in enumerate(cond_labels[::-1]):
+
+            agent_types = sorted(fig_data[n_good][cond].keys())
+
+            for row, at in enumerate(agent_types):
+                ax = fig.add_subplot(gs[row, col])
+                curve(fig_data[n_good][cond][at]['mean'],
+                      fig_data[n_good][cond][at]['sem'],
+                      n_good=n_good, cond=cond, agent_type=at,
+                      ax=ax)
+
+        plt.tight_layout()
+        f_name = f"fig/learning_curves_{n_good}.pdf"
+        plt.savefig(f_name)
+        print(f'{f_name} has been produced')

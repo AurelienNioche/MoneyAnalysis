@@ -1,13 +1,13 @@
 import numpy as np
 
 import scipy.optimize
-from hyperopt import hp, fmin, tpe
+# from hyperopt import hp, fmin, tpe
 
 # IDX_PARAMETERS = 0
 # IDX_MODEL = 1
 # IDX_ARGUMENTS = 2
 
-MAX_EVALS = 500  # Only if tpe
+# MAX_EVALS = 500  # Only if tpe
 
 
 class Fit:

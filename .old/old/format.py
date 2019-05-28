@@ -7,7 +7,7 @@ import scipy.stats
 
 def medium_over_user(medium):
     """
-    returns an array with format compatible with
+    returns an array with analysis compatible with
     for_medium_bar_plot_from_simulation function
     """
 
@@ -61,7 +61,7 @@ def medium_over_t(medium):
 def monetary_bhv_over_user(monetary_bhv):
 
     """
-    returns an array with format compatible with
+    returns an array with analysis compatible with
     for_monetary_behavior_bar_plot_from_simulation function
     """
 

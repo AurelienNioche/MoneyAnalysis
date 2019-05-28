@@ -12,7 +12,7 @@ import backup.structure
 import simulation.economy
 import simulation.parameters
 
-import format.old.economy
+import analysis.old.economy
 
 
 def _get_phase_parameters(
@@ -80,7 +80,7 @@ def _get_experiment_like_parameters():
 
     rooms = (414, 415, 416, 417)
 
-    distributions = [format.old.economy.distributions.get(i) for i in rooms]
+    distributions = [analysis.old.economy.distributions.get(i) for i in rooms]
 
     i = 0
     for i_r in range(len(rooms)):

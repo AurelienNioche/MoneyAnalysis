@@ -15,7 +15,7 @@
 # Django specific settings
 import os
 
-import metric.metric as metric
+from analysis.metric import metric as metric
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "MoneyAnalysis.settings")
 
@@ -120,11 +120,11 @@ def sim_and_xp(n_split=3):
     #
     #     data = []
     #
-    #     titles = [analysis.format.economy.labels.get(r_id) for r_id in room_id[n_good]]
+    #     titles = [analysis.analysis.economy.labels.get(r_id) for r_id in room_id[n_good]]
     #
     #     for r_id in room_id[n_good]:
     #
-    #         label = analysis.format.economy.labels.get(r_id)
+    #         label = analysis.analysis.economy.labels.get(r_id)
     #         xp_session = f"{n_good}-{'NUPM' if 'non_uniform' in label else 'U'}"
     #         print(f"Stats for simulation '{label}':")
 

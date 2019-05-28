@@ -15,7 +15,7 @@
 
 import numpy as np
 
-from format.conversion import Converter
+from analysis.tools.conversion import Converter
 
 # Django specific settings
 import os

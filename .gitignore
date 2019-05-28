@@ -106,7 +106,7 @@ data/phase_4_goods/
 data/exp_like/
 data/individual_data.p
 fig/
-__old__/
+.old/__old__/
 __test__/run.py
 Supprimerait .DS_Store
 

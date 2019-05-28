@@ -2,6 +2,59 @@ import numpy as np
 from tqdm import tqdm
 
 
+def exchange(n_good, in_hand, desired, prod, cons):
+
+    """
+    Compute for a single subject for each timestep the cumulative number of
+        * direct exchange with production good in hand
+        * indirect exchange with good x
+    :param n_good:
+    :param in_hand:
+    :param desired:
+    :param prod:
+    :param cons:
+    :return:
+    """
+
+    t_max = len(in_hand)
+
+    ind_ex = np.zeros((t_max, n_good))
+    dir_ex = np.zeros(t_max)
+    n = np.zeros(t_max, dtype=int)
+
+    _n = 0
+    _dir_ex = 0
+    _ind_ex = np.zeros(n_good)
+
+    for t in range(t_max):
+
+        ih = in_hand[t]
+        # --- ...old way ---
+        # Check for direct
+        # if (ih, c) == (prod, cons):
+        #     dir_ex += 1
+        # Check for indirect
+        # else:
+        #     for g in goods:
+        #         if (ih, c) in [(prod, g), (g, cons)]:
+        #             ind_ex[g] += 1
+        if ih == prod:
+            _n += 1
+
+            c = int(desired[t])
+
+            if c == cons:
+                _dir_ex += 1
+            else:
+                _ind_ex[c] += 1
+
+        ind_ex[t, :] = _ind_ex
+        dir_ex[t] = _dir_ex
+        n[t] = _n
+
+    return dir_ex, ind_ex, n
+
+
 def get_windowed_observation(dir_ex, ind_ex, n, n_split, n_good, slice_idx=-1):
 
     tmax = len(n)
@@ -63,59 +116,6 @@ def get_windowed_observation(dir_ex, ind_ex, n, n_split, n_good, slice_idx=-1):
     return (m_dir_ex[slice_idx], m_ind_ex[slice_idx, :]) if slice_idx != 'all' else (m_dir_ex, m_ind_ex)
 
 
-def exchange(n_good, in_hand, desired, prod, cons):
-
-    """
-    Compute for a single subject for each timestep the cumulative number of
-        * direct exchange with production good in hand
-        * indirect exchange with good x
-    :param n_good:
-    :param in_hand:
-    :param desired:
-    :param prod:
-    :param cons:
-    :return:
-    """
-
-    t_max = len(in_hand)
-
-    ind_ex = np.zeros((t_max, n_good))
-    dir_ex = np.zeros(t_max)
-    n = np.zeros(t_max, dtype=int)
-
-    _n = 0
-    _dir_ex = 0
-    _ind_ex = np.zeros(n_good)
-
-    for t in range(t_max):
-
-        ih = in_hand[t]
-        # --- ...old way ---
-        # Check for direct
-        # if (ih, c) == (prod, cons):
-        #     dir_ex += 1
-        # Check for indirect
-        # else:
-        #     for g in goods:
-        #         if (ih, c) in [(prod, g), (g, cons)]:
-        #             ind_ex[g] += 1
-        if ih == prod:
-            _n += 1
-
-            c = int(desired[t])
-
-            if c == cons:
-                _dir_ex += 1
-            else:
-                _ind_ex[c] += 1
-
-        ind_ex[t, :] = _ind_ex
-        dir_ex[t] = _dir_ex
-        n[t] = _n
-
-    return dir_ex, ind_ex, n
-
-
 def get_economy_measure(in_hand, desired, prod, cons, n_split=3):
 
     """
@@ -163,35 +163,6 @@ def get_economy_measure(in_hand, desired, prod, cons, n_split=3):
         obs.append(to_add)
 
     return obs
-
-
-def phase_diagram(in_hand, desired, prod, cons, distribution, n_good):
-
-    n = len(distribution)  # Number of economies in this batch
-
-    observation = get_economy_measure(in_hand=in_hand, desired=desired, prod=prod, cons=cons)
-
-    money = np.array([
-        [observation[i][good] for good in range(n_good)] for i in range(n)
-    ])
-
-    unq_repartition = np.unique(distribution, axis=0)
-    labels = np.unique([i[-1] for i in unq_repartition])
-
-    n_side = len(labels)
-
-    phases = []
-
-    for good in range(n_good):
-
-        scores = np.array([
-            np.mean([money[i][good] for i in range(n) if np.all(distribution[i] == r)])
-            for r in unq_repartition
-        ])
-
-        phases.append(scores.reshape(n_side, n_side).T)
-
-    return phases, labels
 
 
 def get_individual_measure(data_xp_session, i, n_split, slice_idx, obs_type):

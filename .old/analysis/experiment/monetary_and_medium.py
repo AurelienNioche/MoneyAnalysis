@@ -2,8 +2,8 @@ import numpy as np
 import os
 
 from game.models import Room, User, Choice
-from format.old import economy
-from format import Converter
+from analysis.old import economy
+from analysis import Converter
 
 import backup.backup as backup
 

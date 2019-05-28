@@ -1,21 +1,9 @@
 import os
 import numpy as np
 
-from simulation.model.RL.rl_agent import RLAgent
-
-from backup import backup, structure
-
-import matplotlib.pyplot as plt
-
-from fit import fit
-from xp import xp
+from backup import structure
 
 from simulation.run import _run
-
-from metric import metric
-
-import graph.sim_and_xp
-from stats import stats
 
 SCRIPT_FOLDER = os.path.dirname(os.path.abspath(__file__))
 DATA_FOLDER = f'{SCRIPT_FOLDER}/../data'

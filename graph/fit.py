@@ -19,4 +19,4 @@ def plot_hist(alpha, beta, gamma, mean_p, lls, bic, ):
         f_name = f"fig/{param_name}_distribution.pdf"
         plt.savefig()
         print(f'{f_name} has been produced')
-        plt.close()
+

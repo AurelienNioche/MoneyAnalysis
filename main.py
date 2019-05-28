@@ -26,10 +26,12 @@ import graph.phase_diagram
 import graph.supplementary.s1_and_s2
 import graph.supplementary.age
 import graph.supplementary.gender
+import graph.parameter_recovery
+import graph.learning_curves
 
-import stats.stats
+from analysis.stats import stats
 
-import format.data
+import analysis.data
 
 
 def phase_diagram(f_name='phase.pdf'):
@@ -39,43 +41,62 @@ def phase_diagram(f_name='phase.pdf'):
     with 3 and 4 goods
     """
 
-    data, labels = format.data.phase_diagram()
+    data, labels = analysis.data.phase_diagram()
     graph.phase_diagram.plot(data=data, labels=labels, f_name=f_name)
 
 
 def sim_and_xp():
 
-    data = format.data.sim_and_xp()
+    data = analysis.data.sim_and_xp()
     graph.sim_and_xp.plot(data)
-    stats.stats.sim_and_xp(data)
+    analysis.stats.stats.sim_and_xp(data)
 
 
 def sim_and_xp_exploration():
 
     # With gamma = 0.225 simulations fail statistically with 4 goods but graph are not clear
-    data = format.data.sim_and_xp_exploration(beta=1e+20)
+    data = analysis.data.sim_and_xp_exploration(beta=1e+20)
     graph.sim_and_xp.plot(data)
-    stats.stats.sim_and_xp(data, extension="exploration")
+    analysis.stats.stats.sim_and_xp(data, name_extension="exploration")
 
 
 def supplementary_sim_and_xp():
 
-    data = format.data.supplementary_sim_and_xp()
+    data = analysis.data.supplementary_sim_and_xp()
     graph.supplementary.s1_and_s2.plot(data)
 
 
 def supplementary_gender():
 
-    data = format.data.supplementary_gender()
+    data = analysis.data.supplementary_gender()
     graph.supplementary.gender.plot(data)
-    stats.stats.supplementary_gender(data)
+    analysis.stats.stats.supplementary_gender(data)
 
 
 def supplementary_age():
 
-    age, data = format.data.supplementary_age()
+    age, data = analysis.data.supplementary_age()
     graph.supplementary.age.plot(age=age, y=data)
-    stats.stats.supplementary_age(age=age, y=data)
+    analysis.stats.stats.supplementary_age(age=age, y=data)
+
+
+def parameter_recovery():
+
+    fig_data = analysis.data.parameter_recovery()
+    graph.parameter_recovery.plot(fig_data)
+
+
+def fit():
+
+    fig_data = analysis.data.fit()
+    graph.sim_and_xp.plot(fig_data, name_extension='FIT')
+    stats.sim_and_xp(fig_data, name_extension='FIT')
+
+
+def learning_curves():
+
+    fig_data = analysis.data.learning_curves()
+    graph.learning_curves.plot(fig_data)
 
 
 if __name__ == '__main__':
@@ -95,3 +116,8 @@ if __name__ == '__main__':
 
     # # Uncomment for supplementary analysis concerning parameter exploration
     sim_and_xp_exploration()
+
+    # # Uncomment for supplementary analysis related to fit
+    fit()
+    learning_curves()
+    parameter_recovery()

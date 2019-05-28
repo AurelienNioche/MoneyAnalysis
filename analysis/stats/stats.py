@@ -70,11 +70,11 @@ def _mw(to_compare, print_latex=False, **kwargs):
     return p_corr
 
 
-def sim_and_xp(data, extension=''):
+def sim_and_xp(data, name_extension=''):
     # keys: ngood, HUMAN/SIM, agent_type, UNIF/NON-UNIF (1, 0)
     # Main tests
     print(SEP)
-    print(f'MAIN SIM AND XP TESTS {extension}')
+    print(f'MAIN SIM AND XP TESTS {name_extension}')
     print(SEP)
 
     to_compare = [
@@ -159,6 +159,21 @@ def supplementary_gender(data):
         }])
 
         print(SEP)
+
+
+def parameter_recovery(age, y):
+
+    for n_good in age.keys():
+        print(SEP)
+        print(f'SUPPLEMENTARY AGE TEST FOR N_GOOD = {n_good}')
+        print(SEP)
+
+        cor, p = scipy.stats.pearsonr(
+            age[n_good],
+            y[n_good]
+        )
+
+        print(f'Pearson corr age - measure : $r_pearson={cor:.2f}$, $p={p:.3f}$')
 
 
 if __name__ == "__main__":
