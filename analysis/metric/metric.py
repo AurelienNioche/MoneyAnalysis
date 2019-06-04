@@ -1,8 +1,10 @@
 import numpy as np
 from tqdm import tqdm
 
+np.seterr(all='raise')
 
-def exchange(n_good, in_hand, desired, prod, cons):
+
+def exchange(n_good, in_hand, desired, prod, cons, m=None):
 
     """
     Compute for a single subject for each timestep the cumulative number of
@@ -18,13 +20,19 @@ def exchange(n_good, in_hand, desired, prod, cons):
 
     t_max = len(in_hand)
 
-    ind_ex = np.zeros((t_max, n_good))
-    dir_ex = np.zeros(t_max)
     n = np.zeros(t_max, dtype=int)
+    dir_ex = np.zeros(t_max)
 
     _n = 0
     _dir_ex = 0
-    _ind_ex = np.zeros(n_good)
+
+    if m is None:
+        ind_ex = np.zeros((t_max, n_good))
+        _ind_ex = np.zeros(n_good)
+
+    else:
+        ind_ex = np.zeros(t_max)
+        _ind_ex = 0
 
     for t in range(t_max):
 
@@ -46,24 +54,70 @@ def exchange(n_good, in_hand, desired, prod, cons):
             if c == cons:
                 _dir_ex += 1
             else:
-                _ind_ex[c] += 1
+                if m is None:
+                    _ind_ex[c] += 1
+                else:
+                    _ind_ex += int(c == m)
 
-        ind_ex[t, :] = _ind_ex
+        if m is None:
+            ind_ex[t, :] = _ind_ex
+        else:
+            ind_ex[t] = _ind_ex
         dir_ex[t] = _dir_ex
         n[t] = _n
 
     return dir_ex, ind_ex, n
 
 
+def _windowed_computation(ex, inf, sup, norm_n_possibility, split_idx):
+
+    # get windowed data
+    raw_windowed = ex[inf:sup]
+    # If it is not the first window normalize, otherwise no (minus 0)
+    # normalized by the number of attempts
+
+    last_data = ex[inf - 1] if split_idx != 0 else 0
+
+    norm_windowed = raw_windowed - last_data
+
+    r = []
+    for x, y in zip(norm_windowed, norm_n_possibility):
+
+        if y > 0:
+            r.append(x / y)
+
+    try:
+        assert len(r)
+        r_mean = np.mean(r)
+    except AssertionError:
+        r_mean = np.nan
+
+    return r_mean
+
+
 def get_windowed_observation(dir_ex, ind_ex, n, n_split, n_good, slice_idx=-1):
 
-    tmax = len(n)
-    step = tmax // n_split
-    bounds = np.arange(tmax+1, step=step)
-    m_ind_ex = np.zeros((n_split, n_good), dtype=float)
+    m_defined = len(ind_ex.shape) == 1
+
+    t_max = len(n)
+    step = t_max // n_split
+    bounds = np.arange(t_max+1, step=step)
     m_dir_ex = np.zeros(n_split, dtype=float)
 
-    for i in range(n_split):
+    if m_defined:
+        m_ind_ex = np.zeros(n_split, dtype=float)
+    else:
+        m_ind_ex = np.zeros((n_split, n_good), dtype=float)
+
+    if slice_idx == 'all':
+        slice_to_compute = range(n_split)
+    else:
+        if slice_idx != -1:
+            slice_to_compute = slice_idx,
+        else:
+            slice_to_compute = n_split - 1,
+
+    for i in slice_to_compute:
         # set inferior and superior bound
         inf = bounds[i]
         sup = bounds[i+1]
@@ -72,53 +126,35 @@ def get_windowed_observation(dir_ex, ind_ex, n, n_split, n_good, slice_idx=-1):
         n_possibility = n[inf:sup]
 
         last_n = n[inf - 1] if i != 0 else 0
-        last_data_dir = dir_ex[inf - 1] if i != 0 else 0
-
-        # compute average direct exchanges
-        windowed_dir = dir_ex[inf:sup]
-
         norm_n_possibility = n_possibility - last_n
-        norm_windowed_dir = windowed_dir - last_data_dir
 
-        dir_to_compute = []
-        for x, y in zip(norm_windowed_dir,  norm_n_possibility):
+        m_dir_ex[i] = _windowed_computation(
+            ex=dir_ex, inf=inf, sup=sup, norm_n_possibility=norm_n_possibility, split_idx=i)
 
-            if y > 0:
-                dir_to_compute.append(x/y)
-            # else:
-            #     dir_to_compute.append(-1)
+        if m_defined:
+            m_ind_ex[i] = _windowed_computation(
+                ex=ind_ex[:], inf=inf, sup=sup, norm_n_possibility=norm_n_possibility, split_idx=i)
 
-        m_dir_ex[i] = np.mean(dir_to_compute)
+        else:
+            for good in range(n_good):
 
-        # Average indirect exchanges for each good
-        for good in range(n_good):
+                m_ind_ex[i, good] = _windowed_computation(
+                    ex=ind_ex[:, good], inf=inf, sup=sup, norm_n_possibility=norm_n_possibility, split_idx=i)
 
-            # get windowed data
-            windowed_ind = ind_ex[inf:sup, good]
-            # If it is not the first window normalize, otherwise no (minus 0)
-            # normalized by the number of attempts
+    if slice_idx != 'all':
+        if m_defined:
+            return m_dir_ex[slice_idx], m_ind_ex[slice_idx]
+        else:
+            return m_dir_ex[slice_idx], m_ind_ex[slice_idx, :]
 
-            last_data_ind = ind_ex[inf - 1, good] if i != 0 else 0
-
-            norm_windowed_ind = windowed_ind - last_data_ind
-
-            ind_to_compute = []
-            for x, y in zip(norm_windowed_ind,  norm_n_possibility):
-
-                if y > 0:
-                    ind_to_compute.append(x/y)
-                # else:
-                #     ind_to_compute.append(-1)
-                    # idx += 1
-
-            m_ind_ex[i, good] = np.mean(ind_to_compute)
-
-    return (m_dir_ex[slice_idx], m_ind_ex[slice_idx, :]) if slice_idx != 'all' else (m_dir_ex, m_ind_ex)
+    else:
+        return m_dir_ex, m_ind_ex
 
 
-def get_economy_measure(in_hand, desired, prod, cons, n_split=3):
+def get_economy_measure(in_hand, desired, prod, cons, m=None, n_split=3):
 
     """
+    :param m: None or integer
     :param n_split: integer
     :param cons: nested list n_eco:n_agent
     :param prod: nested list n_eco:n_agent
@@ -136,33 +172,46 @@ def get_economy_measure(in_hand, desired, prod, cons, n_split=3):
         n_good = int(max(in_hand[i_eco][:, 0])) + 1  # All individuals, time step=0
         n_agent = len(in_hand[i_eco])
 
-        obs_eco = np.zeros((n_agent, n_good))
+        if m is None:
+            obs_eco = np.zeros((n_agent, n_good))
+
+        else:
+            obs_eco = np.zeros(n_agent)
+
         for i_agent in range(n_agent):
 
             dir_ex, ind_ex, n = exchange(n_good=n_good,
                                          in_hand=in_hand[i_eco][i_agent],
                                          desired=desired[i_eco][i_agent],
                                          prod=prod[i_eco][i_agent],
-                                         cons=cons[i_eco][i_agent])
+                                         cons=cons[i_eco][i_agent],
+                                         m=m)
+
             _dir, _ind = get_windowed_observation(dir_ex=dir_ex, ind_ex=ind_ex, n=n,
                                                   n_good=n_good, n_split=n_split, slice_idx=-1)
             obs_eco[i_agent] = _ind
 
-        to_add = []
-        for i_good in range(n_good):
+        if m is None:
+            to_add = []
+            for i_good in range(n_good):
 
-            non_prod_i = prod[i_eco] != i_good
-            non_cons_i = cons[i_eco] != i_good
+                non_prod_i = prod[i_eco] != i_good
+                non_cons_i = cons[i_eco] != i_good
+                can_use_as_m = non_prod_i * non_cons_i
+
+                to_add.append(
+                    np.mean(obs_eco[can_use_as_m, i_good])
+                )
+            obs.append(to_add)
+        else:
+            non_prod_i = prod[i_eco] != m
+            non_cons_i = cons[i_eco] != m
             can_use_as_m = non_prod_i * non_cons_i
 
-            np.seterr(all='raise')
-            to_add.append(
-                np.mean(obs_eco[can_use_as_m, i_good])
-            )
+            mean_obs = np.mean(obs_eco[can_use_as_m])
+            obs.append(mean_obs)
 
-        obs.append(to_add)
-
-    return obs
+    return np.asarray(obs)
 
 
 def get_individual_measure(data_xp_session, i, n_split, slice_idx, obs_type):
