@@ -6,6 +6,7 @@ import scipy.stats
 import simulation.run_xp_like
 import simulation.run
 import simulation.run_based_on_fit
+import simulation.cross_validation
 
 from xp import xp
 
@@ -474,6 +475,7 @@ def fit():
 
     data = {}
     data["HUMAN"], room_n_good, room_uniform = xp.get_data()
+
     data["SIM"] = simulation.run_based_on_fit.get_data(
         xp_data_list=data["HUMAN"], alpha=alpha, beta=beta, gamma=gamma, eco=eco)
 
@@ -510,5 +512,43 @@ def fit():
                         fig_data[n_good][cat][agent_type] = {}
 
                     fig_data[n_good][cat][agent_type][cond_labels[int(uniform)]] = d_formatted[agent_type]
+
+    return fig_data
+
+
+def cross_validation():
+    alpha, beta, gamma, mean_p, lls, bic, eco = analysis.fit.data.get()
+
+    data = {}
+    data["HUMAN"], room_n_good, room_uniform = xp.get_data()
+
+    cond_labels = "NON-UNIF", "UNIF"
+
+    fig_data = {cond: None for cond in cond_labels}
+    agent_type = 2
+
+    for uniform in True, False:
+
+        # Find the good indexes
+        cond_n_good = room_n_good == 3
+        cond_uniform = room_uniform == uniform
+
+        xp_cond = cond_n_good * cond_uniform
+        assert (np.sum(xp_cond) == 1)
+        d_idx = np.where(xp_cond == 1)[0][0]
+
+        d = data['HUMAN'][d_idx]
+
+        n_agent = len(d.cons)
+        a = np.random.choice(alpha, replace=False, size=n_agent)
+        b = np.random.choice(beta, replace=False, size=n_agent)
+        g = np.random.choice(gamma, replace=False, size=n_agent)
+
+        data['SIM'] = simulation.cross_validation.get_data(
+            prod=d.prod, cons=d.cons, alpha=a, beta=b, gamma=g, n_good=3, t_max=d.t_max)
+
+        d_formatted = metric.dynamic_data(data_xp_session=data['SIM'])
+
+        fig_data[cond_labels[int(uniform)]] = d_formatted[agent_type]
 
     return fig_data
