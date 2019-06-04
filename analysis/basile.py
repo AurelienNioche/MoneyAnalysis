@@ -227,12 +227,19 @@ def supplementary_gender(obs_type='dir', n_split=3):
 
     for d, n_good in zip(data, room_n_good):
 
+        agent_types = tuple(range(2, n_good))
+
+        agent_of_interest = []
+        for at in agent_types:
+            agent_of_interest += np.arange(len(d.cons))[d.cons == at].tolist()
+
         for i, g in enumerate(d.gender):
 
-            to_append = metric.get_individual_measure(
-                data_xp_session=d, i=i, n_split=n_split, slice_idx=-1, obs_type=obs_type)
+            if i in agent_of_interest:
+                to_append = metric.get_individual_measure(
+                    data_xp_session=d, i=i, n_split=n_split, slice_idx=-1, obs_type=obs_type)
 
-            data_gender[n_good][categories[int(g)]].append(to_append)
+                data_gender[n_good][categories[int(g)]].append(to_append)
 
     return data_gender
 
