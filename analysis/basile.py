@@ -211,7 +211,7 @@ def supplementary_sim_and_xp():
     return fig_data
 
 
-def supplementary_gender(obs_type='dir', n_split=3):
+def supplementary_gender(obs_type='ind_0', n_split=3):
 
     data, room_n_good, room_uniform = xp.get_data()
 
@@ -227,14 +227,17 @@ def supplementary_gender(obs_type='dir', n_split=3):
 
     for d, n_good in zip(data, room_n_good):
 
+        # get agent types depending on the number of good
         agent_types = tuple(range(2, n_good))
 
+        # get agents of this type
         agent_of_interest = []
         for at in agent_types:
             agent_of_interest += np.arange(len(d.cons))[d.cons == at].tolist()
 
         for i, g in enumerate(d.gender):
 
+            # only compute and append for this agent type
             if i in agent_of_interest:
                 to_append = metric.get_individual_measure(
                     data_xp_session=d, i=i, n_split=n_split, slice_idx=-1, obs_type=obs_type)
@@ -421,7 +424,6 @@ def learning_curves_xp(m=0):
             cons = xp_data.cons
             desired = xp_data.desired
             in_hand = xp_data.in_hand
-            success = xp_data.success
 
             n_good = xp_data.n_good
 
