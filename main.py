@@ -15,6 +15,10 @@
 # Django specific settings
 import os
 
+import analysis.exploratory
+import analysis.main
+import analysis.supplementary
+
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "MoneyAnalysis.settings")
 
 # Ensure settings are read
@@ -41,13 +45,13 @@ def phase_diagram(f_name='phase.pdf'):
     with 3 and 4 goods
     """
 
-    data, labels = analysis.data.phase_diagram()
+    data, labels = analysis.main.phase_diagram()
     graph.phase_diagram.plot(data=data, labels=labels, f_name=f_name)
 
 
 def sim_and_xp():
 
-    data = analysis.data.sim_and_xp()
+    data = analysis.main.sim_and_xp()
     graph.sim_and_xp.plot(data)
     analysis.stats.stats.sim_and_xp(data)
 
@@ -55,48 +59,48 @@ def sim_and_xp():
 def sim_and_xp_exploration():
 
     # With gamma = 0.225 simulations fail statistically with 4 goods but graph are not clear
-    data = analysis.data.sim_and_xp_exploration(beta=1e+20)
+    data = analysis.exploratory.sim_and_xp_exploration(beta=1e+20)
     graph.sim_and_xp.plot(data)
     analysis.stats.stats.sim_and_xp(data, name_extension="exploration")
 
 
 def supplementary_sim_and_xp():
 
-    data = analysis.data.supplementary_sim_and_xp()
+    data = analysis.supplementary.supplementary_sim_and_xp()
     graph.supplementary.s1_and_s2.plot(data)
 
 
 def supplementary_gender():
 
-    data = analysis.data.supplementary_gender()
+    data = analysis.supplementary.supplementary_gender()
     graph.supplementary.gender.plot(data)
     analysis.stats.stats.supplementary_gender(data)
 
 
 def supplementary_age():
 
-    data = analysis.data.supplementary_age()
+    data = analysis.supplementary.supplementary_age()
     graph.supplementary.age.plot(data)
     analysis.stats.stats.supplementary_age(data)
 
 
 def parameter_recovery():
 
-    fig_data = analysis.data.parameter_recovery()
+    fig_data = analysis.supplementary.parameter_recovery()
     graph.parameter_recovery.plot(fig_data)
     analysis.stats.stats.parameter_recovery(fig_data)
 
 
 def fit():
 
-    fig_data = analysis.data.fit()
+    fig_data = analysis.supplementary.fit()
     graph.sim_and_xp.plot(fig_data, name_extension='FIT')
     stats.sim_and_xp(fig_data, name_extension='FIT')
 
 
 def learning_curves():
 
-    fig_data = analysis.data.learning_curves()
+    fig_data = analysis.exploratory.learning_curves()
     graph.learning_curves.plot(fig_data)
 
 
