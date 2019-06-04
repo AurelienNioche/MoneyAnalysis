@@ -4,10 +4,11 @@ import numpy as np
 
 import simulation.run
 import simulation.run_xp_like
-from analysis.data import DATA_FOLDER
 from analysis.metric import metric
 from backup import backup
 from xp import xp
+
+DATA_FOLDER = "backup"
 
 
 def sim_and_xp(alpha=.175, beta=1, gamma=.125):

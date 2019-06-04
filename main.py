@@ -35,8 +35,6 @@ import graph.learning_curves
 
 from analysis.stats import stats
 
-import analysis.data
-
 
 def phase_diagram(f_name='phase.pdf'):
 
@@ -86,14 +84,14 @@ def supplementary_age():
 
 def parameter_recovery():
 
-    fig_data = analysis.supplementary.parameter_recovery()
+    fig_data = analysis.supplementary.supplementary_parameter_recovery()
     graph.parameter_recovery.plot(fig_data)
     analysis.stats.stats.parameter_recovery(fig_data)
 
 
 def fit():
 
-    fig_data = analysis.supplementary.fit()
+    fig_data = analysis.supplementary.supplementary_fit()
     graph.sim_and_xp.plot(fig_data, name_extension='FIT')
     stats.sim_and_xp(fig_data, name_extension='FIT')
 

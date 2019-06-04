@@ -1,6 +1,6 @@
 import numpy as np
 
-import analysis.fit
+import analysis.fit.data
 import simulation.run_based_on_fit
 
 import simulation.run_xp_like
@@ -9,6 +9,7 @@ from xp import xp
 
 
 def supplementary_sim_and_xp():
+
     raw_data = {}
 
     raw_data['HUMAN'], room_n_good, room_uniform = xp.get_data()
@@ -109,7 +110,7 @@ def supplementary_age(obs_type='dir', n_split=3):
     return fig_data
 
 
-def parameter_recovery():
+def supplementary_parameter_recovery():
 
     data = {}
     data["HUMAN"], room_n_good, room_uniform = xp.get_data()
@@ -130,14 +131,15 @@ def parameter_recovery():
     return fig_data
 
 
-def fit():
+def supplementary_fit(heterogeneous=True, t_max=None):
 
     alpha, beta, gamma, mean_p, lls, bic, eco = analysis.fit.data.get()
 
     data = {}
     data["HUMAN"], room_n_good, room_uniform = xp.get_data()
     data["SIM"] = simulation.run_based_on_fit.get_data(
-        xp_data_list=data["HUMAN"], alpha=alpha, beta=beta, gamma=gamma, eco=eco)
+        xp_data_list=data["HUMAN"], alpha=alpha, beta=beta, gamma=gamma, eco=eco,
+        heterogeneous=heterogeneous, t_max=t_max)
 
     category = data.keys()
     n_good_cond = np.unique(room_n_good)

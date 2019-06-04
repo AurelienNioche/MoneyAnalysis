@@ -1,9 +1,10 @@
 import numpy as np
 
-import analysis.fit
+import analysis.fit.data
 import simulation.run_xp_like
 from analysis.metric import metric
 from simulation.model.RL.rl_agent import RLAgent
+import simulation.run_based_on_fit
 from xp import xp
 
 
