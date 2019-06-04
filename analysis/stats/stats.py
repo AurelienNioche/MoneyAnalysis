@@ -146,7 +146,7 @@ def supplementary_age(data):
         print(f'Pearson corr age - measure : $r_pearson={cor:.2f}$, $p={p:.3f}$')
 
 
-def supplementary_gender(data):
+def supplementary_gender(data, obs_type='ind_0'):
 
     for n_good in data.keys():
         print(SEP)
@@ -155,7 +155,7 @@ def supplementary_gender(data):
 
         _mw(to_compare=[{
             'data': np.array([data[n_good]['MALE'], data[n_good]['FEMALE']]),
-            'name': 'MALE VS FEMALE, obs=dir'
+            'name': f'MALE VS FEMALE, obs={obs_type}'
         }])
 
         print(SEP)

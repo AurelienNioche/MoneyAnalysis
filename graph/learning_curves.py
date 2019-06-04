@@ -45,7 +45,7 @@ def curve(mean, sem, cond='', n_good='', agent_type='', ax=None):
     ax.set_title(f'{n_good} - {cond} - type{agent_type}')
 
 
-def plot(fig_data):
+def plot(fig_data, f_name=None):
 
     n_good_cond = fig_data.keys()
 
@@ -70,6 +70,12 @@ def plot(fig_data):
                       ax=ax)
 
         plt.tight_layout()
-        f_name = f"fig/learning_curves_{n_good}.pdf"
-        plt.savefig(f_name)
-        print(f'{f_name} has been produced')
+
+        if f_name is None:
+            to_save = f"fig/learning_curves_{n_good}.pdf"
+        else:
+
+            to_save = f_name.format(n_good)
+
+        plt.savefig(to_save)
+        print(f'{to_save} has been produced')
