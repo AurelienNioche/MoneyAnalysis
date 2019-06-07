@@ -15,4 +15,6 @@ def plot(data):
     fig = plt.figure()
     ax = fig.add_subplot()
     graph.sim_and_xp.boxplot(data, n_good=3, ax=ax, y_label="Freq. ind. ex.")
-    plt.savefig(f"fig/supplementary_cross_validation.pdf")
+    f_name = f"fig/supplementary_cross_validation.pdf"
+    plt.savefig(f_name)
+    print(f'Figure {f_name} has been produced.')
