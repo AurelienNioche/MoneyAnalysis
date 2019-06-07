@@ -176,5 +176,15 @@ def parameter_recovery(data):
         print(f'Pearson corr: $r_pearson={cor:.2f}$, $p={p:.3f}$')
 
 
+def cross_validation(data):
+
+    _mw(to_compare=[
+        {
+            'data': np.array([data['UNIF'], data['NON-UNIF']]),
+            'name': 'CROSS-VALIDATION obs_type=ind_0'
+        }
+    ])
+
+
 if __name__ == "__main__":
     exit('Run the main.py script.')
