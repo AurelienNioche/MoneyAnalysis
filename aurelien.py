@@ -114,7 +114,6 @@ def main():
                 not_nan = np.invert(np.isnan(data[n_good]['ind0']))
                 relevant = data[n_good][param] == x
                 values = data[n_good]['ind0'][relevant * not_nan]
-                print(len(values))
                 values_box_plot[idx] += list(values)
 
             span = x_ticks[-1] - x_ticks[0]
