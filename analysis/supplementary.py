@@ -1,11 +1,16 @@
+import os
 import numpy as np
 
 import analysis.fit.data
-import simulation.run_based_on_fit
-
 import simulation.run_xp_like
+import simulation.run_based_on_fit
+import simulation.run
 from analysis.metric import metric
 from xp import xp
+from backup import backup
+
+
+DATA_FOLDER = "data"
 
 
 def supplementary_sim_and_xp():
@@ -62,7 +67,7 @@ def supplementary_sim_and_xp():
     return fig_data
 
 
-def supplementary_gender(obs_type='dir', n_split=3):
+def old_supplementary_gender(obs_type='dir', n_split=3):
 
     data, room_n_good, room_uniform = xp.get_data()
 
@@ -84,6 +89,48 @@ def supplementary_gender(obs_type='dir', n_split=3):
                 data_xp_session=d, i=i, n_split=n_split, slice_idx=-1, obs_type=obs_type)
 
             data_gender[n_good][categories[int(g)]].append(to_append)
+
+    return data_gender
+
+
+def supplementary_gender(obs_type='ind_0', n_split=3):
+    """
+    Selection of agents able to proceed to indirect exchanges with good 0
+    :param obs_type:
+    :param n_split:
+    :return:
+    """
+
+    data, room_n_good, room_uniform = xp.get_data()
+
+    categories = "FEMALE", "MALE"
+
+    n_good_cond = np.unique(room_n_good)
+
+    data_gender = {
+        n_good: {
+            cat: [] for cat in categories
+        } for n_good in n_good_cond
+    }
+
+    for d, n_good in zip(data, room_n_good):
+
+        # get agent types depending on the number of good
+        agent_types = tuple(range(2, n_good))
+
+        # get agents of this type
+        agent_of_interest = []
+        for at in agent_types:
+            agent_of_interest += np.arange(len(d.cons))[d.cons == at].tolist()
+
+        for i, g in enumerate(d.gender):
+
+            # only compute and append for this agent type
+            if i in agent_of_interest:
+                to_append = metric.get_individual_measure(
+                    data_xp_session=d, i=i, n_split=n_split, slice_idx=-1, obs_type=obs_type)
+
+                data_gender[n_good][categories[int(g)]].append(to_append)
 
     return data_gender
 
@@ -176,3 +223,40 @@ def supplementary_fit(heterogeneous=True, t_max=None):
                     fig_data[n_good][cat][agent_type][cond_labels[int(uniform)]] = d_formatted[agent_type]
 
     return fig_data
+
+
+def effect_of_unique_parameter():
+
+    data_file = os.path.join(DATA_FOLDER, 'sensibility_analysis.p')
+
+    if os.path.exists(data_file):
+        data = backup.load(data_file)
+        return data
+
+    n_good_cond = 3, 4
+
+    data = {
+        g: {} for g in n_good_cond
+    }
+
+    for n_good in n_good_cond:
+
+        d = simulation.run.get_data(n_good=n_good)
+        # dist = d.distribution
+
+        # n = len(dist)  # Number of economies in this batch
+
+        alpha = [i[0] for i in d.cognitive_parameters]
+        beta = [i[1] for i in d.cognitive_parameters]
+        gamma = [i[2] for i in d.cognitive_parameters]
+
+        observation = analysis.metric.metric.get_economy_measure(
+            in_hand=d.in_hand, desired=d.desired, prod=d.prod, cons=d.cons, m=0)
+        data[n_good]['alpha'] = alpha
+        data[n_good]['beta'] = beta
+        data[n_good]['gamma'] = gamma
+        data[n_good]['ind0'] = observation
+
+    backup.save(data, data_file)
+
+    return data

@@ -11,7 +11,7 @@ DATA_FOLDER = f'{SCRIPT_FOLDER}/../data'
 FILE_PATH = f'{DATA_FOLDER}/fit.p'
 
 
-def get_data(n_good, prod, cons, alpha, beta, gamma, heterogeneous=True, t_max=None):
+def get_data(n_good, prod, cons, alpha, beta, gamma, t_max, heterogeneous=True):
 
     alpha = np.array(alpha)
     beta = np.array(beta)

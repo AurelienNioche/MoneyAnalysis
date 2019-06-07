@@ -15,25 +15,27 @@
 # Django specific settings
 import os
 
-import analysis.exploratory
-import analysis.main
-import analysis.supplementary
-
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "MoneyAnalysis.settings")
 
 # Ensure settings are read
 from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 
+import analysis.exploratory
+import analysis.main
+import analysis.supplementary
+
+from analysis.stats import stats
+
 import graph.sim_and_xp
 import graph.phase_diagram
 import graph.supplementary.s1_and_s2
 import graph.supplementary.age
 import graph.supplementary.gender
-import graph.parameter_recovery
-import graph.learning_curves
-
-from analysis.stats import stats
+import graph.supplementary.effect_of_unique_parameter
+import graph.supplementary.parameter_recovery
+import graph.supplementary.learning_curves
+import graph.supplementary.cross_validation
 
 
 def phase_diagram(f_name='phase.pdf'):
@@ -68,9 +70,9 @@ def supplementary_sim_and_xp():
     graph.supplementary.s1_and_s2.plot(data)
 
 
-def supplementary_gender():
+def old_supplementary_gender():
 
-    data = analysis.supplementary.supplementary_gender()
+    data = analysis.supplementary.old_supplementary_gender()
     graph.supplementary.gender.plot(data)
     analysis.stats.stats.supplementary_gender(data)
 
@@ -85,7 +87,7 @@ def supplementary_age():
 def parameter_recovery():
 
     fig_data = analysis.supplementary.supplementary_parameter_recovery()
-    graph.parameter_recovery.plot(fig_data)
+    graph.supplementary.parameter_recovery.plot(fig_data)
     analysis.stats.stats.parameter_recovery(fig_data)
 
 
@@ -99,7 +101,49 @@ def fit():
 def learning_curves():
 
     fig_data = analysis.exploratory.learning_curves()
-    graph.learning_curves.plot(fig_data)
+    graph.supplementary.learning_curves.plot(fig_data)
+
+
+def ind0_freq_over_time():
+
+    data = analysis.exploratory.ind0_freq_over_time()
+    graph.supplementary.learning_curves.plot(data, f_name='fig/ind0_freq_over_time_{}.pdf')
+
+
+def supplementary_gender():
+    obs_type = 'ind_0'
+    data = analysis.supplementary.supplementary_gender(obs_type=obs_type)
+    graph.supplementary.gender.plot(data)
+    analysis.stats.stats.supplementary_gender(data, obs_type=obs_type)
+
+
+def cross_validation():
+
+    data = analysis.exploratory.cross_validation()
+    graph.supplementary.cross_validation.plot(data)
+    analysis.stats.stats.cross_validation(data)
+
+
+def check_effect_of_heterogeneous():
+
+    name_extension = 'FIT_non_heterogeneous'
+    fig_data = analysis.supplementary.supplementary_fit(heterogeneous=False)
+    graph.sim_and_xp.plot(fig_data, name_extension=name_extension)
+    analysis.stats.stats.sim_and_xp(fig_data, name_extension=name_extension)
+
+
+def check_effect_of_extended_time():
+
+    name_extension = 'FIT_extended'
+    fig_data = analysis.supplementary.supplementary_fit(heterogeneous=False, t_max=1000)
+    graph.sim_and_xp.plot(fig_data, name_extension=name_extension)
+    analysis.stats.stats.sim_and_xp(fig_data, name_extension=name_extension)
+
+
+def effect_of_unique_parameter():
+
+    data = analysis.supplementary.effect_of_unique_parameter()
+    graph.supplementary.effect_of_unique_parameter.plot(data)
 
 
 if __name__ == '__main__':
