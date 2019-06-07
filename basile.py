@@ -23,11 +23,12 @@ def supplementary_gender():
 def cross_validation():
     data = analysis.basile.cross_validation()
     graph.cross_validation.plot(data)
+    analysis.stats.stats.cross_validation(data)
 
 
 if __name__ == "__main__":
 
-    ind0_freq_over_time()
-    supplementary_gender()
+    # ind0_freq_over_time()
+    # supplementary_gender()
     cross_validation()
 
