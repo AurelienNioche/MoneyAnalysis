@@ -540,9 +540,9 @@ def cross_validation():
         d = data['HUMAN'][d_idx]
 
         n_agent = len(d.cons)
-        a = np.random.choice(alpha, replace=False, size=n_agent)
-        b = np.random.choice(beta, replace=False, size=n_agent)
-        g = np.random.choice(gamma, replace=False, size=n_agent)
+        a = np.ones(n_agent) * np.mean(alpha)
+        b = np.ones(n_agent) * np.mean(beta)
+        g = np.ones(n_agent) * np.mean(gamma)
 
         data['SIM'] = simulation.cross_validation.get_data(
             prod=d.prod, cons=d.cons, alpha=a, beta=b, gamma=g, n_good=3, t_max=d.t_max)
