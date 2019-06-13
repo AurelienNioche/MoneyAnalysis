@@ -83,7 +83,7 @@ def sim_and_xp(data, data_type=('HUMAN', 'SIM'), name_extension=''):
         {
             'data': np.array([
                 data[3][human][2]['UNIF'],
-                data[3][human]['NON-UNIF'],
+                data[3][human][2]['NON-UNIF'],
             ]),
             'name': 'HUMAN, 3 GOODS, UNIF vs. NON-UNIF, agent_type=2, obs=ind_0'
         },
