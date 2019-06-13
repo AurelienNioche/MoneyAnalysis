@@ -9,6 +9,8 @@ import simulation.run_based_on_fit
 import simulation.cross_validation
 from xp import xp
 
+import math
+
 
 def sim_and_xp_exploration(alpha=.175, beta=1, gamma=.125, random_cognitive_param=False):
 
@@ -275,16 +277,30 @@ def cross_validation():
 
 def agent_selection():
 
+    """
+    Median split
+    :return:
+    """
+
     raw_data, room_n_good, room_uniform = xp.get_data()
 
     alpha, beta, gamma, mean_p, lls, bic, eco = analysis.fit.data.get()
 
-    n_good_cond = np.unique(room_n_good)
-    cond_labels = "NON-UNIF", "UNIF"
+    data = dict()
+    data["SIM"] = simulation.run_based_on_fit.get_data(
+        xp_data_list=raw_data, alpha=alpha, beta=beta,
+        gamma=gamma, eco=eco,
+        heterogeneous=True, t_max=None)
 
-    alpha = np.zeros(room_n_good.shape[0])
-    beta = np.zeros(room_n_good.shape[0])
-    gamma = np.zeros(room_n_good.shape[0])
+    n_good_cond = np.unique(room_n_good)
+
+    alpha = np.asarray(alpha)
+    beta = np.asarray(beta)
+    gamma = np.asarray(gamma)
+
+    # alpha = np.zeros(room_n_good.shape[0])
+    # beta = np.zeros(room_n_good.shape[0])
+    # gamma = np.zeros(room_n_good.shape[0])
 
     for n_good in n_good_cond:
 
@@ -302,59 +318,91 @@ def agent_selection():
             d = raw_data[d_idx]
             d_formatted = metric.dynamic_data(data_xp_session=d)
 
-            prod = d.prod.copy()
-            cons = d.cons.copy()
-            alpha = d.alpha.copy()
-            beta = d.alpha.copy()
-            gamma = d.gamma.copy()
+            assert type(d.cons) == np.ndarray
+
+            # n = d.cons.shape[0]
+
+            to_select = eco == d_idx
+
+            alpha_eco = alpha[to_select]
+            beta_eco = beta[to_select]
+            gamma_eco = gamma[to_select]
+            #
+            # for i, (a, b, g) in enumerate(d.cognitive_parameters):
+            #     alpha[i] = a
+            #     beta[i] = b
+            #     gamma[i] = g
 
             for agent_type in sorted(d_formatted.keys()):
 
+                at_id = d.cons == agent_type
+
+                at_alpha = alpha_eco[at_id]
+                at_beta = beta_eco[at_id]
+                at_gamma = gamma_eco[at_id]
+
                 n = len(d_formatted[agent_type])
-                a = np.sort(d_formatted[agent_type])
+                half_n = math.ceil(n/2)
+                best_id = np.argsort(d_formatted[agent_type])[:half_n]
 
-            # simulation.cross_validation.get_data(n_good, prod, cons, alpha, beta, gamma, heterogeneous=True, t_max=None)
+                best_alpha = at_alpha[best_id]
+                best_beta = at_beta[best_id]
+                best_gamma = at_gamma[best_id]
 
+                new_alpha_at = np.asarray(list(best_alpha) * 2)[:n]
+                new_beta_at = np.asarray(list(best_beta) * 2)[:n]
+                new_gamma_at = np.asarray(list(best_gamma) * 2)[:n]
 
+                alpha_eco[at_id] = new_alpha_at
+                beta_eco[at_id] = new_beta_at
+                gamma_eco[at_id] = new_gamma_at
 
-                    # if agent_type not in fig_data[n_good][cat].keys():
-                    #     fig_data[n_good][cat][agent_type] = {}
-                    #
-                    # fig_data[n_good][cat][agent_type][cond_labels[int(uniform)]] = d_formatted[agent_type]
+            alpha[to_select] = alpha_eco
+            beta[to_select] = beta_eco
+            gamma[to_select] = gamma_eco
 
+    # =================== #
 
-    # raw_data['SIM'] = []
-    #
-    # for
-    #
-    # fig_data = {n_good: {
-    #     cat: {
-    #
-    #     } for cat in category
-    # } for n_good in n_good_cond}
-    #
-    # for n_good in n_good_cond:
-    #
-    #     for uniform in True, False:
-    #
-    #         # Find the good indexes
-    #         cond_n_good = room_n_good == n_good
-    #         cond_uniform = room_uniform == uniform
-    #
-    #         xp_cond = cond_n_good * cond_uniform
-    #         assert (np.sum(xp_cond) == 1)
-    #         d_idx = np.where(xp_cond == 1)[0][0]
-    #
-    #         for cat in category:
-    #
-    #             # Get formatted data
-    #             d = raw_data[cat][d_idx]
-    #             d_formatted = metric.dynamic_data(data_xp_session=d)
-    #
-    #             for agent_type in sorted(d_formatted.keys()):
-    #                 if agent_type not in fig_data[n_good][cat].keys():
-    #                     fig_data[n_good][cat][agent_type] = {}
-    #
-    #                 fig_data[n_good][cat][agent_type][cond_labels[int(uniform)]] = d_formatted[agent_type]
-    #
-    # return fig_data
+    data["SIM_SELECT"] = simulation.run_based_on_fit.get_data(
+        xp_data_list=raw_data, alpha=alpha, beta=beta,
+        gamma=gamma, eco=eco,
+        heterogeneous=True, t_max=None)
+
+    # =================== #
+
+    category = data.keys()
+    cond_labels = "NON-UNIF", "UNIF"
+
+    fig_data = {n_good: {
+        cat: {
+
+        } for cat in category
+    } for n_good in n_good_cond}
+
+    for n_good in room_n_good:
+
+        for uniform in True, False:
+
+            # Find the good indexes
+            cond_n_good = room_n_good == n_good
+            cond_uniform = room_uniform == uniform
+
+            xp_cond = cond_n_good * cond_uniform
+            assert (np.sum(xp_cond) == 1)
+            d_idx = np.where(xp_cond == 1)[0][0]
+
+            for cat in category:
+
+                # Get formatted data
+                d = data[cat][d_idx]
+                d_formatted = metric.dynamic_data(data_xp_session=d)
+
+                for agent_type in sorted(d_formatted.keys()):
+                    if agent_type not in fig_data[n_good][cat].keys():
+                        fig_data[n_good][cat][agent_type] = {}
+
+                    fig_data[n_good][cat][agent_type][
+                        cond_labels[int(uniform)]] = d_formatted[
+                        agent_type]
+
+    return fig_data
