@@ -343,7 +343,7 @@ def agent_selection():
 
                 n = len(d_formatted[agent_type])
                 half_n = math.ceil(n/2)
-                best_id = np.argsort(d_formatted[agent_type])[:half_n]
+                best_id = np.argsort(d_formatted[agent_type])[::-1][:half_n]
 
                 best_alpha = at_alpha[best_id]
                 best_beta = at_beta[best_id]
