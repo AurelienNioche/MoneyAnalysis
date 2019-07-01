@@ -58,7 +58,7 @@ def sim_and_xp():
 
 def sim_and_xp_exploration():
 
-    # With gamma = 0.225 simulations fail statistically with 4 goods but graph are not clear
+    # With gamma = 0.225 simulations fail statistically with 4 goods
     data = analysis.exploratory.sim_and_xp_exploration(beta=1e+20)
     graph.sim_and_xp.plot(data)
     analysis.stats.stats.sim_and_xp(data, name_extension="exploration")
@@ -107,7 +107,9 @@ def learning_curves():
 def ind0_freq_over_time():
 
     data = analysis.exploratory.ind0_freq_over_time()
-    graph.supplementary.learning_curves.plot(data, f_name='fig/ind0_freq_over_time_{}.pdf')
+    graph.supplementary.learning_curves.plot(
+        data,
+        f_name='fig/ind0_freq_over_time_{}.pdf')
 
 
 def supplementary_gender():
@@ -135,7 +137,8 @@ def check_effect_of_heterogeneous():
 def check_effect_of_extended_time():
 
     name_extension = 'FIT_extended'
-    fig_data = analysis.supplementary.supplementary_fit(heterogeneous=False, t_max=1000)
+    fig_data = analysis.supplementary.supplementary_fit(heterogeneous=False,
+                                                        t_max=1000)
     graph.sim_and_xp.plot(fig_data, name_extension=name_extension)
     analysis.stats.stats.sim_and_xp(fig_data, name_extension=name_extension)
 
@@ -147,6 +150,9 @@ def effect_of_unique_parameter():
 
 
 if __name__ == '__main__':
+
+    # For stats about reward
+    analysis.supplementary.reward()
 
     # # Uncomment for running simulations used for phase diagram
     phase_diagram()

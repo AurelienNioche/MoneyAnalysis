@@ -9,8 +9,20 @@ from analysis.metric import metric
 from xp import xp
 from backup import backup
 
+from game.models import User
 
 DATA_FOLDER = "data"
+
+
+def reward():
+    print('_' * 10)
+    print('\n********* Rewards ***********\n')
+    users = User.objects.all()
+    var = 10 + 0.20 * np.array([u.score for u in users])
+    print(f'Reward = {np.mean(var):.2f} (+/- {np.std(var):.2f} STD)')
+    print("Computation: 10 euros + 0.20 cents per point")
+    print()
+    print('_' * 10)
 
 
 def supplementary_sim_and_xp():
