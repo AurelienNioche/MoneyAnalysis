@@ -57,9 +57,12 @@ class Fit:
         if self.method == 'tpe':  # Tree of Parzen Estimators
             raise NotImplementedError
             # space = [hp.uniform(*b) for b in bounds]
-            # best_param = fmin(fn=objective, space=space, algo=tpe.suggest, max_evals=MAX_EVALS)
+            # best_param =
+            # fmin(fn=objective, space=space,
+            # algo=tpe.suggest, max_evals=MAX_EVALS)
 
-        elif self.method in ('de', 'L-BFGS-B', 'TNC', 'COBYLA', 'SLSQP'):  # Differential evolution
+        # de: Differential evolution
+        elif self.method in ('de', 'L-BFGS-B', 'TNC', 'COBYLA', 'SLSQP'):
 
             bounds_scipy = [b[-2:] for b in bounds]
 
@@ -70,14 +73,16 @@ class Fit:
                     func=objective, bounds=bounds_scipy)
             else:
                 x0 = np.zeros(len(bounds)) * 0.5
-                res = scipy.optimize.minimize(fun=objective, bounds=bounds_scipy, x0=x0)
+                res = scipy.optimize.minimize(fun=objective,
+                                              bounds=bounds_scipy, x0=x0)
 
             best_param_values = res.x
             best_param = {b[0]: v for b, v in zip(bounds, best_param_values)}
 
             print(f"{res.message} [best loss: {res.fun}]")
             if not res.success:
-                raise Exception(f"The fit did not succeed with method {self.method}.")
+                raise Exception(f"The fit did not succeed with "
+                                f"method {self.method}.")
 
         else:
             raise Exception(f'Method {self.method} is not defined')
@@ -87,15 +92,18 @@ class Fit:
         model_name = p_provider.model_name()
 
         # Compute bic, etc.
-        mean_p, lls, bic = self._model_stats(p_choices=p_choices, best_param=best_param)
+        mean_p, lls, bic = self._model_stats(p_choices=p_choices,
+                                             best_param=best_param)
 
         self._print(model_name, best_param, mean_p, lls, bic)
         return best_param, mean_p, lls, bic
 
     def _print(self, model_name, best_param, mean_p, lls, bic):
 
-        dsp_best_param = ''.join(f'{k}={round(best_param[k], 3)}, ' for k in sorted(best_param.keys()))
+        dsp_best_param = ''.join(f'{k}={round(best_param[k], 3)}, '
+                                 for k in sorted(best_param.keys()))
 
-        print(f"[{model_name} - '{self.method}'] Best param: " + dsp_best_param +
+        print(f"[{model_name} - '{self.method}'] "
+              f"Best param: " + dsp_best_param +
               f"LLS: {round(lls, 2)}, " +
               f'BIC: {round(bic, 2)}, mean(P): {round(mean_p, 3)}\n')

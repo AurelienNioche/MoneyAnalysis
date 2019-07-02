@@ -98,7 +98,6 @@ def _windowed_computation(ex, inf, sup, norm_n_possibility, split_idx):
 def get_windowed_observation(dir_ex, ind_ex, n, n_split, n_good, slice_idx=-1):
 
     m_defined = len(ind_ex.shape) == 1
-    assert m_defined
 
     t_max = len(n)
     step = t_max // n_split

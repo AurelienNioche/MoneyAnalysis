@@ -29,13 +29,14 @@ def individual_behavior():
 
     raw_data = {}
 
-    raw_data['HUMAN'], room_n_good, room_uniform = xp.get_data()
+    raw_data['Human'], room_n_good, room_uniform = xp.get_data()
 
-    raw_data['SIM'] = simulation.run_xp_like.get_data(xp_data=raw_data['HUMAN'])
+    raw_data['Simulation'] \
+        = simulation.run_xp_like.get_data(xp_data=raw_data['Human'])
 
     category = raw_data.keys()
     n_good_cond = np.unique(room_n_good)
-    cond_labels = "NON-UNIF", "UNIF"
+    cond_labels = "Non-uniform", "Uniform"
 
     obs_type = 'ind_0', 'dir'
 
@@ -74,7 +75,9 @@ def individual_behavior():
                         if agent_type not in fig_data[ot][n_good][cat].keys():
                             fig_data[ot][n_good][cat][agent_type] = {}
 
-                        fig_data[ot][n_good][cat][agent_type][cond_labels[int(uniform)]] = d_formatted[agent_type]
+                        cond = cond_labels[int(uniform)]
+                        fig_data[ot][n_good][cat][agent_type][cond] = \
+                            d_formatted[agent_type]
 
     return fig_data
 
@@ -89,7 +92,7 @@ def gender(obs_type='ind_0', n_split=3):
 
     data, room_n_good, room_uniform = xp.get_data()
 
-    categories = "FEMALE", "MALE"
+    categories = "Female", "Male"
 
     n_good_cond = np.unique(room_n_good)
 
@@ -148,20 +151,24 @@ def age(obs_type='dir', n_split=3):
 def parameter_recovery():
 
     data = {}
-    data["HUMAN"], room_n_good, room_uniform = xp.get_data()
+    data["Human"], room_n_good, room_uniform = xp.get_data()
     alpha, beta, gamma, mean_p, lls, bic, eco = \
-        analysis.fit.data.get(data["HUMAN"], room_n_good, room_uniform)
+        analysis.fit.data.get(data["Human"], room_n_good, room_uniform)
 
-    data["SIM"] = simulation.run_based_on_fit.get_data(
-        xp_data_list=data["HUMAN"], alpha=alpha, beta=beta, gamma=gamma, eco=eco)
+    data["Simulation"] = \
+        simulation.run_based_on_fit.get_data(
+            xp_data_list=data["Human"],
+            alpha=alpha, beta=beta, gamma=gamma,
+            eco=eco)
 
-    r_alpha, r_beta, r_gamma, r_mean_p, r_lls, r_bic, r_eco = analysis.fit.data.get(
-        data["SIM"], room_n_good, room_uniform, extension="sim")
+    r_alpha, r_beta, r_gamma, r_mean_p, r_lls, r_bic, r_eco = \
+        analysis.fit.data.get(
+            data["Simulation"], room_n_good, room_uniform, extension="sim")
 
     fig_data = {
-        "alpha": (alpha, r_alpha),
-        "beta": (beta, r_beta),
-        "gamma": (gamma, r_gamma)
+        r"$\alpha$": (alpha, r_alpha),
+        r"$\beta$": (beta, r_beta),
+        r"$\gamma$": (gamma, r_gamma)
     }
 
     return fig_data
@@ -174,7 +181,8 @@ def fit(heterogeneous=True, t_max=None):
     data = {}
     data["Human"], room_n_good, room_uniform = xp.get_data()
     data["Simulation"] = simulation.run_based_on_fit.get_data(
-        xp_data_list=data["Human"], alpha=alpha, beta=beta, gamma=gamma, eco=eco,
+        xp_data_list=data["Human"], alpha=alpha, beta=beta, gamma=gamma,
+        eco=eco,
         heterogeneous=heterogeneous, t_max=t_max)
 
     category = data.keys()
@@ -241,9 +249,9 @@ def sensibility_analysis():
         observation = analysis.metric.metric.get_economy_measure(
             in_hand=d.in_hand, desired=d.desired,
             prod=d.prod, cons=d.cons, m=0)
-        data[n_good]['alpha'] = alpha
-        data[n_good]['beta'] = beta
-        data[n_good]['gamma'] = gamma
+        data[n_good][r'$\alpha$'] = alpha
+        data[n_good][r'$\beta$'] = beta
+        data[n_good][r'$\gamma$'] = gamma
         data[n_good]['ind0'] = observation
 
     backup.save(data, data_file)

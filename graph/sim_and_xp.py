@@ -9,6 +9,22 @@ FIG_FOLDER = "fig"
 os.makedirs(FIG_FOLDER, exist_ok=True)
 
 
+AGENT_LABELLING = {
+    3:
+        {
+            0: '31',
+            1: '12',
+            2: '23',
+        },
+    4: {
+            0: '41',
+            1: '12',
+            2: '23',
+            3: '34'
+        }
+    }
+
+
 def boxplot(
         results, ax, n_good, colors=None, tick_labels=None,
         y_label="y_label",
@@ -81,13 +97,7 @@ def boxplot(
     ax.set_aspect(aspect)
 
 
-def plot(fig_data, name_extension='', agent_labelling=None):
-
-    if agent_labelling is None:
-        agent_labelling = {
-            2: '(2, 3)',
-            3: '(3, 4)'
-        }
+def plot(fig_data, name_extension=''):
 
     n_good_cond = fig_data.keys()
 
@@ -109,7 +119,7 @@ def plot(fig_data, name_extension='', agent_labelling=None):
 
                 ax = fig.add_subplot(gs[row, col])
 
-                at_label = agent_labelling[at]
+                at_label = AGENT_LABELLING[n_good][at]
                 ax.set_title(f'{cat} - Type {at_label}')
 
                 boxplot(results=fig_data[n_good][cat][at], n_good=n_good,
@@ -117,6 +127,7 @@ def plot(fig_data, name_extension='', agent_labelling=None):
                         y_label='Freq. ind. ex. with good 1',
                         colors=('C0', 'C1'))
 
+                # Add letter
                 ax.text(-0.2, 1.2, string.ascii_uppercase[n],
                         transform=ax.transAxes,
                         size=20, weight='bold')

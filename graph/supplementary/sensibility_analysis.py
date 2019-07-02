@@ -20,12 +20,17 @@ def plot(data):
         else:
             raise NotImplementedError
 
-        for i, param in enumerate(('alpha', 'beta', 'gamma')):
+        for i, param in enumerate((r'$\alpha$',
+                                   r'$\beta$',
+                                   r'$\gamma$')):
 
-            # assert not np.sum(np.isnan(data[n_good]['ind0'])), np.isnan(data[n_good]['ind0']).nonzero()
+            # assert not np.sum(np.isnan(data[n_good]['ind0'])),
+            # np.isnan(data[n_good]['ind0']).nonzero()
 
             ax = axes[i]
-            ax.scatter(data[n_good][param], data[n_good]['ind0'], alpha=0.01, s=0.5)
+            ax.scatter(data[n_good][param], data[n_good]['ind0'],
+                       alpha=0.01,
+                       s=0.5)
             # axes[i].set_title(param)
             ax.set_xlabel(param)
             ax.set_ylabel('Freq. ind. ex.')
@@ -35,7 +40,8 @@ def plot(data):
             x_ticks = np.unique(data[n_good][param])
 
             # For horizontal line
-            ax.axhline(chance_level, linestyle='--', color='0.3', zorder=-10, linewidth=0.5)
+            ax.axhline(chance_level, linestyle='--', color='0.3', zorder=-10,
+                       linewidth=0.5)
 
             values_box_plot = [[] for _ in range(len(x_ticks))]
             for idx, x in enumerate(x_ticks):
@@ -48,10 +54,12 @@ def plot(data):
             span = x_ticks[-1] - x_ticks[0]
 
             # For boxplot
-            bp = ax.boxplot(values_box_plot, positions=x_ticks, showfliers=False, zorder=-2,
+            bp = ax.boxplot(values_box_plot, positions=x_ticks,
+                            showfliers=False, zorder=-2,
                             widths=[0.10*span for _ in range(len(x_ticks))])
 
-            for e in ['boxes', 'caps', 'whiskers', 'medians']:  # Warning: only one box, but several whiskers by plot
+            # Warning: only one box, but several whiskers by plot
+            for e in ['boxes', 'caps', 'whiskers', 'medians']:
                 for b in bp[e]:
                     b.set(color='black')
 

@@ -9,7 +9,8 @@ os.makedirs(FIG_FOLDER, exist_ok=True)
 
 
 def _plot(
-        results, ax, color='black', y_label="y_label", y_lim=(-0.01, 1.01), y_ticks=None,
+        results, ax, color='black', y_label="y_label", y_lim=(-0.01, 1.01),
+        y_ticks=None,
         fontsize=10,
         aspect=3,
         tick_labels=None,
@@ -32,7 +33,8 @@ def _plot(
             x_scatter.append(idx_split)
             y_scatter.append(split_value)
 
-    ax.scatter(x_scatter, y_scatter, c=color, s=30, alpha=0.5, linewidth=0.0, zorder=1)
+    ax.scatter(x_scatter, y_scatter, c=color, s=30, alpha=0.5, linewidth=0.0,
+               zorder=1)
     ax.axhline(0.5, linestyle='--', color='0.3', zorder=-10, linewidth=0.5)
 
     if y_ticks is not None:
@@ -66,7 +68,8 @@ def plot(fig_data):
             n_cols = 2*len(category)  # '2' because 2 conditions
             n_rows = n_good - 2 if 'ind' in obs_type else n_good
 
-            y_label = 'Freq. ind. ex. with good 0' if 'ind' in obs_type else "Freq. dir. ex."
+            y_label = 'Freq. ind. ex. with good 0' if 'ind' in obs_type \
+                else "Freq. dir. ex."
 
             fig = plt.figure(figsize=(15, 15), dpi=200)
             gs = grd.GridSpec(ncols=n_cols, nrows=n_rows)
@@ -87,7 +90,8 @@ def plot(fig_data):
                         ax = fig.add_subplot(gs[row, col])
                         ax.set_title(f'{cat} - {cond} - type {at}')
 
-                        _plot(results=fig_data[ot][n_good][cat][at][cond], ax=ax, y_label=y_label,
+                        _plot(results=fig_data[ot][n_good][cat][at][cond],
+                              ax=ax, y_label=y_label,
                               tick_labels=('1/3', '2/3', '3/3'))
 
                         col += 1

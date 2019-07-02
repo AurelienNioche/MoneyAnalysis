@@ -89,8 +89,9 @@ class Economy(object):
 
             for i in range(n_agent):
 
-                cognitive_parameters = self.cognitive_parameters if not heterogeneous else \
-                    self.cognitive_parameters[i]
+                cognitive_parameters = self.cognitive_parameters \
+                    if not heterogeneous \
+                    else self.cognitive_parameters[i]
 
                 agents[i] = eval(self.agent_model)(
                     prod=prod[i], cons=cons[i],

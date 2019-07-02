@@ -238,6 +238,7 @@ def ind0_freq_over_time(m=0):
 
 
 def cross_validation():
+
     alpha, beta, gamma, mean_p, lls, bic, eco = analysis.fit.data.get()
 
     data = {}
@@ -266,7 +267,8 @@ def cross_validation():
         g = np.ones(n_agent) * np.mean(gamma)
 
         data['SIM'] = simulation.cross_validation.get_data(
-            prod=d.prod, cons=d.cons, alpha=a, beta=b, gamma=g, n_good=3, t_max=d.t_max)
+            prod=d.prod, cons=d.cons, alpha=a, beta=b, gamma=g,
+            n_good=3, t_max=d.t_max)
 
         d_formatted = metric.dynamic_data(data_xp_session=data['SIM'])
 

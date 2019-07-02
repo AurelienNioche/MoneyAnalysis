@@ -40,7 +40,8 @@ def _mw(to_compare, print_latex=False, **kwargs):
     us = []
 
     for dic in to_compare:
-        u, p = scipy.stats.mannwhitneyu(dic["data"][0], dic["data"][1], alternative="two-sided")
+        u, p = scipy.stats.mannwhitneyu(dic["data"][0], dic["data"][1],
+                                        alternative="two-sided")
         n = len(dic["data"][0]) + len(dic["data"][1])
         ps.append(p)
         us.append(u)
@@ -50,22 +51,26 @@ def _mw(to_compare, print_latex=False, **kwargs):
         return
 
     valid, p_corr, alpha_c_sidak, alpha_c_bonf = \
-        statsmodels.stats.multitest.multipletests(pvals=ps, alpha=0.05, method="b")
+        statsmodels.stats.multitest.multipletests(pvals=ps, alpha=0.05,
+                                                  method="b")
 
     for p, u, n, p_c, v, dic in zip(ps, us, ns, p_corr, valid, to_compare):
         cond_name = dic['name']
-        f_name = cond_name.replace("good", "").replace("_", "").replace("vs", ", ")
+        f_name = \
+            cond_name.replace("good", "").replace("_", "").replace("vs", ", ")
 
         if print_latex:
             xp_session = kwargs["xp_session"]
             measure = kwargs["measure"]
             p_c = f"{p_c:.3f}" if p_c >= 0.001 else '<0.001'
             p = f"{p:.3f}" if p >= 0.001 else '<0.001'
-            print(f"{xp_session} & {measure} & ${f_name}$ & ${u}$ & ${p}$ & ${p_c}{'^*' if v else ''}$ & ${n}$" + r"\\")
+            print(f"{xp_session} & {measure} & ${f_name}$ & ${u}$ & ${p}$ & "
+                  f"${p_c}{'^*' if v else ''}$ & ${n}$" + r"\\")
 
         else:
             print(
-                f"[{cond_name}] Mann-Whitney rank test: $u={u}$, $p corr={p_c:.3f}$, p raw {p:.3f}, $n={n}$, sign.: {v}")
+                f"[{cond_name}] Mann-Whitney rank test: $u={u}$, "
+                f"$p corr={p_c:.3f}$, p raw {p:.3f}, $n={n}$, sign.: {v}")
 
     return p_corr
 
@@ -89,7 +94,8 @@ def sim_and_xp(data, data_type=('Human', 'Simulation'),
                 data[3][human][2][unif],
                 data[3][human][2][non_unif],
             ]),
-            'name': 'HUMAN, 3 GOODS, UNIF vs. NON-UNIF, agent_type=2, obs=ind_0'
+            'name': 'HUMAN, 3 GOODS, UNIF vs. NON-UNIF, '
+                    'agent_type=2, obs=ind_0'
         },
 
         {
@@ -97,7 +103,8 @@ def sim_and_xp(data, data_type=('Human', 'Simulation'),
                 data[3][sim][2][unif],
                 data[3][sim][2][non_unif],
             ]),
-            'name': 'SIM, 3 GOODS, UNIF vs. NON-UNIF, agent_type=2, obs=ind_0'
+            'name': 'SIM, 3 GOODS, UNIF vs. NON-UNIF, '
+                    'agent_type=2, obs=ind_0'
         }
     ]
 
@@ -109,28 +116,32 @@ def sim_and_xp(data, data_type=('Human', 'Simulation'),
                 data[4][human][2][unif],
                 data[4][human][2][non_unif],
             ]),
-            'name': 'HUMAN, 4 GOODS, UNIF vs. NON-UNIF, agent_type=2, obs=ind_0'
+            'name': 'HUMAN, 4 GOODS, UNIF vs. NON-UNIF, '
+                    'agent_type=2, obs=ind_0'
         },
         {
             'data': np.array([
                 data[4][sim][2][unif],
                 data[4][sim][2][non_unif],
             ]),
-            'name': 'SIM, 4 GOODS, UNIF vs. NON-UNIF, agent_type=2, obs=ind_0'
+            'name': 'SIM, 4 GOODS, UNIF vs. NON-UNIF, '
+                    'agent_type=2, obs=ind_0'
         },
         {
             'data': np.array([
                 data[4][human][3][unif],
                 data[4][human][3][non_unif],
             ]),
-            'name': 'HUMAN, 4 GOODS, UNIF vs. NON-UNIF, agent_type=3, obs=ind_0'
+            'name': 'HUMAN, 4 GOODS, UNIF vs. NON-UNIF, '
+                    'agent_type=3, obs=ind_0'
         },
         {
             'data': np.array([
                 data[4][sim][3][unif],
                 data[4][sim][3][non_unif],
             ]),
-            'name': 'SIM, 4 GOODS, UNIF vs. NON-UNIF, agent_type=3, obs=ind_0'
+            'name': 'SIM, 4 GOODS, UNIF vs. NON-UNIF, '
+                    'agent_type=3, obs=ind_0'
         }
     ]
 
@@ -149,7 +160,8 @@ def supplementary_age(data):
             data[n_good]['obs']
         )
 
-        print(f'Pearson corr age - measure : $r_pearson={cor:.2f}$, $p={p:.3f}$')
+        print(f'Pearson corr age - measure : '
+              f'$r_pearson={cor:.2f}$, $p={p:.3f}$')
 
 
 def supplementary_gender(data, obs_type='ind_0'):
@@ -160,7 +172,7 @@ def supplementary_gender(data, obs_type='ind_0'):
         print(SEP)
 
         _mw(to_compare=[{
-            'data': np.array([data[n_good]['MALE'], data[n_good]['FEMALE']]),
+            'data': np.array([data[n_good]['Male'], data[n_good]['Female']]),
             'name': f'MALE VS FEMALE, obs={obs_type}'
         }])
 

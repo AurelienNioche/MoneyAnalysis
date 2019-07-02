@@ -29,10 +29,10 @@ from analysis.stats import stats
 
 import graph.sim_and_xp
 import graph.phase_diagram
-import graph.supplementary.s1_and_s2
+import graph.supplementary.individual_behavior
 import graph.supplementary.age
 import graph.supplementary.gender
-import graph.supplementary.effect_of_unique_parameter
+import graph.supplementary.sensibility_analysis
 import graph.supplementary.parameter_recovery
 import graph.supplementary.learning_curves
 import graph.supplementary.cross_validation
@@ -64,17 +64,16 @@ def main_sim_and_xp():
 # ------------------------------------------------- #
 
 
+def sup_sensibility_analysis():
+
+    data = analysis.supplementary.sensibility_analysis()
+    graph.supplementary.sensibility_analysis.plot(data)
+
+
 def sup_individual_behavior():
 
     data = analysis.supplementary.individual_behavior()
-    graph.supplementary.s1_and_s2.plot(data)
-
-
-# def old_supplementary_gender():
-#
-#     data = analysis.supplementary.old_supplementary_gender()
-#     graph.supplementary.gender.plot(data)
-#     analysis.stats.stats.supplementary_gender(data)
+    graph.supplementary.individual_behavior.plot(data)
 
 
 def sup_gender(obs_type='ind_0'):
@@ -120,12 +119,6 @@ def sup_effect_of_extended_time():
                                           t_max=1000)
     graph.sim_and_xp.plot(fig_data, name_extension=name_extension)
     analysis.stats.stats.sim_and_xp(fig_data, name_extension=name_extension)
-
-
-def sup_sensibility_analysis():
-
-    data = analysis.supplementary.sensibility_analysis()
-    graph.supplementary.effect_of_unique_parameter.plot(data)
 
 
 # ------------------------------------------------- #
@@ -174,24 +167,24 @@ if __name__ == '__main__':
     # # Uncomment for running simulations used for phase diagram
     main_phase_diagram()
 
-    # # For stats about reward
-    # main_reward()
-    #
-    # # # Uncomment for experiment analysis and experiment-like simulations
-    # main_sim_and_xp()
-    #
-    # # # Uncomment for sensibility analysis
-    # sup_sensibility_analysis()
-    #
-    # # # Uncomment demographic analysis
-    # sup_gender()
-    # sup_age()
-    #
-    # # # Uncomment for supplementary analysis
-    # sup_individual_behavior()
-    #
-    # # # Uncomment for supplementary analysis related to fit
-    # sup_fit()
-    # sup_parameter_recovery()
-    # sup_effect_of_extended_time()
-    # sup_effect_of_heterogeneous()
+    # For stats about reward
+    main_reward()
+
+    # # Uncomment for experiment analysis and experiment-like simulations
+    main_sim_and_xp()
+
+    # # Uncomment for sensibility analysis
+    sup_sensibility_analysis()
+
+    # # Uncomment demographic analysis
+    sup_gender()
+    sup_age()
+
+    # # Uncomment for supplementary analysis
+    sup_individual_behavior()
+
+    # # Uncomment for supplementary analysis related to fit
+    sup_fit()
+    sup_parameter_recovery()
+    sup_effect_of_extended_time()
+    sup_effect_of_heterogeneous()

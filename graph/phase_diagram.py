@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as grd
 
 import os
-
+import string
 
 FIG_FOLDER = "fig"
 os.makedirs(FIG_FOLDER, exist_ok=True)
@@ -11,22 +11,22 @@ os.makedirs(FIG_FOLDER, exist_ok=True)
 AGENT_LABELLING = {
     3:
         {
-            0: '12',
-            1: '23',
-            2: '31',
+            0: '31',
+            1: '12',
+            2: '23',
         },
     4: {
-            0: '12',
-            1: '23',
-            2: '34',
-            3: '41'
+            0: '41',
+            1: '12',
+            2: '23',
+            3: '34'
         }
     }
 
 
 def _phase_diagram(
         data, ax, labels, n_good, title=None,
-        letter=None, ticks_position=(10, 50, 100, 150, 200),
+        ticks_position=(10, 50, 100, 150, 200),
         v_max=1.0,
         colorbar=True):
 
@@ -44,24 +44,25 @@ def _phase_diagram(
 
     ax.tick_params(labelsize=8)
 
-    agent_type = n_good-1
+    agent_type = n_good-2
     at_label = AGENT_LABELLING[n_good][agent_type]
 
-    ax.set_xlabel(f'$x_{at_label}$')
+    ax.set_xlabel(f'$x_{{{at_label}}}$')
 
     if title is not None:
         ax.set_title(title)
 
-    if letter:
-        ax.text(
-            s=letter, x=-0.1, y=-0.2,
-            horizontalalignment='center',
-            verticalalignment='center',
-            transform=ax.transAxes,
-            fontsize=20)
+    # if letter:
+    #     ax.text(
+    #         s=letter, x=-0.1, y=-0.2,
+    #         horizontalalignment='center',
+    #         verticalalignment='center',
+    #         transform=ax.transAxes,
+    #         fontsize=20)
 
+    agent_type = n_good-1
     at_label = AGENT_LABELLING[n_good][agent_type]
-    ax.set_ylabel(f'$x_{at_label}$')
+    ax.set_ylabel(f'$x_{{{at_label}}}$')
 
     title = f'{n_good} goods'
     ax.set_title(title)
@@ -84,13 +85,20 @@ def plot(data, labels, f_name, v_max=0.9):
 
     for idx_g, n_good in enumerate((3, 4)):
 
+        ax = fig.add_subplot(gs[0, idx_g])
+
         _phase_diagram(
             data=data[n_good],
             labels=labels,
-            ax=fig.add_subplot(gs[0, idx_g]),
+            ax=ax,
             n_good=n_good,
             v_max=v_max
         )
+
+        # Add letter
+        ax.text(-0.2, 1.2, string.ascii_uppercase[idx_g],
+                transform=ax.transAxes,
+                size=20, weight='bold')
 
     plt.tight_layout()
 
