@@ -91,7 +91,6 @@ def _windowed_computation(ex, inf, sup, norm_n_possibility, split_idx):
         r_mean = np.mean(r)
     except AssertionError:
         r_mean = np.nan
-        raise AssertionError
 
     return r_mean
 
@@ -221,9 +220,7 @@ def get_economy_measure(in_hand, desired, prod, cons, m=None, n_split=3):
             non_cons_i = cons[i_eco] != m
             can_use_as_m = non_prod_i * non_cons_i
 
-            assert np.sum(can_use_as_m) > 0, 'I suspect an error of logic'
-
-            mean_obs = np.mean(obs_eco[can_use_as_m])
+            mean_obs = np.nanmean(obs_eco[can_use_as_m])
 
             assert not np.isnan(mean_obs)
             obs.append(mean_obs)

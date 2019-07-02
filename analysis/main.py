@@ -84,8 +84,6 @@ def phase_diagram(m=0):
                                                  cons=d.cons,
                                                  m=m)
 
-        assert np.sum(np.isnan(d)) == 0, 'Observation should not contain a nan'
-
         unq_repartition = np.unique(dist, axis=0)
         labels = np.unique([i[-1] for i in unq_repartition])
 
@@ -97,7 +95,6 @@ def phase_diagram(m=0):
         ])
 
         d = scores.reshape(n_side, n_side).T
-        assert np.sum(np.isnan(d)) == 0, 'Scores should not contain a nan'
 
         data[n_good] = d
 
