@@ -10,9 +10,11 @@ os.makedirs(FIG_FOLDER, exist_ok=True)
 
 def _phase_diagram(
         data, ax, labels, n_good, title=None,
-        letter=None, ticks_position=(10, 50, 100, 150, 200), vmax=1.0, colorbar=True):
+        letter=None, ticks_position=(10, 50, 100, 150, 200),
+        v_max=1.0,
+        colorbar=True):
 
-    im = ax.imshow(data, cmap="binary", origin="lower", vmin=0.0, vmax=vmax)
+    im = ax.imshow(data, cmap="binary", origin="lower", vmin=0.0, vmax=v_max)
 
     lab_to_display = ticks_position
 
@@ -33,7 +35,9 @@ def _phase_diagram(
 
     if letter:
         ax.text(
-            s=letter, x=-0.1, y=-0.2, horizontalalignment='center', verticalalignment='center',
+            s=letter, x=-0.1, y=-0.2,
+            horizontalalignment='center',
+            verticalalignment='center',
             transform=ax.transAxes,
             fontsize=20)
 
@@ -52,13 +56,11 @@ def _phase_diagram(
     ax.set_aspect(1)
 
 
-def plot(data, labels, f_name, m=0):
+def plot(data, labels, f_name, m=0, v_max=0.9):
 
     fig = plt.figure(figsize=(14, 8))
 
     gs = grd.GridSpec(nrows=1, ncols=2)
-
-    vmax = 0.9
 
     for idx_g, n_good in enumerate((3, 4)):
 
@@ -67,7 +69,7 @@ def plot(data, labels, f_name, m=0):
             labels=labels,
             ax=fig.add_subplot(gs[0, idx_g]),
             n_good=n_good,
-            vmax=vmax
+            v_max=v_max
         )
 
     plt.tight_layout()

@@ -1,6 +1,5 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
-*.py[cod]
 *$py.class
 
 # C extensions
@@ -97,16 +96,23 @@ ENV/
 
 # mypy
 .mypy_cache/
-
-.idea/
 templates/
 game/migrations/
+
+# Pycharm
+.idea/
+
+# Data
 data/phase_3_goods/
 data/phase_4_goods/
-data/exp_like/
-data/individual_data.p
+data/*.p
+
+# Figure
 fig/
+
+# Old scripts
 .old/__old__/
-__test__/run.py
-Supprimerait .DS_Store
+
+# Mac stuff
+.DS_Store
 

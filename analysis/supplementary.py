@@ -25,7 +25,7 @@ def reward():
     print('_' * 10)
 
 
-def supplementary_sim_and_xp():
+def individual_behavior():
 
     raw_data = {}
 
@@ -79,33 +79,7 @@ def supplementary_sim_and_xp():
     return fig_data
 
 
-def old_supplementary_gender(obs_type='dir', n_split=3):
-
-    data, room_n_good, room_uniform = xp.get_data()
-
-    categories = "FEMALE", "MALE"
-
-    n_good_cond = np.unique(room_n_good)
-
-    data_gender = {
-        n_good: {
-            cat: [] for cat in categories
-        } for n_good in n_good_cond
-    }
-
-    for d, n_good in zip(data, room_n_good):
-
-        for i, g in enumerate(d.gender):
-
-            to_append = metric.get_individual_measure(
-                data_xp_session=d, i=i, n_split=n_split, slice_idx=-1, obs_type=obs_type)
-
-            data_gender[n_good][categories[int(g)]].append(to_append)
-
-    return data_gender
-
-
-def supplementary_gender(obs_type='ind_0', n_split=3):
+def gender(obs_type='ind_0', n_split=3):
     """
     Selection of agents able to proceed to indirect exchanges with good 0
     :param obs_type:
@@ -140,14 +114,15 @@ def supplementary_gender(obs_type='ind_0', n_split=3):
             # only compute and append for this agent type
             if i in agent_of_interest:
                 to_append = metric.get_individual_measure(
-                    data_xp_session=d, i=i, n_split=n_split, slice_idx=-1, obs_type=obs_type)
+                    data_xp_session=d, i=i, n_split=n_split, slice_idx=-1,
+                    obs_type=obs_type)
 
                 data_gender[n_good][categories[int(g)]].append(to_append)
 
     return data_gender
 
 
-def supplementary_age(obs_type='dir', n_split=3):
+def age(obs_type='dir', n_split=3):
 
     data, room_n_good, room_uniform = xp.get_data()
 
@@ -162,18 +137,20 @@ def supplementary_age(obs_type='dir', n_split=3):
         for i, a in enumerate(d.age):
 
             to_append = metric.get_individual_measure(
-                data_xp_session=d, i=i, n_split=n_split, slice_idx=-1, obs_type=obs_type)
+                data_xp_session=d, i=i, n_split=n_split, slice_idx=-1,
+                obs_type=obs_type)
             fig_data[n_good]['obs'].append(to_append)
             fig_data[n_good]['age'].append(a)
 
     return fig_data
 
 
-def supplementary_parameter_recovery():
+def parameter_recovery():
 
     data = {}
     data["HUMAN"], room_n_good, room_uniform = xp.get_data()
-    alpha, beta, gamma, mean_p, lls, bic, eco = analysis.fit.data.get(data["HUMAN"], room_n_good, room_uniform)
+    alpha, beta, gamma, mean_p, lls, bic, eco = \
+        analysis.fit.data.get(data["HUMAN"], room_n_good, room_uniform)
 
     data["SIM"] = simulation.run_based_on_fit.get_data(
         xp_data_list=data["HUMAN"], alpha=alpha, beta=beta, gamma=gamma, eco=eco)
@@ -190,7 +167,7 @@ def supplementary_parameter_recovery():
     return fig_data
 
 
-def supplementary_fit(heterogeneous=True, t_max=None):
+def fit(heterogeneous=True, t_max=None):
 
     alpha, beta, gamma, mean_p, lls, bic, eco = analysis.fit.data.get()
 
@@ -232,7 +209,9 @@ def supplementary_fit(heterogeneous=True, t_max=None):
                     if agent_type not in fig_data[n_good][cat].keys():
                         fig_data[n_good][cat][agent_type] = {}
 
-                    fig_data[n_good][cat][agent_type][cond_labels[int(uniform)]] = d_formatted[agent_type]
+                    cond = cond_labels[int(uniform)]
+                    fig_data[n_good][cat][agent_type][cond] = \
+                        d_formatted[agent_type]
 
     return fig_data
 
@@ -254,16 +233,14 @@ def sensibility_analysis():
     for n_good in n_good_cond:
 
         d = simulation.run.get_data(n_good=n_good)
-        # dist = d.distribution
-
-        # n = len(dist)  # Number of economies in this batch
 
         alpha = [i[0] for i in d.cognitive_parameters]
         beta = [i[1] for i in d.cognitive_parameters]
         gamma = [i[2] for i in d.cognitive_parameters]
 
         observation = analysis.metric.metric.get_economy_measure(
-            in_hand=d.in_hand, desired=d.desired, prod=d.prod, cons=d.cons, m=0)
+            in_hand=d.in_hand, desired=d.desired,
+            prod=d.prod, cons=d.cons, m=0)
         data[n_good]['alpha'] = alpha
         data[n_good]['beta'] = beta
         data[n_good]['gamma'] = gamma

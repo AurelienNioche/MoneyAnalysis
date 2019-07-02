@@ -8,7 +8,7 @@ from analysis.metric import metric
 from backup import backup
 from xp import xp
 
-DATA_FOLDER = "backup"
+DATA_FOLDER = "data"
 
 
 def sim_and_xp(alpha=.175, beta=1, gamma=.125):
@@ -17,7 +17,9 @@ def sim_and_xp(alpha=.175, beta=1, gamma=.125):
 
     raw_data['HUMAN'], room_n_good, room_uniform = xp.get_data()
 
-    raw_data['SIM'] = simulation.run_xp_like.get_data(xp_data=raw_data['HUMAN'], alpha=alpha, beta=beta, gamma=gamma)
+    raw_data['SIM'] = \
+        simulation.run_xp_like.get_data(xp_data=raw_data['HUMAN'],
+                                        alpha=alpha, beta=beta, gamma=gamma)
 
     category = raw_data.keys()
     n_good_cond = np.unique(room_n_good)
@@ -51,7 +53,9 @@ def sim_and_xp(alpha=.175, beta=1, gamma=.125):
                     if agent_type not in fig_data[n_good][cat].keys():
                         fig_data[n_good][cat][agent_type] = {}
 
-                    fig_data[n_good][cat][agent_type][cond_labels[int(uniform)]] = d_formatted[agent_type]
+                    cond = cond_labels[int(uniform)]
+                    fig_data[n_good][cat][agent_type][cond] = \
+                        d_formatted[agent_type]
 
     return fig_data
 

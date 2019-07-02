@@ -66,7 +66,7 @@ def main_sim_and_xp():
 
 def sup_individual_behavior():
 
-    data = analysis.supplementary.supplementary_sim_and_xp()
+    data = analysis.supplementary.individual_behavior()
     graph.supplementary.s1_and_s2.plot(data)
 
 
@@ -79,28 +79,28 @@ def sup_individual_behavior():
 
 def sup_gender(obs_type='ind_0'):
 
-    data = analysis.supplementary.supplementary_gender(obs_type=obs_type)
+    data = analysis.supplementary.gender(obs_type=obs_type)
     graph.supplementary.gender.plot(data)
     analysis.stats.stats.supplementary_gender(data, obs_type=obs_type)
 
 
 def sup_age():
 
-    data = analysis.supplementary.supplementary_age()
+    data = analysis.supplementary.age()
     graph.supplementary.age.plot(data)
     analysis.stats.stats.supplementary_age(data)
 
 
 def sup_parameter_recovery():
 
-    fig_data = analysis.supplementary.supplementary_parameter_recovery()
+    fig_data = analysis.supplementary.parameter_recovery()
     graph.supplementary.parameter_recovery.plot(fig_data)
     analysis.stats.stats.parameter_recovery(fig_data)
 
 
 def sup_fit():
 
-    fig_data = analysis.supplementary.supplementary_fit()
+    fig_data = analysis.supplementary.fit()
     graph.sim_and_xp.plot(fig_data, name_extension='FIT')
     stats.sim_and_xp(fig_data, name_extension='FIT')
 
@@ -108,7 +108,7 @@ def sup_fit():
 def sup_effect_of_heterogeneous():
 
     name_extension = 'FIT_non_heterogeneous'
-    fig_data = analysis.supplementary.supplementary_fit(heterogeneous=False)
+    fig_data = analysis.supplementary.fit(heterogeneous=False)
     graph.sim_and_xp.plot(fig_data, name_extension=name_extension)
     analysis.stats.stats.sim_and_xp(fig_data, name_extension=name_extension)
 
@@ -116,8 +116,8 @@ def sup_effect_of_heterogeneous():
 def sup_effect_of_extended_time():
 
     name_extension = 'FIT_extended'
-    fig_data = analysis.supplementary.supplementary_fit(heterogeneous=False,
-                                                        t_max=1000)
+    fig_data = analysis.supplementary.fit(heterogeneous=False,
+                                          t_max=1000)
     graph.sim_and_xp.plot(fig_data, name_extension=name_extension)
     analysis.stats.stats.sim_and_xp(fig_data, name_extension=name_extension)
 
