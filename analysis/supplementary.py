@@ -172,14 +172,14 @@ def fit(heterogeneous=True, t_max=None):
     alpha, beta, gamma, mean_p, lls, bic, eco = analysis.fit.data.get()
 
     data = {}
-    data["HUMAN"], room_n_good, room_uniform = xp.get_data()
-    data["SIM"] = simulation.run_based_on_fit.get_data(
-        xp_data_list=data["HUMAN"], alpha=alpha, beta=beta, gamma=gamma, eco=eco,
+    data["Human"], room_n_good, room_uniform = xp.get_data()
+    data["Simulation"] = simulation.run_based_on_fit.get_data(
+        xp_data_list=data["Human"], alpha=alpha, beta=beta, gamma=gamma, eco=eco,
         heterogeneous=heterogeneous, t_max=t_max)
 
     category = data.keys()
     n_good_cond = np.unique(room_n_good)
-    cond_labels = "NON-UNIF", "UNIF"
+    cond_labels = "Non-uniform", "Uniform"
 
     fig_data = {n_good: {
         cat: {

@@ -91,6 +91,7 @@ def _windowed_computation(ex, inf, sup, norm_n_possibility, split_idx):
         r_mean = np.mean(r)
     except AssertionError:
         r_mean = np.nan
+        raise AssertionError
 
     return r_mean
 
@@ -98,6 +99,7 @@ def _windowed_computation(ex, inf, sup, norm_n_possibility, split_idx):
 def get_windowed_observation(dir_ex, ind_ex, n, n_split, n_good, slice_idx=-1):
 
     m_defined = len(ind_ex.shape) == 1
+    assert m_defined
 
     t_max = len(n)
     step = t_max // n_split
@@ -118,6 +120,7 @@ def get_windowed_observation(dir_ex, ind_ex, n, n_split, n_good, slice_idx=-1):
             slice_to_compute = n_split - 1,
 
     for i in slice_to_compute:
+
         # set inferior and superior bound
         inf = bounds[i]
         sup = bounds[i+1]
@@ -129,17 +132,23 @@ def get_windowed_observation(dir_ex, ind_ex, n, n_split, n_good, slice_idx=-1):
         norm_n_possibility = n_possibility - last_n
 
         m_dir_ex[i] = _windowed_computation(
-            ex=dir_ex, inf=inf, sup=sup, norm_n_possibility=norm_n_possibility, split_idx=i)
+            ex=dir_ex, inf=inf, sup=sup,
+            norm_n_possibility=norm_n_possibility,
+            split_idx=i)
 
         if m_defined:
             m_ind_ex[i] = _windowed_computation(
-                ex=ind_ex[:], inf=inf, sup=sup, norm_n_possibility=norm_n_possibility, split_idx=i)
+                ex=ind_ex[:], inf=inf, sup=sup,
+                norm_n_possibility=norm_n_possibility,
+                split_idx=i)
 
         else:
             for good in range(n_good):
 
                 m_ind_ex[i, good] = _windowed_computation(
-                    ex=ind_ex[:, good], inf=inf, sup=sup, norm_n_possibility=norm_n_possibility, split_idx=i)
+                    ex=ind_ex[:, good], inf=inf, sup=sup,
+                    norm_n_possibility=norm_n_possibility,
+                    split_idx=i)
 
     if slice_idx != 'all':
         if m_defined:
@@ -169,7 +178,8 @@ def get_economy_measure(in_hand, desired, prod, cons, m=None, n_split=3):
 
     for i_eco in tqdm(range(n_eco)):
 
-        n_good = int(max(in_hand[i_eco][:, 0])) + 1  # All individuals, time step=0
+        # All individuals, time step=0
+        n_good = int(max(in_hand[i_eco][:, 0])) + 1
         n_agent = len(in_hand[i_eco])
 
         if m is None:
@@ -180,15 +190,18 @@ def get_economy_measure(in_hand, desired, prod, cons, m=None, n_split=3):
 
         for i_agent in range(n_agent):
 
-            dir_ex, ind_ex, n = exchange(n_good=n_good,
-                                         in_hand=in_hand[i_eco][i_agent],
-                                         desired=desired[i_eco][i_agent],
-                                         prod=prod[i_eco][i_agent],
-                                         cons=cons[i_eco][i_agent],
-                                         m=m)
+            dir_ex, ind_ex, n = exchange(
+                n_good=n_good,
+                in_hand=in_hand[i_eco][i_agent],
+                desired=desired[i_eco][i_agent],
+                prod=prod[i_eco][i_agent],
+                cons=cons[i_eco][i_agent],
+                m=m)
 
-            _dir, _ind = get_windowed_observation(dir_ex=dir_ex, ind_ex=ind_ex, n=n,
-                                                  n_good=n_good, n_split=n_split, slice_idx=-1)
+            _dir, _ind = get_windowed_observation(
+                dir_ex=dir_ex, ind_ex=ind_ex, n=n,
+                n_good=n_good, n_split=n_split, slice_idx=-1)
+
             obs_eco[i_agent] = _ind
 
         if m is None:
@@ -208,7 +221,11 @@ def get_economy_measure(in_hand, desired, prod, cons, m=None, n_split=3):
             non_cons_i = cons[i_eco] != m
             can_use_as_m = non_prod_i * non_cons_i
 
+            assert np.sum(can_use_as_m) > 0, 'I suspect an error of logic'
+
             mean_obs = np.mean(obs_eco[can_use_as_m])
+
+            assert not np.isnan(mean_obs)
             obs.append(mean_obs)
 
     return np.asarray(obs)
@@ -259,10 +276,12 @@ def dynamic_data(data_xp_session, n_split=3, obs_type='ind_0', slice_idx=-1):
     value: average for each subject able to use the
     """
 
-    assert obs_type in ('ind_0', 'ind_1', 'ind_2', 'ind_3', 'dir'), 'Observation type not recognized'
+    assert obs_type in ('ind_0', 'ind_1', 'ind_2', 'ind_3', 'dir'), \
+        'Observation type not recognized'
 
     if obs_type not in ('ind_0', 'dir'):
-        raise NotImplementedError('Other obs than ind_0 or dir are not available yet.')
+        raise NotImplementedError(
+            'Other obs than ind_0 or dir are not available yet.')
 
     n_good = data_xp_session.n_good
 
@@ -279,7 +298,9 @@ def dynamic_data(data_xp_session, n_split=3, obs_type='ind_0', slice_idx=-1):
 
         if agent_type in agent_types:
 
-            d = get_individual_measure(data_xp_session, i, n_split, slice_idx, obs_type)
+            d = get_individual_measure(data_xp_session, i,
+                                       n_split, slice_idx,
+                                       obs_type)
             formatted_data[agent_type].append(d)
 
     return formatted_data

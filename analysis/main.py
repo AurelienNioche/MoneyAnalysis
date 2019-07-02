@@ -15,15 +15,16 @@ def sim_and_xp(alpha=.175, beta=1, gamma=.125):
 
     raw_data = {}
 
-    raw_data['HUMAN'], room_n_good, room_uniform = xp.get_data()
+    raw_data['Human'], room_n_good, room_uniform = xp.get_data()
 
-    raw_data['SIM'] = \
-        simulation.run_xp_like.get_data(xp_data=raw_data['HUMAN'],
+    raw_data['Simulation'] = \
+        simulation.run_xp_like.get_data(xp_data=raw_data['Human'],
                                         alpha=alpha, beta=beta, gamma=gamma)
 
-    category = raw_data.keys()
+    category = sorted(raw_data.keys())[::-1]
+
     n_good_cond = np.unique(room_n_good)
-    cond_labels = "NON-UNIF", "UNIF"
+    cond_labels = "Non-uniform", "Uniform"
 
     fig_data = {n_good: {
         cat: {
@@ -60,7 +61,7 @@ def sim_and_xp(alpha=.175, beta=1, gamma=.125):
     return fig_data
 
 
-def phase_diagram():
+def phase_diagram(m=0):
 
     data_file = f'{DATA_FOLDER}/formatted_phase_diagram.p'
 
@@ -68,37 +69,37 @@ def phase_diagram():
         data, labels = backup.load(data_file)
         return data, labels
 
-    data = []
+    data = {}
 
-    for n_good in 3, 4:
+    for n_good in (4, 3):
 
         d = simulation.run.get_data(n_good=n_good)
         dist = d.distribution
 
         n = len(dist)  # Number of economies in this batch
 
-        observation = metric.get_economy_measure(in_hand=d.in_hand, desired=d.desired, prod=d.prod, cons=d.cons)
+        observation = metric.get_economy_measure(in_hand=d.in_hand,
+                                                 desired=d.desired,
+                                                 prod=d.prod,
+                                                 cons=d.cons,
+                                                 m=m)
 
-        money = np.array([
-            [observation[i][good] for good in range(n_good)] for i in range(n)
-        ])
+        assert np.sum(np.isnan(d)) == 0, 'Observation should not contain a nan'
 
         unq_repartition = np.unique(dist, axis=0)
         labels = np.unique([i[-1] for i in unq_repartition])
 
         n_side = len(labels)
 
-        phases = []
+        scores = np.array([
+            np.mean([observation[i] for i in range(n) if np.all(dist[i] == r)])
+            for r in unq_repartition
+        ])
 
-        for good in range(n_good):
-            scores = np.array([
-                np.mean([money[i][good] for i in range(n) if np.all(dist[i] == r)])
-                for r in unq_repartition
-            ])
+        d = scores.reshape(n_side, n_side).T
+        assert np.sum(np.isnan(d)) == 0, 'Scores should not contain a nan'
 
-            phases.append(scores.reshape(n_side, n_side).T)
-
-        data.append(phases)
+        data[n_good] = d
 
     backup.save((data, labels), data_file)
 

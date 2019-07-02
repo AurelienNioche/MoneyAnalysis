@@ -171,27 +171,27 @@ def exploratory_median_split():
 
 if __name__ == '__main__':
 
-    # For stats about reward
-    main_reward()
-
     # # Uncomment for running simulations used for phase diagram
     main_phase_diagram()
 
-    # # Uncomment for experiment analysis and experiment-like simulations
-    main_sim_and_xp()
-
-    # # Uncomment for sensibility analysis
-    sup_sensibility_analysis()
-
-    # # Uncomment demographic analysis
-    sup_gender()
-    sup_age()
-
-    # # Uncomment for supplementary analysis
-    sup_individual_behavior()
-
-    # # Uncomment for supplementary analysis related to fit
-    sup_fit()
-    sup_parameter_recovery()
-    sup_effect_of_extended_time()
-    sup_effect_of_heterogeneous()
+    # # For stats about reward
+    # main_reward()
+    #
+    # # # Uncomment for experiment analysis and experiment-like simulations
+    # main_sim_and_xp()
+    #
+    # # # Uncomment for sensibility analysis
+    # sup_sensibility_analysis()
+    #
+    # # # Uncomment demographic analysis
+    # sup_gender()
+    # sup_age()
+    #
+    # # # Uncomment for supplementary analysis
+    # sup_individual_behavior()
+    #
+    # # # Uncomment for supplementary analysis related to fit
+    # sup_fit()
+    # sup_parameter_recovery()
+    # sup_effect_of_extended_time()
+    # sup_effect_of_heterogeneous()

@@ -70,7 +70,10 @@ def _mw(to_compare, print_latex=False, **kwargs):
     return p_corr
 
 
-def sim_and_xp(data, data_type=('HUMAN', 'SIM'), name_extension=''):
+def sim_and_xp(data, data_type=('Human', 'Simulation'),
+               conditions=('Uniform', 'Non-uniform'),
+               name_extension=''):
+
     # keys: ngood, HUMAN/SIM, agent_type, UNIF/NON-UNIF (1, 0)
     # Main tests
     print(SEP)
@@ -78,20 +81,21 @@ def sim_and_xp(data, data_type=('HUMAN', 'SIM'), name_extension=''):
     print(SEP)
 
     human, sim = data_type
+    unif, non_unif = conditions
 
     to_compare = [
         {
             'data': np.array([
-                data[3][human][2]['UNIF'],
-                data[3][human][2]['NON-UNIF'],
+                data[3][human][2][unif],
+                data[3][human][2][non_unif],
             ]),
             'name': 'HUMAN, 3 GOODS, UNIF vs. NON-UNIF, agent_type=2, obs=ind_0'
         },
 
         {
             'data': np.array([
-                data[3][sim][2]['UNIF'],
-                data[3][sim][2]['NON-UNIF'],
+                data[3][sim][2][unif],
+                data[3][sim][2][non_unif],
             ]),
             'name': 'SIM, 3 GOODS, UNIF vs. NON-UNIF, agent_type=2, obs=ind_0'
         }
@@ -102,29 +106,29 @@ def sim_and_xp(data, data_type=('HUMAN', 'SIM'), name_extension=''):
     to_compare = [
         {
             'data': np.array([
-                data[4][human][2]['UNIF'],
-                data[4][human][2]['NON-UNIF'],
+                data[4][human][2][unif],
+                data[4][human][2][non_unif],
             ]),
             'name': 'HUMAN, 4 GOODS, UNIF vs. NON-UNIF, agent_type=2, obs=ind_0'
         },
         {
             'data': np.array([
-                data[4][sim][2]['UNIF'],
-                data[4][sim][2]['NON-UNIF'],
+                data[4][sim][2][unif],
+                data[4][sim][2][non_unif],
             ]),
             'name': 'SIM, 4 GOODS, UNIF vs. NON-UNIF, agent_type=2, obs=ind_0'
         },
         {
             'data': np.array([
-                data[4][human][3]['UNIF'],
-                data[4][human][3]['NON-UNIF'],
+                data[4][human][3][unif],
+                data[4][human][3][non_unif],
             ]),
             'name': 'HUMAN, 4 GOODS, UNIF vs. NON-UNIF, agent_type=3, obs=ind_0'
         },
         {
             'data': np.array([
-                data[4][sim][3]['UNIF'],
-                data[4][sim][3]['NON-UNIF'],
+                data[4][sim][3][unif],
+                data[4][sim][3][non_unif],
             ]),
             'name': 'SIM, 4 GOODS, UNIF vs. NON-UNIF, agent_type=3, obs=ind_0'
         }

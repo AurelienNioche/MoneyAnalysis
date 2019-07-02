@@ -21,7 +21,7 @@ def plot(data):
             data[n_good]['age'],
             data[n_good]['obs'],
             s=15, alpha=0.5,
-            # facecolor="black", edgecolor='white',
+            facecolor="black", edgecolor='black',
         )
 
         ax.set_ylabel("Freq. dir. ex.")

@@ -8,13 +8,29 @@ FIG_FOLDER = "fig"
 os.makedirs(FIG_FOLDER, exist_ok=True)
 
 
+AGENT_LABELLING = {
+    3:
+        {
+            0: '12',
+            1: '23',
+            2: '31',
+        },
+    4: {
+            0: '12',
+            1: '23',
+            2: '34',
+            3: '41'
+        }
+    }
+
+
 def _phase_diagram(
         data, ax, labels, n_good, title=None,
         letter=None, ticks_position=(10, 50, 100, 150, 200),
         v_max=1.0,
         colorbar=True):
 
-    im = ax.imshow(data, cmap="binary", origin="lower", vmin=0.0, vmax=v_max)
+    im = ax.imshow(data, cmap="viridis", origin="lower", vmin=0.0, vmax=v_max)
 
     lab_to_display = ticks_position
 
@@ -28,7 +44,10 @@ def _phase_diagram(
 
     ax.tick_params(labelsize=8)
 
-    ax.set_xlabel(f'$x_{n_good-1}$')
+    agent_type = n_good-1
+    at_label = AGENT_LABELLING[n_good][agent_type]
+
+    ax.set_xlabel(f'$x_{at_label}$')
 
     if title is not None:
         ax.set_title(title)
@@ -41,7 +60,8 @@ def _phase_diagram(
             transform=ax.transAxes,
             fontsize=20)
 
-    ax.set_ylabel(f'$x_{n_good}$')
+    at_label = AGENT_LABELLING[n_good][agent_type]
+    ax.set_ylabel(f'$x_{at_label}$')
 
     title = f'{n_good} goods'
     ax.set_title(title)
@@ -56,7 +76,7 @@ def _phase_diagram(
     ax.set_aspect(1)
 
 
-def plot(data, labels, f_name, m=0, v_max=0.9):
+def plot(data, labels, f_name, v_max=0.9):
 
     fig = plt.figure(figsize=(14, 8))
 
@@ -65,7 +85,7 @@ def plot(data, labels, f_name, m=0, v_max=0.9):
     for idx_g, n_good in enumerate((3, 4)):
 
         _phase_diagram(
-            data=data[idx_g][m],
+            data=data[n_good],
             labels=labels,
             ax=fig.add_subplot(gs[0, idx_g]),
             n_good=n_good,
