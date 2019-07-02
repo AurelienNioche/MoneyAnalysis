@@ -237,7 +237,7 @@ def supplementary_fit(heterogeneous=True, t_max=None):
     return fig_data
 
 
-def effect_of_unique_parameter():
+def sensibility_analysis():
 
     data_file = os.path.join(DATA_FOLDER, 'sensibility_analysis.p')
 

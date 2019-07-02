@@ -7,17 +7,20 @@ from simulation.model.RL.rl_agent import RLAgent
 
 class Economy(object):
 
-    def __init__(self, t_max, cognitive_parameters, agent_model='RLAgent', distribution=None,
-                 economy_model='prod: i-1', seed=123, heterogeneous=False, prod=None, cons=None):
+    def __init__(self, t_max, cognitive_parameters, agent_model='RLAgent',
+                 distribution=None,
+                 economy_model='prod: i-1', seed=123, heterogeneous=False,
+                 prod=None, cons=None):
 
         np.random.seed(seed)
         self.t_max = t_max
         self.cognitive_parameters = cognitive_parameters
         self.agent_model = agent_model
 
-        self.n_goods, self.n_agent, self.agents, self.prod, self.cons = \
+        self.n_good, self.n_agent, self.agents, self.prod, self.cons = \
             self.create_agents(economy_model=economy_model,
-                               heterogeneous=heterogeneous, distribution=distribution,
+                               heterogeneous=heterogeneous,
+                               distribution=distribution,
                                prod=prod, cons=cons)
 
         # ---- For backup ----- #
@@ -29,24 +32,25 @@ class Economy(object):
 
         self.t = 0
 
-        self.markets = self.get_markets(self.n_goods)
-        self.exchange_types = list(it.combinations(range(self.n_goods), r=2))
+        self.markets = self.get_markets(self.n_good)
+        self.exchange_types = list(it.combinations(range(self.n_good), r=2))
 
-    def create_agents(self, economy_model, heterogeneous, distribution, prod, cons):
+    def create_agents(self, economy_model, heterogeneous, distribution,
+                      prod, cons):
 
         if distribution is not None:
 
-            n_goods = len(distribution)
+            n_good = len(distribution)
             n_agent = sum(distribution)
 
-            roles = np.zeros((n_goods, 2), dtype=int)
+            roles = np.zeros((n_good, 2), dtype=int)
             if economy_model == 'prod: i+1':
-                for i in range(n_goods):
-                    roles[i] = (i + 1) % n_goods, i
+                for i in range(n_good):
+                    roles[i] = (i + 1) % n_good, i
 
             elif economy_model == 'prod: i-1':
-                for i in range(n_goods):
-                    roles[i] = (i - 1) % n_goods, i
+                for i in range(n_good):
+                    roles[i] = (i - 1) % n_good, i
 
             else:
                 raise Exception(f'Model "{economy_model}" is not defined.')
@@ -54,7 +58,8 @@ class Economy(object):
             idx = 0
 
             agents = np.zeros(n_agent, dtype=object)
-            prod, cons = np.zeros(n_agent, dtype=int), np.zeros(n_agent, dtype=int)
+            prod, cons = np.zeros(n_agent, dtype=int), \
+                         np.zeros(n_agent, dtype=int)
 
             for agent_type, n in enumerate(distribution):
 
@@ -67,7 +72,7 @@ class Economy(object):
                     a = eval(self.agent_model)(
                         prod=i, cons=j,
                         cognitive_parameters=cognitive_parameters,
-                        n_goods=n_goods,
+                        n_goods=n_good,
                         idx=idx
                     )
 
@@ -77,7 +82,7 @@ class Economy(object):
 
         else:
             assert cons is not None and prod is not None
-            n_goods = max(cons) + 1
+            n_good = max(cons) + 1
             n_agent = len(cons)
 
             agents = np.zeros(n_agent, dtype=object)
@@ -90,11 +95,11 @@ class Economy(object):
                 agents[i] = eval(self.agent_model)(
                     prod=prod[i], cons=cons[i],
                     cognitive_parameters=cognitive_parameters,
-                    n_goods=n_goods,
+                    n_goods=n_good,
                     idx=i
                 )
 
-        return n_goods, n_agent, agents, prod, cons
+        return n_good, n_agent, agents, prod, cons
 
     @staticmethod
     def get_markets(n_goods):
@@ -104,26 +109,14 @@ class Economy(object):
             markets[i] = []
         return markets
 
-    def run(self):
-
-        for t in range(self.t_max):
-            self.time_step(t)
-
-        return {
-            'in_hand': self.in_hand,
-            'desired': self.desired,
-            'prod': self.prod,
-            'cons': self.cons,
-            'success': self.success
-        }
-
     def time_step(self, t):
 
         self.t = t
 
         self.organize_encounters()
 
-        # Each agent consumes at the end of each round and adapt his behavior (or not).
+        # Each agent consumes at the end of each round
+        # and adapt his behavior (or not).
         for agent in self.agents:
             agent.consume()
 
@@ -165,6 +158,20 @@ class Economy(object):
             agent.proceed_to_exchange()
 
             self.success[idx, self.t] = True
+
+    def run(self):
+
+        for t in range(self.t_max):
+            self.time_step(t)
+
+        return {
+            'in_hand': self.in_hand,
+            'desired': self.desired,
+            'prod': self.prod,
+            'cons': self.cons,
+            'success': self.success,
+            'n_good': self.n_good
+        }
 
 
 def launch(**kwargs):

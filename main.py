@@ -38,7 +38,12 @@ import graph.supplementary.learning_curves
 import graph.supplementary.cross_validation
 
 
-def phase_diagram(f_name='phase.pdf'):
+def main_reward():
+
+    analysis.supplementary.reward()
+
+
+def main_phase_diagram(f_name='phase.pdf'):
 
     """
     plot phase diagrams
@@ -49,84 +54,58 @@ def phase_diagram(f_name='phase.pdf'):
     graph.phase_diagram.plot(data=data, labels=labels, f_name=f_name)
 
 
-def sim_and_xp():
+def main_sim_and_xp():
 
     data = analysis.main.sim_and_xp()
     graph.sim_and_xp.plot(data)
     analysis.stats.stats.sim_and_xp(data)
 
 
-def sim_and_xp_exploration():
-
-    # With gamma = 0.225 simulations fail statistically with 4 goods
-    data = analysis.exploratory.sim_and_xp_exploration(beta=1e+20)
-    graph.sim_and_xp.plot(data)
-    analysis.stats.stats.sim_and_xp(data, name_extension="exploration")
+# ------------------------------------------------- #
 
 
-def supplementary_sim_and_xp():
+def sup_individual_behavior():
 
     data = analysis.supplementary.supplementary_sim_and_xp()
     graph.supplementary.s1_and_s2.plot(data)
 
 
-def old_supplementary_gender():
+# def old_supplementary_gender():
+#
+#     data = analysis.supplementary.old_supplementary_gender()
+#     graph.supplementary.gender.plot(data)
+#     analysis.stats.stats.supplementary_gender(data)
 
-    data = analysis.supplementary.old_supplementary_gender()
+
+def sup_gender(obs_type='ind_0'):
+
+    data = analysis.supplementary.supplementary_gender(obs_type=obs_type)
     graph.supplementary.gender.plot(data)
-    analysis.stats.stats.supplementary_gender(data)
+    analysis.stats.stats.supplementary_gender(data, obs_type=obs_type)
 
 
-def supplementary_age():
+def sup_age():
 
     data = analysis.supplementary.supplementary_age()
     graph.supplementary.age.plot(data)
     analysis.stats.stats.supplementary_age(data)
 
 
-def parameter_recovery():
+def sup_parameter_recovery():
 
     fig_data = analysis.supplementary.supplementary_parameter_recovery()
     graph.supplementary.parameter_recovery.plot(fig_data)
     analysis.stats.stats.parameter_recovery(fig_data)
 
 
-def fit():
+def sup_fit():
 
     fig_data = analysis.supplementary.supplementary_fit()
     graph.sim_and_xp.plot(fig_data, name_extension='FIT')
     stats.sim_and_xp(fig_data, name_extension='FIT')
 
 
-def learning_curves():
-
-    fig_data = analysis.exploratory.learning_curves()
-    graph.supplementary.learning_curves.plot(fig_data)
-
-
-def ind0_freq_over_time():
-
-    data = analysis.exploratory.ind0_freq_over_time()
-    graph.supplementary.learning_curves.plot(
-        data,
-        f_name='fig/ind0_freq_over_time_{}.pdf')
-
-
-def supplementary_gender():
-    obs_type = 'ind_0'
-    data = analysis.supplementary.supplementary_gender(obs_type=obs_type)
-    graph.supplementary.gender.plot(data)
-    analysis.stats.stats.supplementary_gender(data, obs_type=obs_type)
-
-
-def cross_validation():
-
-    data = analysis.exploratory.cross_validation()
-    graph.supplementary.cross_validation.plot(data)
-    analysis.stats.stats.cross_validation(data)
-
-
-def check_effect_of_heterogeneous():
+def sup_effect_of_heterogeneous():
 
     name_extension = 'FIT_non_heterogeneous'
     fig_data = analysis.supplementary.supplementary_fit(heterogeneous=False)
@@ -134,7 +113,7 @@ def check_effect_of_heterogeneous():
     analysis.stats.stats.sim_and_xp(fig_data, name_extension=name_extension)
 
 
-def check_effect_of_extended_time():
+def sup_effect_of_extended_time():
 
     name_extension = 'FIT_extended'
     fig_data = analysis.supplementary.supplementary_fit(heterogeneous=False,
@@ -143,34 +122,76 @@ def check_effect_of_extended_time():
     analysis.stats.stats.sim_and_xp(fig_data, name_extension=name_extension)
 
 
-def effect_of_unique_parameter():
+def sup_sensibility_analysis():
 
-    data = analysis.supplementary.effect_of_unique_parameter()
+    data = analysis.supplementary.sensibility_analysis()
     graph.supplementary.effect_of_unique_parameter.plot(data)
+
+
+# ------------------------------------------------- #
+
+
+def exploratory_parameters():
+
+    # With gamma = 0.225 simulations fail statistically with 4 goods
+    data = analysis.exploratory.sim_and_xp_exploration(beta=1e+20)
+    graph.sim_and_xp.plot(data)
+    analysis.stats.stats.sim_and_xp(data, name_extension="exploration")
+
+
+def exploratory_learning_curves():
+
+    fig_data = analysis.exploratory.learning_curves()
+    graph.supplementary.learning_curves.plot(fig_data)
+
+
+# def ind0_freq_over_time():
+#
+#     data = analysis.exploratory.ind0_freq_over_time()
+#     graph.supplementary.learning_curves.plot(
+#         data,
+#         f_name='fig/ind0_freq_over_time_{}.pdf')
+
+
+def exploratory_cross_validation():
+
+    data = analysis.exploratory.cross_validation()
+    graph.supplementary.cross_validation.plot(data)
+    analysis.stats.stats.cross_validation(data)
+
+
+def exploratory_median_split():
+
+    ext = 'MEDIAN_SPLIT'
+    fig_data = analysis.exploratory.agent_selection()
+    graph.sim_and_xp.plot(fig_data, name_extension=ext)
+    analysis.stats.stats.sim_and_xp(fig_data, data_type=('SIM', 'SIM_SELECT'),
+                                    name_extension=ext)
 
 
 if __name__ == '__main__':
 
     # For stats about reward
-    analysis.supplementary.reward()
+    main_reward()
 
     # # Uncomment for running simulations used for phase diagram
-    phase_diagram()
+    main_phase_diagram()
 
     # # Uncomment for experiment analysis and experiment-like simulations
-    sim_and_xp()
+    main_sim_and_xp()
+
+    # # Uncomment for sensibility analysis
+    sup_sensibility_analysis()
+
+    # # Uncomment demographic analysis
+    sup_gender()
+    sup_age()
 
     # # Uncomment for supplementary analysis
-    supplementary_sim_and_xp()
-
-    # # Uncomment for supplementary analysis concerning gender
-    supplementary_gender()
-    supplementary_age()
-
-    # # Uncomment for supplementary analysis concerning parameter exploration
-    sim_and_xp_exploration()
+    sup_individual_behavior()
 
     # # Uncomment for supplementary analysis related to fit
-    fit()
-    learning_curves()
-    parameter_recovery()
+    sup_fit()
+    sup_parameter_recovery()
+    sup_effect_of_extended_time()
+    sup_effect_of_heterogeneous()
