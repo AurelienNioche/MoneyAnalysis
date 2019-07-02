@@ -96,7 +96,7 @@ def plot(data, labels, f_name, v_max=0.9):
         )
 
         # Add letter
-        ax.text(-0.2, 1.2, string.ascii_uppercase[idx_g],
+        ax.text(-0.1, 1.1, string.ascii_uppercase[idx_g],
                 transform=ax.transAxes,
                 size=20, weight='bold')
 
