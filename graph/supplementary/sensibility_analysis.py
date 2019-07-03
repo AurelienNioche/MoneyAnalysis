@@ -1,15 +1,29 @@
+import os
+import string
+
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.gridspec as grd
+
+from graph.parameters import SUP_FIG_FOLDER
 
 
-def plot(data):
+def plot(data,
+         f_name='sensibility_analysis.pdf',
+         parameters=(r'$\alpha$',
+                     r'$\beta$',
+                     r'$\gamma$',
+                     ),
+         y_label='Freq. ind. ex. with good 1'):
 
-    n_good_cond = list(data.keys())
-    n_good_cond.sort()
+    fig = plt.figure(figsize=(8, 8))
+    gs = grd.GridSpec(nrows=3, ncols=2)
 
-    for n_good in n_good_cond:
+    n_subplot = 0
 
-        fig, axes = plt.subplots(nrows=3)
+    n_good_cond = sorted(list(data.keys()))
+
+    for i, n_good in enumerate(n_good_cond):
 
         if n_good == 3:
             chance_level = 0.5
@@ -20,27 +34,32 @@ def plot(data):
         else:
             raise NotImplementedError
 
-        for i, param in enumerate((r'$\alpha$',
-                                   r'$\beta$',
-                                   r'$\gamma$')):
+        for j, param in enumerate(parameters):
 
             # assert not np.sum(np.isnan(data[n_good]['ind0'])),
             # np.isnan(data[n_good]['ind0']).nonzero()
 
-            ax = axes[i]
-            ax.scatter(data[n_good][param], data[n_good]['ind0'],
+            ax = fig.add_subplot(gs[j, i])
+
+            if j == 0:
+                ax.set_title(f'{n_good} goods\n')
+
+            ax.scatter(data[n_good][param],
+                       data[n_good]['ind0'],
                        alpha=0.01,
                        s=0.5)
-            # axes[i].set_title(param)
+
             ax.set_xlabel(param)
-            ax.set_ylabel('Freq. ind. ex.')
+            ax.set_ylabel(y_label)
             ax.set_ylim(0, 1)
             ax.set_yticks(y_ticks)
 
             x_ticks = np.unique(data[n_good][param])
 
             # For horizontal line
-            ax.axhline(chance_level, linestyle='--', color='0.3', zorder=-10,
+            ax.axhline(chance_level,
+                       linestyle='--',
+                       color='0.3', zorder=-10,
                        linewidth=0.5)
 
             values_box_plot = [[] for _ in range(len(x_ticks))]
@@ -66,7 +85,17 @@ def plot(data):
             ax.set_xticks(x_ticks)
             ax.set_xlim(x_ticks[0]-0.10*span, x_ticks[-1]+0.10*span)
 
-        plt.tight_layout()
-        f_name = f"fig/sensibility_analysis_{n_good}.pdf"
-        plt.savefig(f_name)
-        print(f"Figure {f_name} has been produced.")
+            if j == 0:
+                # Add letter
+                ax.text(-0.3, 1.1, string.ascii_uppercase[n_subplot],
+                        transform=ax.transAxes,
+                        size=20, weight='bold')
+
+                n_subplot += 1
+
+    plt.tight_layout()
+
+    fig_path = os.path.join(SUP_FIG_FOLDER, f_name)
+    plt.savefig(fig_path)
+
+    print(f"Figure '{fig_path}' created.\n")

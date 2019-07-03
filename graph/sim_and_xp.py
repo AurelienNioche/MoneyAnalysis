@@ -1,41 +1,36 @@
+import os
+import string
+
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as grd
 import numpy as np
 
-import os
-import string
-
-FIG_FOLDER = "fig"
-os.makedirs(FIG_FOLDER, exist_ok=True)
-
-
-AGENT_LABELLING = {
-    3:
-        {
-            0: '31',
-            1: '12',
-            2: '23',
-        },
-    4: {
-            0: '41',
-            1: '12',
-            2: '23',
-            3: '34'
-        }
-    }
+from graph.parameters import FIG_FOLDER, AGENT_LABELLING, SUP_FIG_FOLDER
 
 
 def boxplot(
-        results, ax, n_good, colors=None, tick_labels=None,
+        results, ax, n_good, colors=None, color=None, tick_labels=None,
         y_label="y_label",
         y_lim=(-0.02, 1.02),
-        fontsize=10, aspect=3):
+        fontsize=10, aspect=3, title=None,
+        n_subplot=None):
 
     if tick_labels is None:
         tick_labels = results.keys()
 
     if colors is None:
-        colors = ['black' for _ in range(len(results.keys()))]
+        if color is None:
+            color = 'black'
+        colors = [color for _ in range(len(results.keys()))]
+
+    if title:
+        ax.set_title(title, fontsize=fontsize)
+
+    if n_subplot is not None:
+        # Add letter
+        ax.text(-0.2, 1.2, string.ascii_uppercase[n_subplot],
+                transform=ax.transAxes,
+                size=20, weight='bold')
 
     n = len(results.keys())
 
@@ -120,21 +115,23 @@ def plot(fig_data, name_extension=''):
                 ax = fig.add_subplot(gs[row, col])
 
                 at_label = AGENT_LABELLING[n_good][at]
-                ax.set_title(f'{cat} - Type {at_label}')
 
                 boxplot(results=fig_data[n_good][cat][at], n_good=n_good,
                         ax=ax,
+                        title=f'{cat} - Type {at_label}',
                         y_label='Freq. ind. ex. with good 1',
-                        colors=('C0', 'C1'))
-
-                # Add letter
-                ax.text(-0.2, 1.2, string.ascii_uppercase[n],
-                        transform=ax.transAxes,
-                        size=20, weight='bold')
+                        colors=('C0', 'C1'),
+                        n_subplot=n)
 
                 n += 1
 
         plt.tight_layout()
-        f_name = f'fig/xp_{n_good}{name_extension}.pdf'
-        plt.savefig(f_name)
-        print(f'{f_name} has been produced')
+
+        f_name = f'xp_{n_good}{name_extension}.pdf'
+
+        if not name_extension:
+            f_path = os.path.join(FIG_FOLDER, f_name)
+        else:
+            f_path = os.path.join(SUP_FIG_FOLDER, f_name)
+        plt.savefig(f_path)
+        print(f'{f_name} created.')

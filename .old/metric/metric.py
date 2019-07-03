@@ -29,7 +29,7 @@ def exchange(n_good, in_hand, desired, prod, cons):
     for t in range(t_max):
 
         ih = in_hand[t]
-        # --- ...old way ---
+        # --- ....old way ---
         # Check for direct
         # if (ih, c) == (prod, cons):
         #     dir_ex += 1

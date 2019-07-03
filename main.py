@@ -34,8 +34,8 @@ import graph.supplementary.age
 import graph.supplementary.gender
 import graph.supplementary.sensibility_analysis
 import graph.supplementary.parameter_recovery
-import graph.supplementary.learning_curves
-import graph.supplementary.cross_validation
+import graph.exploratory.learning_curves
+import graph.exploratory.cross_validation
 
 
 def main_reward():
@@ -100,8 +100,8 @@ def sup_parameter_recovery():
 def sup_fit():
 
     fig_data = analysis.supplementary.fit()
-    graph.sim_and_xp.plot(fig_data, name_extension='FIT')
-    stats.sim_and_xp(fig_data, name_extension='FIT')
+    graph.sim_and_xp.plot(fig_data, name_extension='_fit')
+    stats.sim_and_xp(fig_data, name_extension='_fit')
 
 
 def sup_effect_of_heterogeneous():
@@ -135,7 +135,7 @@ def exploratory_parameters():
 def exploratory_learning_curves():
 
     fig_data = analysis.exploratory.learning_curves()
-    graph.supplementary.learning_curves.plot(fig_data)
+    graph.exploratory.learning_curves.plot(fig_data)
 
 
 # def ind0_freq_over_time():
@@ -149,7 +149,7 @@ def exploratory_learning_curves():
 def exploratory_cross_validation():
 
     data = analysis.exploratory.cross_validation()
-    graph.supplementary.cross_validation.plot(data)
+    graph.exploratory.cross_validation.plot(data)
     analysis.stats.stats.cross_validation(data)
 
 
@@ -164,27 +164,27 @@ def exploratory_median_split():
 
 if __name__ == '__main__':
 
-    # # Uncomment for running simulations used for phase diagram
-    main_phase_diagram()
-
-    # For stats about reward
-    main_reward()
-
-    # # Uncomment for experiment analysis and experiment-like simulations
-    main_sim_and_xp()
-
-    # # Uncomment for sensibility analysis
-    sup_sensibility_analysis()
-
-    # # Uncomment demographic analysis
-    sup_gender()
-    sup_age()
-
-    # # Uncomment for supplementary analysis
-    sup_individual_behavior()
-
-    # # Uncomment for supplementary analysis related to fit
+    # # # Uncomment for running simulations used for phase diagram
+    # main_phase_diagram()
+    #
+    # # For stats about reward
+    # main_reward()
+    #
+    # # # Uncomment for experiment analysis and experiment-like simulations
+    # main_sim_and_xp()
+    #
+    # # # Uncomment for sensibility analysis
+    # sup_sensibility_analysis()
+    # #
+    # # # # Uncomment demographic analysis
+    # sup_gender()
+    # sup_age()
+    # #
+    # # # Uncomment for supplementary analysis
+    # sup_individual_behavior()
+    #
+    # # # Uncomment for supplementary analysis related to fit
     sup_fit()
-    sup_parameter_recovery()
-    sup_effect_of_extended_time()
-    sup_effect_of_heterogeneous()
+    # sup_parameter_recovery()
+    # sup_effect_of_extended_time()
+    # sup_effect_of_heterogeneous()

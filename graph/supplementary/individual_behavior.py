@@ -1,20 +1,20 @@
+import os
+import string
+
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as grd
 
-import os
 
-
-FIG_FOLDER = "fig"
-os.makedirs(FIG_FOLDER, exist_ok=True)
+from graph.parameters import SUP_FIG_FOLDER, AGENT_LABELLING
 
 
 def _plot(
         results, ax, color='black', y_label="y_label", y_lim=(-0.01, 1.01),
         y_ticks=None,
         fontsize=10,
-        aspect=3,
         tick_labels=None,
-):
+        title=None
+    ):
 
     n_split = len(results[0])
 
@@ -23,6 +23,9 @@ def _plot(
 
     for data_ind in results:
         ax.plot(data_ind, color='black', alpha=0.5)
+
+    if title is not None:
+        ax.set_title(title, fontsize=fontsize)
 
     x_scatter = []
     y_scatter = []
@@ -50,7 +53,12 @@ def _plot(
     if y_lim is not None:
         ax.set_ylim(y_lim)
 
-    ax.set_aspect(aspect)
+    ratio = 1.0
+    xleft, xright = ax.get_xlim()
+    ybottom, ytop = ax.get_ylim()
+    # the abs method is used to make sure that all numbers are positive
+    # because x and y axis of an axes maybe inversed.
+    ax.set_aspect(abs((xright - xleft) / (ybottom - ytop)) * ratio)
 
 
 def plot(fig_data):
@@ -71,10 +79,12 @@ def plot(fig_data):
             y_label = 'Freq. ind. ex. with good 0' if 'ind' in obs_type \
                 else "Freq. dir. ex."
 
-            fig = plt.figure(figsize=(15, 15), dpi=200)
+            fig = plt.figure(figsize=(3*n_cols, 3*n_rows))
             gs = grd.GridSpec(ncols=n_cols, nrows=n_rows)
 
             agent_type = sorted(fig_data[ot][n_good][list(category)[0]].keys())
+
+            idx_fig = 0
 
             for row, at in enumerate(agent_type):
 
@@ -88,16 +98,32 @@ def plot(fig_data):
                     for cond in conditions:
 
                         ax = fig.add_subplot(gs[row, col])
-                        ax.set_title(f'{cat} - {cond} - type {at}')
+
+                        at_label = AGENT_LABELLING[n_good][at]
+
+                        title = f'{cat} - {cond} - Type {at_label}'
 
                         _plot(results=fig_data[ot][n_good][cat][at][cond],
                               ax=ax, y_label=y_label,
-                              tick_labels=('1/3', '2/3', '3/3'))
+                              tick_labels=('1/3', '2/3', '3/3'),
+                              title=title)
+
+                        if col % 2 == 0 and row == 0:
+                            # Add letter
+                            ax.text(-0.2, 1.1,
+                                    string.ascii_uppercase[idx_fig],
+                                    transform=ax.transAxes,
+                                    size=20, weight='bold')
+                            idx_fig += 1
 
                         col += 1
 
             plt.tight_layout()
 
-            f_name = f'fig/supplementary_indirect_{n_good}_{ot}.pdf'
-            plt.savefig(f_name)
-            print(f'{f_name} has been produced')
+            f_name = f'individual_behavior_{n_good}_{ot}.pdf'
+
+            plt.tight_layout()
+
+            fig_path = os.path.join(SUP_FIG_FOLDER, f_name)
+            plt.savefig(fig_path)
+            print(f"Figure '{fig_path}' created.\n")
