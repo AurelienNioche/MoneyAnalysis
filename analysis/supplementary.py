@@ -9,21 +9,56 @@ from analysis.metric import metric
 from xp import xp
 from backup import backup
 
-from game.models import User
+from game.models import User, Room
 
 DATA_FOLDER = "data"
 
 
 def reward():
-    print('_' * 10)
-    print('\n********* Rewards ***********\n')
-    users = User.objects.all()
-    var = 10 + 0.20 * np.array([u.score for u in users])
-    print(f'Reward = {np.mean(var):.2f} (+/- {np.std(var):.2f} STD)')
-    print("Computation: 10 euros + 0.20 cents per point")
-    print()
-    print('_' * 10)
 
+    users = User.objects.all()
+    n = len(users)
+
+    age = np.zeros(n, dtype=int)
+    gender = np.zeros(n, dtype=bool)
+    n_good = np.zeros(n, dtype=int)
+    score = np.zeros(n, dtype=float)
+
+    for i, u in enumerate(users):
+
+        gender[i] = u.gender == 'male'
+        age[i] = u.age
+
+        r = Room.objects.get(id=u.room_id)
+        n_good[i] = r.n_type
+        score[i] = 10 + 0.20 * u.score
+
+    for i, g in enumerate((3, 4)):
+
+        include = n_good == g
+
+        print('=' * 35)
+        print(f"======== Experience {i+1} =============")
+        print('=' * 35)
+        print()
+        print(f"N = {np.sum(include)}")
+        print()
+        print(f'Reward = {np.mean(score[include]):.2f} '
+              f'(+/- {np.std(score[include]):.2f} STD)')
+        print("[Computation: 10 euros + 0.20 cents per point]")
+        print()
+        male_prop = np.mean(gender[include])
+        female_prop = 1 - male_prop
+        print(f'Gender = '
+              f'{female_prop*100:.1f}% female, '
+              f'{male_prop*100:.1f}% male'
+              )
+        print()
+        print(f'Age = {np.mean(age[include]):.2f}')
+        print()
+
+    print('=' * 35)
+    print()
 
 def supplementary_sim_and_xp():
 
