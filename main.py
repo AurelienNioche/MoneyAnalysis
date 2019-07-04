@@ -29,13 +29,13 @@ from analysis.stats import stats
 
 import graph.sim_and_xp
 import graph.phase_diagram
-import graph.supplementary.s1_and_s2
+import graph.supplementary.individual_behavior
 import graph.supplementary.age
 import graph.supplementary.gender
-import graph.supplementary.effect_of_unique_parameter
+import graph.supplementary.sensibility_analysis
 import graph.supplementary.parameter_recovery
-import graph.supplementary.learning_curves
-import graph.supplementary.cross_validation
+import graph.exploratory.learning_curves
+import graph.exploratory.cross_validation
 
 
 def main_reward():
@@ -64,51 +64,50 @@ def main_sim_and_xp():
 # ------------------------------------------------- #
 
 
+def sup_sensibility_analysis():
+
+    data = analysis.supplementary.sensibility_analysis()
+    graph.supplementary.sensibility_analysis.plot(data)
+
+
 def sup_individual_behavior():
 
-    data = analysis.supplementary.supplementary_sim_and_xp()
-    graph.supplementary.s1_and_s2.plot(data)
-
-
-# def old_supplementary_gender():
-#
-#     data = analysis.supplementary.old_supplementary_gender()
-#     graph.supplementary.gender.plot(data)
-#     analysis.stats.stats.supplementary_gender(data)
+    data = analysis.supplementary.individual_behavior()
+    graph.supplementary.individual_behavior.plot(data)
 
 
 def sup_gender(obs_type='ind_0'):
 
-    data = analysis.supplementary.supplementary_gender(obs_type=obs_type)
+    data = analysis.supplementary.gender(obs_type=obs_type)
     graph.supplementary.gender.plot(data)
     analysis.stats.stats.supplementary_gender(data, obs_type=obs_type)
 
 
 def sup_age():
 
-    data = analysis.supplementary.supplementary_age()
+    data = analysis.supplementary.age()
     graph.supplementary.age.plot(data)
     analysis.stats.stats.supplementary_age(data)
 
 
 def sup_parameter_recovery():
 
-    fig_data = analysis.supplementary.supplementary_parameter_recovery()
+    fig_data = analysis.supplementary.parameter_recovery()
     graph.supplementary.parameter_recovery.plot(fig_data)
     analysis.stats.stats.parameter_recovery(fig_data)
 
 
 def sup_fit():
 
-    fig_data = analysis.supplementary.supplementary_fit()
-    graph.sim_and_xp.plot(fig_data, name_extension='FIT')
-    stats.sim_and_xp(fig_data, name_extension='FIT')
+    fig_data = analysis.supplementary.fit()
+    graph.sim_and_xp.plot(fig_data, name_extension='_fit')
+    stats.sim_and_xp(fig_data, name_extension='_fit')
 
 
 def sup_effect_of_heterogeneous():
 
     name_extension = 'FIT_non_heterogeneous'
-    fig_data = analysis.supplementary.supplementary_fit(heterogeneous=False)
+    fig_data = analysis.supplementary.fit(heterogeneous=False)
     graph.sim_and_xp.plot(fig_data, name_extension=name_extension)
     analysis.stats.stats.sim_and_xp(fig_data, name_extension=name_extension)
 
@@ -116,16 +115,10 @@ def sup_effect_of_heterogeneous():
 def sup_effect_of_extended_time():
 
     name_extension = 'FIT_extended'
-    fig_data = analysis.supplementary.supplementary_fit(heterogeneous=False,
-                                                        t_max=1000)
+    fig_data = analysis.supplementary.fit(heterogeneous=False,
+                                          t_max=1000)
     graph.sim_and_xp.plot(fig_data, name_extension=name_extension)
     analysis.stats.stats.sim_and_xp(fig_data, name_extension=name_extension)
-
-
-def sup_sensibility_analysis():
-
-    data = analysis.supplementary.sensibility_analysis()
-    graph.supplementary.effect_of_unique_parameter.plot(data)
 
 
 # ------------------------------------------------- #
@@ -142,7 +135,7 @@ def exploratory_parameters():
 def exploratory_learning_curves():
 
     fig_data = analysis.exploratory.learning_curves()
-    graph.supplementary.learning_curves.plot(fig_data)
+    graph.exploratory.learning_curves.plot(fig_data)
 
 
 # def ind0_freq_over_time():
@@ -156,7 +149,7 @@ def exploratory_learning_curves():
 def exploratory_cross_validation():
 
     data = analysis.exploratory.cross_validation()
-    graph.supplementary.cross_validation.plot(data)
+    graph.exploratory.cross_validation.plot(data)
     analysis.stats.stats.cross_validation(data)
 
 
@@ -171,27 +164,27 @@ def exploratory_median_split():
 
 if __name__ == '__main__':
 
-    # For stats about reward
-    main_reward()
-
-    # # Uncomment for running simulations used for phase diagram
-    main_phase_diagram()
-
-    # # Uncomment for experiment analysis and experiment-like simulations
-    main_sim_and_xp()
-
-    # # Uncomment for sensibility analysis
-    sup_sensibility_analysis()
-
-    # # Uncomment demographic analysis
-    sup_gender()
-    sup_age()
-
-    # # Uncomment for supplementary analysis
-    sup_individual_behavior()
-
-    # # Uncomment for supplementary analysis related to fit
+    # # # Uncomment for running simulations used for phase diagram
+    # main_phase_diagram()
+    #
+    # # For stats about reward
+    # main_reward()
+    #
+    # # # Uncomment for experiment analysis and experiment-like simulations
+    # main_sim_and_xp()
+    #
+    # # # Uncomment for sensibility analysis
+    # sup_sensibility_analysis()
+    # #
+    # # # # Uncomment demographic analysis
+    # sup_gender()
+    # sup_age()
+    # #
+    # # # Uncomment for supplementary analysis
+    # sup_individual_behavior()
+    #
+    # # # Uncomment for supplementary analysis related to fit
     sup_fit()
-    sup_parameter_recovery()
-    sup_effect_of_extended_time()
-    sup_effect_of_heterogeneous()
+    # sup_parameter_recovery()
+    # sup_effect_of_extended_time()
+    # sup_effect_of_heterogeneous()

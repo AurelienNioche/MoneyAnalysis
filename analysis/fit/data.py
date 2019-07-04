@@ -40,7 +40,8 @@ class PProvider:
             success = self.xp_data.success[self.agent_idx, t]
 
             p = agent.p_choice(in_hand=in_hand, desired=desired)
-            agent.learn_from_result(in_hand=in_hand, desired=desired, success=success)
+            agent.learn_from_result(in_hand=in_hand, desired=desired,
+                                    success=success)
 
             if p == 0:
                 return None
@@ -74,7 +75,9 @@ def produce_fit(xp_data_list, room_n_good, room_uniform):
             p_provider = PProvider(xp_data=d, agent_idx=i)
 
             fitter = fit.Fit()
-            best_param, mean_p_, lls_, bic_ = fitter.evaluate(bounds=bounds, p_provider=p_provider)
+            best_param, mean_p_, lls_, bic_ = \
+                fitter.evaluate(bounds=bounds,
+                                p_provider=p_provider)
 
             alpha.append(best_param['alpha'])
             beta.append(best_param['beta'])
@@ -101,9 +104,11 @@ def get(xp_data_list=None, room_n_good=None, room_uniform=None, extension=''):
     if not os.path.exists(file_path):
         alpha, beta, gamma, mean_p, lls, bic, eco = \
             produce_fit(xp_data_list, room_n_good, room_uniform)
-        backup.save(obj=(alpha, beta, gamma, mean_p, lls, bic, eco), file_name=file_path)
+        backup.save(obj=(alpha, beta, gamma, mean_p, lls, bic, eco),
+                    file_name=file_path)
 
     else:
-        alpha, beta, gamma, mean_p, lls, bic, eco = backup.load(file_name=file_path)
+        alpha, beta, gamma, mean_p, lls, bic, eco = \
+            backup.load(file_name=file_path)
 
     return alpha, beta, gamma, mean_p, lls, bic, eco

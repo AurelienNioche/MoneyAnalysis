@@ -40,7 +40,8 @@ def curve(mean, sem, cond='', n_good='', agent_type='', ax=None):
     ax.set_yticks(y_ticks)
 
     # For horizontal line
-    ax.axhline(chance_level, linestyle='--', color='0.3', zorder=-10, linewidth=0.5)
+    ax.axhline(chance_level, linestyle='--', color='0.3',
+               zorder=-10, linewidth=0.5)
 
     ax.set_title(f'{n_good} - {cond} - type{agent_type}')
 

@@ -12,7 +12,8 @@ class RLAgent(StupidAgent):
 
     def __init__(self, prod, cons, n_goods, cognitive_parameters, idx=None):
 
-        super().__init__(prod=prod, cons=cons, n_goods=n_goods, cognitive_parameters=cognitive_parameters)
+        super().__init__(prod=prod, cons=cons, n_goods=n_goods,
+                         cognitive_parameters=cognitive_parameters)
 
         self.alpha, self.beta, self.gamma = cognitive_parameters
 

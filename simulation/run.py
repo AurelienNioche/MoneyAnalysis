@@ -80,8 +80,10 @@ def _produce_data(n_good):
     params = _get_phase_parameters(
         n_good=n_good,
         agent_model='RLAgent',
-        constant_x_index=np.array([0, ]) if n_good == 3 else np.array([0, 1]),
-        constant_x_value=np.array([50, ]) if n_good == 3 else np.array([50, 50])
+        constant_x_index=np.array([0, ]) if n_good == 3
+        else np.array([0, 1]),
+        constant_x_value=np.array([50, ]) if n_good == 3
+        else np.array([50, 50])
     )
 
     max_ = len(params)

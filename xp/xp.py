@@ -1,27 +1,9 @@
-# MoneyAnalysis
-# Copyright (C) 2018  Aurélien Nioche, Basile Garcia & Nicolas Rougier
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, version 3.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 import numpy as np
 
 from analysis.tools.conversion import Converter
 
 # Django specific settings
 import os
-
-# from analysis.experiment.evolution import evolution_direct
-# from analysis.experiment.graph import fig_evo
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "MoneyAnalysis.settings")
 
@@ -34,12 +16,7 @@ from game.models import User, Room, Choice
 
 from backup import backup, structure
 
-# SCRIPT_FOLDER = os.path.dirname(os.path.abspath(__file__))
-# ROOT_FOLDER = f"{SCRIPT_FOLDER}/../../"
-
 DATA_FOLDER = f"data"
-# FIG_FOLDER = f"{ROOT_FOLDER}/fig"
-
 DATA_FILE = f"{DATA_FOLDER}/xp_data.p"
 
 
@@ -72,8 +49,10 @@ def _load__data_from_db():
 
         for i, u in enumerate(users):
 
-            cons[i] = Converter.convert_value(u.consumption_good, n_good=n_good)
-            prod[i] = Converter.convert_value(u.production_good, n_good=n_good)
+            cons[i] = Converter.convert_value(u.consumption_good,
+                                              n_good=n_good)
+            prod[i] = Converter.convert_value(u.production_good,
+                                              n_good=n_good)
 
             gender[i] = u.gender == 'male'
             age[i] = u.age
@@ -86,16 +65,21 @@ def _load__data_from_db():
 
                 c = Choice.objects.get(room_id=r.id, t=t, user_id=u.id)
 
-                in_hand[i, t] = Converter.convert_value(c.good_in_hand, n_good=n_good)
-                desired[i, t] = Converter.convert_value(c.desired_good, n_good=n_good)
+                in_hand[i, t] = Converter.convert_value(c.good_in_hand,
+                                                        n_good=n_good)
+                desired[i, t] = Converter.convert_value(c.desired_good,
+                                                        n_good=n_good)
                 success[i, t] = c.success
 
         data_session[idx] = \
             structure.DataXPSession(
-                age=age, in_hand=in_hand, desired=desired, prod=prod, cons=cons,
-                n_good=n_good, t_max=t_max, gender=gender, success=success)
+                age=age, in_hand=in_hand, desired=desired,
+                prod=prod, cons=cons,
+                n_good=n_good, t_max=t_max,
+                gender=gender, success=success)
         room_n_good[idx] = n_good
-        room_uniform[idx] = len(np.unique([int(i) for i in r.types.split("/")])) == 1
+        room_uniform[idx] = len(np.unique([int(i)
+                                           for i in r.types.split("/")])) == 1
 
     return data_session, room_n_good, room_uniform
 
