@@ -12,14 +12,14 @@ FILE_PATH = f'{DATA_FOLDER}/fit.p'
 
 
 def get_data(xp_data_list, alpha, beta, gamma, eco,
-             heterogeneous=True, t_max=None):
+             heterogeneous=True, t_max=None, seed=123):
 
     alpha = np.array(alpha)
     beta = np.array(beta)
     gamma = np.array(gamma)
     eco = np.array(eco)
 
-    np.random.seed(1234)
+    np.random.seed(seed=seed)
 
     n_rooms = len(xp_data_list)
 

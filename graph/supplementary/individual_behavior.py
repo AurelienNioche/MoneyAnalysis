@@ -9,11 +9,15 @@ from graph.parameters import SUP_FIG_FOLDER, AGENT_LABELLING
 
 
 def _plot(
-        results, ax, color='black', y_label="y_label", y_lim=(-0.01, 1.01),
+        results, ax,
+        x_label='x_label',
+        y_label='y_label',
+        y_lim=(-0.01, 1.01),
         y_ticks=None,
         fontsize=10,
         tick_labels=None,
-        title=None
+        title=None,
+        color='black'
     ):
 
     n_split = len(results[0])
@@ -22,7 +26,7 @@ def _plot(
         tick_labels = range(n_split)
 
     for data_ind in results:
-        ax.plot(data_ind, color='black', alpha=0.5)
+        ax.plot(data_ind, color=color, alpha=0.5, linewidth=0.5)
 
     if title is not None:
         ax.set_title(title, fontsize=fontsize)
@@ -45,6 +49,7 @@ def _plot(
 
     ax.tick_params(axis='both', labelsize=fontsize)
 
+    ax.set_xlabel(x_label, fontsize=fontsize)
     ax.set_ylabel(y_label, fontsize=fontsize)
 
     ax.set_xticks(range(len(tick_labels)))
@@ -61,8 +66,22 @@ def _plot(
     ax.set_aspect(abs((xright - xleft) / (ybottom - ytop)) * ratio)
 
 
-def plot(fig_data):
+def plot(fig_data, y_labels=None, colors=None,
+         x_label='Time chunk', tick_labels=('1/3', '2/3', '3/3')):
 
+    if y_labels is None:
+        y_labels = {
+            'ind_0': 'Freq. ind. ex. with good 1',
+            'dir': 'Freq. direct ex.'
+        }
+
+    if colors is None:
+        colors = {
+            'Uniform': 'C0',
+            'Non-uniform': 'C1'
+        }
+
+    # Type of measure ('dir', 'ind_0', ...)
     obs_type = fig_data.keys()
 
     for ot in obs_type:
@@ -71,13 +90,13 @@ def plot(fig_data):
 
         for n_good in n_good_cond:
 
-            category = fig_data[ot][n_good].keys()
+            # Human or artificial
+            category = sorted(list(fig_data[ot][n_good].keys()))[::-1]
 
             n_cols = 2*len(category)  # '2' because 2 conditions
-            n_rows = n_good - 2 if 'ind' in obs_type else n_good
+            n_rows = n_good - 2 if 'ind' in ot else n_good
 
-            y_label = 'Freq. ind. ex. with good 0' if 'ind' in obs_type \
-                else "Freq. dir. ex."
+            y_label = y_labels[ot]
 
             fig = plt.figure(figsize=(3*n_cols, 3*n_rows))
             gs = grd.GridSpec(ncols=n_cols, nrows=n_rows)
@@ -103,10 +122,15 @@ def plot(fig_data):
 
                         title = f'{cat} - {cond} - Type {at_label}'
 
+                        color = colors[cond]
+
                         _plot(results=fig_data[ot][n_good][cat][at][cond],
-                              ax=ax, y_label=y_label,
-                              tick_labels=('1/3', '2/3', '3/3'),
-                              title=title)
+                              ax=ax,
+                              x_label=x_label,
+                              y_label=y_label,
+                              tick_labels=tick_labels,
+                              title=title,
+                              color=color)
 
                         if col % 2 == 0 and row == 0:
                             # Add letter

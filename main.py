@@ -99,24 +99,24 @@ def sup_parameter_recovery():
 
 def sup_fit():
 
-    fig_data = analysis.supplementary.fit()
-    graph.sim_and_xp.plot(fig_data, name_extension='_fit')
-    stats.sim_and_xp(fig_data, name_extension='_fit')
+    name_extension = '_fit'
+    fig_data = analysis.supplementary.fit(heterogeneous=True)
+    graph.sim_and_xp.plot(fig_data, name_extension=name_extension)
+    stats.sim_and_xp(fig_data, name_extension=name_extension)
 
 
 def sup_effect_of_heterogeneous():
 
-    name_extension = 'FIT_non_heterogeneous'
+    name_extension = '_fit_non_heterogeneous'
     fig_data = analysis.supplementary.fit(heterogeneous=False)
     graph.sim_and_xp.plot(fig_data, name_extension=name_extension)
     analysis.stats.stats.sim_and_xp(fig_data, name_extension=name_extension)
 
 
-def sup_effect_of_extended_time():
+def sup_effect_of_extended_time(t_max=1000):
 
-    name_extension = 'FIT_extended'
-    fig_data = analysis.supplementary.fit(heterogeneous=False,
-                                          t_max=1000)
+    name_extension = '_fit_extended'
+    fig_data = analysis.supplementary.fit(heterogeneous=True, t_max=t_max)
     graph.sim_and_xp.plot(fig_data, name_extension=name_extension)
     analysis.stats.stats.sim_and_xp(fig_data, name_extension=name_extension)
 
@@ -129,7 +129,7 @@ def exploratory_parameters():
     # With gamma = 0.225 simulations fail statistically with 4 goods
     data = analysis.exploratory.sim_and_xp_exploration(beta=1e+20)
     graph.sim_and_xp.plot(data)
-    analysis.stats.stats.sim_and_xp(data, name_extension="exploration")
+    analysis.stats.stats.sim_and_xp(data, name_extension="_exploration")
 
 
 def exploratory_learning_curves():
@@ -186,5 +186,5 @@ if __name__ == '__main__':
     # # # Uncomment for supplementary analysis related to fit
     sup_fit()
     # sup_parameter_recovery()
-    # sup_effect_of_extended_time()
-    # sup_effect_of_heterogeneous()
+    sup_effect_of_heterogeneous()
+    sup_effect_of_extended_time()

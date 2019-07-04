@@ -94,11 +94,16 @@ def boxplot(
 
 def plot(fig_data, name_extension=''):
 
-    n_good_cond = fig_data.keys()
+    post_hoc = 'fit' in name_extension
+
+    n_good_cond = sorted(list(fig_data.keys()))
+
+    category = sorted(fig_data[n_good_cond[0]].keys())
+    if not post_hoc:
+        # Simulation would on the left column
+        category = category[::-1]
 
     for n_good in n_good_cond:
-
-        category = sorted(fig_data[n_good].keys())[::-1]
 
         n_rows = n_good-2
 
@@ -116,9 +121,18 @@ def plot(fig_data, name_extension=''):
 
                 at_label = AGENT_LABELLING[n_good][at]
 
-                boxplot(results=fig_data[n_good][cat][at], n_good=n_good,
+                results = fig_data[n_good][cat][at]
+
+                if post_hoc and cat == 'Simulation':
+                    cat_label = 'Post hoc simulation'
+                else:
+                    cat_label = cat
+
+                title = f'{cat_label} - Type {at_label}'
+
+                boxplot(results=results, n_good=n_good,
                         ax=ax,
-                        title=f'{cat} - Type {at_label}',
+                        title=title,
                         y_label='Freq. ind. ex. with good 1',
                         colors=('C0', 'C1'),
                         n_subplot=n)
