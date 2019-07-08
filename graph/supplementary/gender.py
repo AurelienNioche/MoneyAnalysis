@@ -9,8 +9,14 @@ from graph.parameters import SUP_FIG_FOLDER
 import graph.sim_and_xp
 
 
-def plot(data_gender, f_name='gender.pdf',
-         y_label='Freq. direct ex.'):
+def plot(data_gender, obs_type, f_name='gender.pdf'):
+
+    assert obs_type in ('dir', 'ind0'), "Observation type not recognized"
+
+    if obs_type == 'dir':
+        y_label = 'Freq. direct ex.'
+    else:
+        y_label = 'Freq. ind. ex. with good 1'
 
     fig = plt.figure(figsize=(6, 4))
     gs = grd.GridSpec(nrows=1, ncols=2)

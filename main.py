@@ -88,18 +88,18 @@ def sup_individual_behavior():
     graph.supplementary.individual_behavior.plot(data)
 
 
-def sup_gender(obs_type='dir'):
+def sup_gender(obs_type='ind0'):
 
     data = analysis.supplementary.gender(obs_type=obs_type)
-    graph.supplementary.gender.plot(data)
+    graph.supplementary.gender.plot(data, obs_type=obs_type)
     analysis.stats.stats.supplementary_gender(data, obs_type=obs_type)
 
 
-def sup_age(obs_type='dir'):
+def sup_age(obs_type='ind0'):
 
     data = analysis.supplementary.age(obs_type=obs_type)
-    graph.supplementary.age.plot(data)
-    analysis.stats.stats.supplementary_age(data)
+    graph.supplementary.age.plot(data, obs_type=obs_type)
+    analysis.stats.stats.supplementary_age(data, obs_type=obs_type)
 
 
 def sup_parameter_recovery():
@@ -187,7 +187,7 @@ if __name__ == '__main__':
     # main_reward()
     #
     # # # Uncomment for experiment analysis and experiment-like simulations
-    # main_sim_and_xp()
+    main_sim_and_xp()
     #
     # # # Uncomment for sensibility analysis
     # sup_sensibility_analysis()
@@ -202,5 +202,5 @@ if __name__ == '__main__':
     # # # Uncomment for supplementary analysis related to fit
     # sup_fit()
     # sup_parameter_recovery()
-    sup_effect_of_heterogeneous()
-    sup_effect_of_extended_time()
+    # sup_effect_of_heterogeneous()
+    # sup_effect_of_extended_time()

@@ -55,17 +55,26 @@ def _mw(to_compare, print_latex=False, **kwargs):
                                                   method="b")
 
     for p, u, n, p_c, v, dic in zip(ps, us, ns, p_corr, valid, to_compare):
+
         cond_name = dic['name']
 
         if print_latex:
+
+            comparison = dic["comparison"]
+
             xp_label = kwargs["xp_label"]
             measure = kwargs["measure"]
-            comparison = kwargs["comparison"]
+
+            corr = p_c != p
+
             p_c = f"{p_c:.3f}" if p_c >= 0.001 else '<0.001'
             p = f"{p:.3f}" if p >= 0.001 else '<0.001'
 
-            print(f"{xp_label} & {measure} & {comparison} & ${u}$ & ${p}$ & "
-                  f"${p_c}{'^*' if v else ''}$ & ${n}$" + r"\\")
+            part0 = f"{xp_label} & {comparison} & {measure} & $u$ & ${u}$ & ${p}"
+            if corr:
+                part0 += f"$ & ${p_c}"
+            part1 = f"{'^*' if v else ''}$ & ${n}$" + r"\\"
+            print(part0 + part1)
 
         else:
             print(
@@ -77,7 +86,9 @@ def _mw(to_compare, print_latex=False, **kwargs):
 
 def sim_and_xp(data, data_type=('Human', 'Simulation'),
                conditions=('Uniform', 'Non-uniform'),
-               name_extension='', print_latex=True):
+               name_extension='', print_latex=True,
+               comparison='Agent type dist.',
+               measure='Ind. good 1'):
 
     # keys: ngood, HUMAN/SIM, agent_type, UNIF/NON-UNIF (1, 0)
     # Main tests
@@ -91,26 +102,29 @@ def sim_and_xp(data, data_type=('Human', 'Simulation'),
     to_compare = [
         {
             'data': np.array([
-                data[3][human][2][unif],
-                data[3][human][2][non_unif],
-            ]),
-            'name': 'HUMAN, 3 GOODS, UNIF vs. NON-UNIF, '
-                    'agent_type=2, obs=ind_0'
-        },
-
-        {
-            'data': np.array([
                 data[3][sim][2][unif],
                 data[3][sim][2][non_unif],
             ]),
             'name': 'SIM, 3 GOODS, UNIF vs. NON-UNIF, '
-                    'agent_type=2, obs=ind_0'
-        }
+                    'agent_type=2, obs=ind_0',
+            'comparison':
+                'Agent type dist. in artificial agents of type (2, 3)'
+        },
+        {
+            'data': np.array([
+                data[3][human][2][unif],
+                data[3][human][2][non_unif],
+            ]),
+            'name': 'HUMAN, 3 GOODS, UNIF vs. NON-UNIF, '
+                    'agent_type=2, obs=ind_0',
+            'comparison':
+                'Agent type dist. in human agents of type (2, 3)'
+        },
     ]
 
     _mw(to_compare=to_compare, print_latex=print_latex,
-        xp_label='3 goods', measure='Ind. good 1',
-        comparison='Agent type dist. (unif./non-unif.)')
+        xp_label='3 goods', measure=measure,
+        comparison=comparison)
 
     to_compare = [
         {
@@ -119,15 +133,9 @@ def sim_and_xp(data, data_type=('Human', 'Simulation'),
                 data[4][sim][2][non_unif],
             ]),
             'name': 'SIM, 4 GOODS, UNIF vs. NON-UNIF, '
-                    'agent_type=2, obs=ind_0'
-        },
-        {
-            'data': np.array([
-                data[4][human][2][unif],
-                data[4][human][2][non_unif],
-            ]),
-            'name': 'HUMAN, 4 GOODS, UNIF vs. NON-UNIF, '
-                    'agent_type=2, obs=ind_0'
+                    'agent_type=2, obs=ind_0',
+            'comparison':
+                'Agent type dist. in artificial agents of type (2, 3)'
         },
         {
             'data': np.array([
@@ -135,7 +143,19 @@ def sim_and_xp(data, data_type=('Human', 'Simulation'),
                 data[4][sim][3][non_unif],
             ]),
             'name': 'SIM, 4 GOODS, UNIF vs. NON-UNIF, '
-                    'agent_type=3, obs=ind_0'
+                    'agent_type=3, obs=ind_0',
+            'comparison':
+                'Agent type dist. in artificial agents of type (3, 4)'
+        },
+        {
+            'data': np.array([
+                data[4][human][2][unif],
+                data[4][human][2][non_unif],
+            ]),
+            'name': 'HUMAN, 4 GOODS, UNIF vs. NON-UNIF, '
+                    'agent_type=2, obs=ind_0',
+            'comparison':
+                'Agent type dist. in human agents of type (2, 3)'
         },
         {
             'data': np.array([
@@ -143,16 +163,25 @@ def sim_and_xp(data, data_type=('Human', 'Simulation'),
                 data[4][human][3][non_unif],
             ]),
             'name': 'HUMAN, 4 GOODS, UNIF vs. NON-UNIF, '
-                    'agent_type=3, obs=ind_0'
+                    'agent_type=3, obs=ind_0',
+            'comparison':
+                'Agent type dist. in human agents of type (3, 4)'
         }
     ]
 
     _mw(to_compare=to_compare, print_latex=print_latex,
-        xp_label='4 goods', measure='Ind. good 1',
-        comparison='Agent type dist. (unif./non-unif.)')
+        xp_label='4 goods', measure=measure,
+        comparison=comparison)
 
 
-def supplementary_age(data, print_latex=True):
+def supplementary_age(data, obs_type, print_latex=True):
+
+    assert obs_type in ('dir', 'ind0'), "Observation type not recognized"
+
+    if obs_type == 'dir':
+        measure_label = 'Dir.'
+    else:
+        measure_label = 'Ind. good 1'
 
     print(SEP)
     print(f'SUPPLEMENTARY AGE TEST')
@@ -160,21 +189,34 @@ def supplementary_age(data, print_latex=True):
 
     for n_good in data.keys():
 
+        n = len(data[n_good]['obs'])
+
         cor, p = scipy.stats.pearsonr(
             data[n_good]['age'],
             data[n_good]['obs']
         )
 
         if print_latex:
-            print(f'{n_good} goods & $r_pearson$ & {cor:.2f}$ & $p={p:.3f}$\\\\')
+            print(f'{n_good} goods & Age & {measure_label} & '
+                  f'$r_pearson$ & {cor:.2f}$ & ${p:.3f} & ${n}$\\\\')
         else:
             print(f'[{n_good} goods] Pearson corr age - measure: '
                   f'$r_pearson={cor:.2f}$, $p={p:.3f}$')
 
+    print(SEP)
+
 
 def supplementary_gender(data,
-                         obs_type='dir',
+                         obs_type,
                          print_latex=True):
+
+    assert obs_type in ('dir', 'ind0'), "Observation type not recognized"
+
+    if obs_type == 'dir':
+        measure_label = 'Dir.'
+    else:
+        measure_label = 'Ind. good 1'
+
     print(SEP)
     print('SUPPLEMENTARY GENDER TEST')
     print(SEP)
@@ -186,7 +228,7 @@ def supplementary_gender(data,
             'name': f'MALE VS FEMALE, obs={obs_type}'}],
             print_latex=print_latex,
             xp_label=f'{n_good} goods',
-            measure=f'Dir.',
+            measure=measure_label,
             comparison='Gender',
             )
     print()
@@ -200,13 +242,15 @@ def parameter_recovery(data, print_latex=True):
 
     for param, (value, r_value) in sorted(data.items()):
 
+        n = len(value)
+
         cor, p = scipy.stats.pearsonr(
             value,
             r_value
         )
 
         if print_latex:
-            print(f'{param} & $r_pearson$ & ${cor:.2f}$, $p={p:.3f}$')
+            print(f'{param} & $r_pearson$ & ${cor:.2f}$ & ${p:.3f}$ & ${n}$')
 
         else:
             print(f'Pearson corr: $r_pearson={cor:.2f}$, $p={p:.3f}$')

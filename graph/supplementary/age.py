@@ -8,8 +8,14 @@ import matplotlib.gridspec as grd
 from graph.parameters import SUP_FIG_FOLDER
 
 
-def plot(data, f_name='age.pdf',
-         y_label='Freq. direct ex.'):
+def plot(data, obs_type, f_name='age.pdf'):
+
+    assert obs_type in ('dir', 'ind0'), "Observation type not recognized"
+
+    if obs_type == 'dir':
+        y_label = 'Freq. direct ex.'
+    else:
+        y_label = 'Freq. ind. ex. with good 1'
 
     fig = plt.figure(figsize=(7, 4))
     gs = grd.GridSpec(nrows=1, ncols=2)
