@@ -178,16 +178,16 @@ def exploratory_median_split():
 
 if __name__ == '__main__':
 
-    n_eco()
+    # n_eco()
 
     # # # Uncomment for running simulations used for phase diagram
     # main_phase_diagram()
     #
     # # For stats about reward
-    # main_reward()
+    main_reward()
     #
     # # # Uncomment for experiment analysis and experiment-like simulations
-    main_sim_and_xp()
+    # main_sim_and_xp()
     #
     # # # Uncomment for sensibility analysis
     # sup_sensibility_analysis()

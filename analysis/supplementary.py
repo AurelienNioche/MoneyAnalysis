@@ -54,7 +54,8 @@ def reward():
               f'{male_prop*100:.1f}% male'
               )
         print()
-        print(f'Age = {np.mean(age[include]):.2f}')
+        print(f'Age = {np.mean(age[include]):.2f}'
+              f'(+/- {np.std(age[include]):.2f})')
         print()
 
     print('=' * 35)
