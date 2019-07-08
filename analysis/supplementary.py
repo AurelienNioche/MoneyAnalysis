@@ -118,7 +118,7 @@ def individual_behavior():
     return fig_data
 
 
-def gender(obs_type='ind_0', n_split=3):
+def gender(obs_type='dir', n_split=3):
     """
     Selection of agents able to proceed to indirect exchanges with good 0
     :param obs_type:

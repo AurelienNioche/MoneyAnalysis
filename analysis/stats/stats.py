@@ -63,7 +63,8 @@ def _mw(to_compare, print_latex=False, **kwargs):
             comparison = kwargs["comparison"]
             p_c = f"{p_c:.3f}" if p_c >= 0.001 else '<0.001'
             p = f"{p:.3f}" if p >= 0.001 else '<0.001'
-            print(f"{xp_label} & {measure} & ${comparison}$ & ${u}$ & ${p}$ & "
+
+            print(f"{xp_label} & {measure} & {comparison} & ${u}$ & ${p}$ & "
                   f"${p_c}{'^*' if v else ''}$ & ${n}$" + r"\\")
 
         else:
@@ -151,52 +152,64 @@ def sim_and_xp(data, data_type=('Human', 'Simulation'),
         comparison='Agent type dist. (unif./non-unif.)')
 
 
-def supplementary_age(data):
+def supplementary_age(data, print_latex=True):
+
+    print(SEP)
+    print(f'SUPPLEMENTARY AGE TEST')
+    print(SEP)
 
     for n_good in data.keys():
-        print(SEP)
-        print(f'SUPPLEMENTARY AGE TEST FOR N_GOOD = {n_good}')
-        print(SEP)
 
         cor, p = scipy.stats.pearsonr(
             data[n_good]['age'],
             data[n_good]['obs']
         )
 
-        print(f'Pearson corr age - measure : '
-              f'$r_pearson={cor:.2f}$, $p={p:.3f}$')
+        if print_latex:
+            print(f'{n_good} goods & $r_pearson$ & {cor:.2f}$ & $p={p:.3f}$\\\\')
+        else:
+            print(f'[{n_good} goods] Pearson corr age - measure: '
+                  f'$r_pearson={cor:.2f}$, $p={p:.3f}$')
 
 
-def supplementary_gender(data, obs_type='ind_0',
+def supplementary_gender(data,
+                         obs_type='dir',
                          print_latex=True):
+    print(SEP)
+    print('SUPPLEMENTARY GENDER TEST')
+    print(SEP)
 
     for n_good in data.keys():
-        print(SEP)
-        print(f'SUPPLEMENTARY GENDER TEST FOR N_GOOD = {n_good}')
-        print(SEP)
 
         _mw(to_compare=[{
             'data': np.array([data[n_good]['Male'], data[n_good]['Female']]),
             'name': f'MALE VS FEMALE, obs={obs_type}'}],
-            print_latex=print_latex
+            print_latex=print_latex,
+            xp_label=f'{n_good} goods',
+            measure=f'Dir.',
+            comparison='Gender',
             )
+    print()
 
-        print(SEP)
 
+def parameter_recovery(data, print_latex=True):
 
-def parameter_recovery(data):
+    print(SEP)
+    print(f'SUPPLEMENTARY PARAM RECOVERY TEST')
+    print(SEP)
 
     for param, (value, r_value) in sorted(data.items()):
-        print(SEP)
-        print(f'SUPPLEMENTARY PARAM RECOVERY TEST FOR PARAM = {param}')
-        print(SEP)
 
         cor, p = scipy.stats.pearsonr(
             value,
             r_value
         )
 
-        print(f'Pearson corr: $r_pearson={cor:.2f}$, $p={p:.3f}$')
+        if print_latex:
+            print(f'{param} & $r_pearson$ & ${cor:.2f}$, $p={p:.3f}$')
+
+        else:
+            print(f'Pearson corr: $r_pearson={cor:.2f}$, $p={p:.3f}$')
 
 
 def cross_validation(data):

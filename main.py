@@ -21,6 +21,8 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "MoneyAnalysis.settings")
 from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 
+import simulation.run
+
 import analysis.exploratory
 import analysis.main
 import analysis.supplementary
@@ -41,6 +43,16 @@ import graph.exploratory.cross_validation
 def main_reward():
 
     analysis.supplementary.reward()
+
+
+def n_eco():
+
+    print('[3 goods]', end=' ')
+    simulation.run.get_data(fake=True, n_good=3)
+    print()
+    print('[4 goods]', end=' ')
+    simulation.run.get_data(fake=True, n_good=4)
+    print()
 
 
 def main_phase_diagram(f_name='phase.pdf'):
@@ -76,16 +88,16 @@ def sup_individual_behavior():
     graph.supplementary.individual_behavior.plot(data)
 
 
-def sup_gender(obs_type='ind_0'):
+def sup_gender(obs_type='dir'):
 
     data = analysis.supplementary.gender(obs_type=obs_type)
     graph.supplementary.gender.plot(data)
     analysis.stats.stats.supplementary_gender(data, obs_type=obs_type)
 
 
-def sup_age():
+def sup_age(obs_type='dir'):
 
-    data = analysis.supplementary.age()
+    data = analysis.supplementary.age(obs_type=obs_type)
     graph.supplementary.age.plot(data)
     analysis.stats.stats.supplementary_age(data)
 
@@ -157,12 +169,16 @@ def exploratory_median_split():
 
     ext = '_median_split'
     fig_data = analysis.exploratory.agent_selection()
-    graph.sim_and_xp.plot(fig_data, name_extension=ext)
-    analysis.stats.stats.sim_and_xp(fig_data, data_type=('SIM', 'SIM_SELECT'),
+    graph.sim_and_xp.plot(fig_data,
+                          name_extension=ext)
+    analysis.stats.stats.sim_and_xp(fig_data,
+                                    data_type=('SIM', 'SIM_SELECT'),
                                     name_extension=ext)
 
 
 if __name__ == '__main__':
+
+    n_eco()
 
     # # # Uncomment for running simulations used for phase diagram
     # main_phase_diagram()
@@ -171,7 +187,7 @@ if __name__ == '__main__':
     # main_reward()
     #
     # # # Uncomment for experiment analysis and experiment-like simulations
-    main_sim_and_xp()
+    # main_sim_and_xp()
     #
     # # # Uncomment for sensibility analysis
     # sup_sensibility_analysis()
@@ -186,5 +202,5 @@ if __name__ == '__main__':
     # # # Uncomment for supplementary analysis related to fit
     # sup_fit()
     # sup_parameter_recovery()
-    # sup_effect_of_heterogeneous()
-    # sup_effect_of_extended_time()
+    sup_effect_of_heterogeneous()
+    sup_effect_of_extended_time()

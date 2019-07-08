@@ -24,7 +24,8 @@ def _get_phase_parameters(
     assert len(constant_x_value) == len(constant_x_index), \
         '"constant_x_value" and "constant_x_index" should have equal size!'
     assert agent_model in ('RLAgent', ), 'Bad argument for "agent_model"!'
-    assert economy_model in ('prod: i-1', 'prod: i+1'), 'Bad argument for "economy_model"!'
+    assert economy_model in ('prod: i-1', 'prod: i+1'), \
+        'Bad argument for "economy_model"!'
 
     first_cog_range = np.linspace(0.1, 0.25, n_cog_value)
     second_cog_range = np.linspace(0.8, 1.2, n_cog_value)
@@ -32,11 +33,13 @@ def _get_phase_parameters(
 
     # ------------------------------ #
 
-    repartition = list(itertools.product(range_repartition, repeat=n_good-len(constant_x_index)))
+    repartition = list(itertools.product(range_repartition,
+                                         repeat=n_good-len(constant_x_index)))
 
     # ---------- #
 
-    var_param = itertools.product(first_cog_range, second_cog_range, third_cog_range, repartition)
+    var_param = itertools.product(first_cog_range, second_cog_range,
+                                  third_cog_range, repartition)
 
     # ----------- #
 
@@ -73,9 +76,9 @@ def _run(param):
     return param, e.run()
 
 
-def _produce_data(n_good):
+def _produce_data(n_good, fake=False):
 
-    tqdm.write("Run simulations.")
+    tqdm.write("Compute parameters...", end=' ')
 
     params = _get_phase_parameters(
         n_good=n_good,
@@ -85,8 +88,13 @@ def _produce_data(n_good):
         constant_x_value=np.array([50, ]) if n_good == 3
         else np.array([50, 50])
     )
+    print('Done!')
 
     max_ = len(params)
+
+    if fake:
+        print(f"I would have compute the results of {max_} economies")
+        return
 
     data = backup.structure.Data()
 
@@ -100,11 +108,15 @@ def _produce_data(n_good):
     return data
 
 
-def get_data(n_good, force=False):
+def get_data(n_good, force=False, fake=True):
 
     data_folder = f'data/phase_{n_good}_goods'
 
-    if force or not os.path.exists(data_folder):
+    if fake:
+        _produce_data(n_good, fake=True)
+        return None
+
+    elif force or not os.path.exists(data_folder):
 
         bkp = _produce_data(n_good)
         bkp.save(data_folder)
