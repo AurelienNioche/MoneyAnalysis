@@ -155,7 +155,7 @@ def exploratory_cross_validation():
 
 def exploratory_median_split():
 
-    ext = 'MEDIAN_SPLIT'
+    ext = '_median_split'
     fig_data = analysis.exploratory.agent_selection()
     graph.sim_and_xp.plot(fig_data, name_extension=ext)
     analysis.stats.stats.sim_and_xp(fig_data, data_type=('SIM', 'SIM_SELECT'),
@@ -184,7 +184,7 @@ if __name__ == '__main__':
     # sup_individual_behavior()
     #
     # # # Uncomment for supplementary analysis related to fit
-    sup_fit()
+    # sup_fit()
     # sup_parameter_recovery()
-    sup_effect_of_heterogeneous()
+    # sup_effect_of_heterogeneous()
     sup_effect_of_extended_time()

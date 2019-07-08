@@ -60,6 +60,7 @@ def reward():
     print('=' * 35)
     print()
 
+
 def individual_behavior():
 
     raw_data = {}
