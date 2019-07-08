@@ -171,7 +171,7 @@ if __name__ == '__main__':
     # main_reward()
     #
     # # # Uncomment for experiment analysis and experiment-like simulations
-    # main_sim_and_xp()
+    main_sim_and_xp()
     #
     # # # Uncomment for sensibility analysis
     # sup_sensibility_analysis()
@@ -187,4 +187,4 @@ if __name__ == '__main__':
     # sup_fit()
     # sup_parameter_recovery()
     # sup_effect_of_heterogeneous()
-    sup_effect_of_extended_time()
+    # sup_effect_of_extended_time()

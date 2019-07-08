@@ -56,15 +56,14 @@ def _mw(to_compare, print_latex=False, **kwargs):
 
     for p, u, n, p_c, v, dic in zip(ps, us, ns, p_corr, valid, to_compare):
         cond_name = dic['name']
-        f_name = \
-            cond_name.replace("good", "").replace("_", "").replace("vs", ", ")
 
         if print_latex:
-            xp_session = kwargs["xp_session"]
+            xp_label = kwargs["xp_label"]
             measure = kwargs["measure"]
+            comparison = kwargs["comparison"]
             p_c = f"{p_c:.3f}" if p_c >= 0.001 else '<0.001'
             p = f"{p:.3f}" if p >= 0.001 else '<0.001'
-            print(f"{xp_session} & {measure} & ${f_name}$ & ${u}$ & ${p}$ & "
+            print(f"{xp_label} & {measure} & ${comparison}$ & ${u}$ & ${p}$ & "
                   f"${p_c}{'^*' if v else ''}$ & ${n}$" + r"\\")
 
         else:
@@ -77,7 +76,7 @@ def _mw(to_compare, print_latex=False, **kwargs):
 
 def sim_and_xp(data, data_type=('Human', 'Simulation'),
                conditions=('Uniform', 'Non-uniform'),
-               name_extension=''):
+               name_extension='', print_latex=True):
 
     # keys: ngood, HUMAN/SIM, agent_type, UNIF/NON-UNIF (1, 0)
     # Main tests
@@ -108,17 +107,11 @@ def sim_and_xp(data, data_type=('Human', 'Simulation'),
         }
     ]
 
-    _mw(to_compare=to_compare)
+    _mw(to_compare=to_compare, print_latex=print_latex,
+        xp_label='3 goods', measure='Ind. good 1',
+        comparison='Agent type dist. (unif./non-unif.)')
 
     to_compare = [
-        {
-            'data': np.array([
-                data[4][human][2][unif],
-                data[4][human][2][non_unif],
-            ]),
-            'name': 'HUMAN, 4 GOODS, UNIF vs. NON-UNIF, '
-                    'agent_type=2, obs=ind_0'
-        },
         {
             'data': np.array([
                 data[4][sim][2][unif],
@@ -129,11 +122,11 @@ def sim_and_xp(data, data_type=('Human', 'Simulation'),
         },
         {
             'data': np.array([
-                data[4][human][3][unif],
-                data[4][human][3][non_unif],
+                data[4][human][2][unif],
+                data[4][human][2][non_unif],
             ]),
             'name': 'HUMAN, 4 GOODS, UNIF vs. NON-UNIF, '
-                    'agent_type=3, obs=ind_0'
+                    'agent_type=2, obs=ind_0'
         },
         {
             'data': np.array([
@@ -142,10 +135,20 @@ def sim_and_xp(data, data_type=('Human', 'Simulation'),
             ]),
             'name': 'SIM, 4 GOODS, UNIF vs. NON-UNIF, '
                     'agent_type=3, obs=ind_0'
+        },
+        {
+            'data': np.array([
+                data[4][human][3][unif],
+                data[4][human][3][non_unif],
+            ]),
+            'name': 'HUMAN, 4 GOODS, UNIF vs. NON-UNIF, '
+                    'agent_type=3, obs=ind_0'
         }
     ]
 
-    _mw(to_compare=to_compare)
+    _mw(to_compare=to_compare, print_latex=print_latex,
+        xp_label='4 goods', measure='Ind. good 1',
+        comparison='Agent type dist. (unif./non-unif.)')
 
 
 def supplementary_age(data):
@@ -164,7 +167,8 @@ def supplementary_age(data):
               f'$r_pearson={cor:.2f}$, $p={p:.3f}$')
 
 
-def supplementary_gender(data, obs_type='ind_0'):
+def supplementary_gender(data, obs_type='ind_0',
+                         print_latex=True):
 
     for n_good in data.keys():
         print(SEP)
@@ -173,8 +177,9 @@ def supplementary_gender(data, obs_type='ind_0'):
 
         _mw(to_compare=[{
             'data': np.array([data[n_good]['Male'], data[n_good]['Female']]),
-            'name': f'MALE VS FEMALE, obs={obs_type}'
-        }])
+            'name': f'MALE VS FEMALE, obs={obs_type}'}],
+            print_latex=print_latex
+            )
 
         print(SEP)
 
@@ -196,12 +201,10 @@ def parameter_recovery(data):
 
 def cross_validation(data):
 
-    _mw(to_compare=[
-        {
+    _mw(to_compare=[{
             'data': np.array([data['UNIF'], data['NON-UNIF']]),
             'name': 'CROSS-VALIDATION obs_type=ind_0'
-        }
-    ])
+        }])
 
 
 if __name__ == "__main__":
