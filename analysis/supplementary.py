@@ -261,9 +261,9 @@ def fit(heterogeneous=True, t_max=None):
     return fig_data
 
 
-def sensibility_analysis(force=False):
+def sensitivity_analysis(force=False):
 
-    data_file = os.path.join(DATA_FOLDER, 'sensibility_analysis.p')
+    data_file = os.path.join(DATA_FOLDER, 'sensitivity_analysis.p')
 
     if os.path.exists(data_file) and not force:
         data = backup.load(data_file)

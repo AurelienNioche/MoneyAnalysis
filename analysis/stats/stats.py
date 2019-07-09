@@ -70,7 +70,7 @@ def _mw(to_compare, print_latex=False, **kwargs):
             p_c = f"{p_c:.3f}" if p_c >= 0.001 else '<0.001'
             p = f"{p:.3f}" if p >= 0.001 else '<0.001'
 
-            part0 = f"{xp_label} & {comparison} & {measure} & $u$ & ${u}$ & ${p}"
+            part0 = f"{xp_label} & {comparison} & {measure} & $U$ & ${u}$ & ${p}"
             if corr:
                 part0 += f"$ & ${p_c}"
             part1 = f"{'^*' if v else ''}$ & ${n}$" + r"\\"
@@ -225,11 +225,12 @@ def supplementary_gender(data,
 
         _mw(to_compare=[{
             'data': np.array([data[n_good]['Male'], data[n_good]['Female']]),
-            'name': f'MALE VS FEMALE, obs={obs_type}'}],
+            'name': f'MALE VS FEMALE, obs={obs_type}',
+            'comparison': 'Gender'
+        }],
             print_latex=print_latex,
             xp_label=f'{n_good} goods',
             measure=measure_label,
-            comparison='Gender',
             )
     print()
 
@@ -264,10 +265,10 @@ def cross_validation(data):
         }])
 
 
-def sensibility_analysis(data):
+def sensitivity_analysis(data):
 
     print(SEP)
-    print('Sensibility analysis')
+    print('Sensitivity analysis')
     print(SEP)
 
     for n_good in data.keys():

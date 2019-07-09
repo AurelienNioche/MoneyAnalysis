@@ -9,7 +9,7 @@ from graph.parameters import SUP_FIG_FOLDER
 
 
 def plot(data,
-         f_name='sensibility_analysis.pdf',
+         f_name='sensitivity_analysis.pdf',
          y_label='Freq. ind. ex. with good 1'):
 
     fig = plt.figure(figsize=(8, 8))

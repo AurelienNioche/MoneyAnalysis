@@ -34,7 +34,7 @@ import graph.phase_diagram
 import graph.supplementary.individual_behavior
 import graph.supplementary.age
 import graph.supplementary.gender
-import graph.supplementary.sensibility_analysis
+import graph.supplementary.sensitivity_analysis
 import graph.supplementary.parameter_recovery
 import graph.exploratory.learning_curves
 import graph.exploratory.cross_validation
@@ -76,11 +76,11 @@ def main_sim_and_xp():
 # ------------------------------------------------- #
 
 
-def sup_sensibility_analysis():
+def sup_sensitivity_analysis():
 
-    data = analysis.supplementary.sensibility_analysis()
-    graph.supplementary.sensibility_analysis.plot(data)
-    stats.sensibility_analysis(data)
+    data = analysis.supplementary.sensitivity_analysis()
+    graph.supplementary.sensitivity_analysis.plot(data)
+    stats.sensitivity_analysis(data)
 
 
 def sup_individual_behavior():
@@ -190,8 +190,8 @@ if __name__ == '__main__':
     # # # Uncomment for experiment analysis and experiment-like simulations
     # main_sim_and_xp()
     #
-    # # # Uncomment for sensibility analysis
-    sup_sensibility_analysis()
+    # # # Uncomment for sensitivity analysis
+    sup_sensitivity_analysis()
     # #
     # # # # Uncomment demographic analysis
     # sup_gender()
