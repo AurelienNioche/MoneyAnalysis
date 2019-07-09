@@ -108,9 +108,9 @@ def _produce_data(n_good, fake=False):
     return data
 
 
-def get_data(n_good, force=False, fake=True):
+def get_data(n_good, force=False, fake=False):
 
-    data_folder = f'data/phase_{n_good}_goods'
+    data_folder = os.path.join('data', f'phase_{n_good}_goods')
 
     if fake:
         _produce_data(n_good, fake=True)

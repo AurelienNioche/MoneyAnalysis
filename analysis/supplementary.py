@@ -19,15 +19,15 @@ def reward():
     users = User.objects.all()
     n = len(users)
 
-    age = np.zeros(n, dtype=int)
-    gender = np.zeros(n, dtype=bool)
+    _age = np.zeros(n, dtype=int)
+    _gender = np.zeros(n, dtype=bool)
     n_good = np.zeros(n, dtype=int)
     score = np.zeros(n, dtype=float)
 
     for i, u in enumerate(users):
 
-        gender[i] = u.gender == 'male'
-        age[i] = u.age
+        _gender[i] = u.gender == 'male'
+        _age[i] = u.age
 
         r = Room.objects.get(id=u.room_id)
         n_good[i] = r.n_type
@@ -47,15 +47,15 @@ def reward():
               f'(+/- {np.std(score[include]):.2f} STD)')
         print("[Computation: 10 euros + 0.20 cents per point]")
         print()
-        male_prop = np.mean(gender[include])
+        male_prop = np.mean(_gender[include])
         female_prop = 1 - male_prop
         print(f'Gender = '
               f'{female_prop*100:.1f}% female, '
               f'{male_prop*100:.1f}% male'
               )
         print()
-        print(f'Age = {np.mean(age[include]):.2f}'
-              f'(+/- {np.std(age[include]):.2f})')
+        print(f'Age = {np.mean(_age[include]):.2f}'
+              f'(+/- {np.std(_age[include]):.2f})')
         print()
 
     print('=' * 35)
@@ -261,11 +261,11 @@ def fit(heterogeneous=True, t_max=None):
     return fig_data
 
 
-def sensibility_analysis():
+def sensibility_analysis(force=False):
 
     data_file = os.path.join(DATA_FOLDER, 'sensibility_analysis.p')
 
-    if os.path.exists(data_file):
+    if os.path.exists(data_file) and not force:
         data = backup.load(data_file)
         return data
 

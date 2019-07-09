@@ -10,10 +10,6 @@ from graph.parameters import SUP_FIG_FOLDER
 
 def plot(data,
          f_name='sensibility_analysis.pdf',
-         parameters=(r'$\alpha$',
-                     r'$\beta$',
-                     r'$\gamma$',
-                     ),
          y_label='Freq. ind. ex. with good 1'):
 
     fig = plt.figure(figsize=(8, 8))
@@ -33,6 +29,8 @@ def plot(data,
             y_ticks = [0, 0.33, 0.66, 1]
         else:
             raise NotImplementedError
+
+        parameters = sorted([i for i in data[n_good].keys() if i[0] == '$'])
 
         for j, param in enumerate(parameters):
 

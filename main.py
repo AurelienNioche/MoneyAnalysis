@@ -80,6 +80,7 @@ def sup_sensibility_analysis():
 
     data = analysis.supplementary.sensibility_analysis()
     graph.supplementary.sensibility_analysis.plot(data)
+    stats.sensibility_analysis(data)
 
 
 def sup_individual_behavior():
@@ -184,13 +185,13 @@ if __name__ == '__main__':
     # main_phase_diagram()
     #
     # # For stats about reward
-    main_reward()
+    # main_reward()
     #
     # # # Uncomment for experiment analysis and experiment-like simulations
     # main_sim_and_xp()
     #
     # # # Uncomment for sensibility analysis
-    # sup_sensibility_analysis()
+    sup_sensibility_analysis()
     # #
     # # # # Uncomment demographic analysis
     # sup_gender()

@@ -264,5 +264,62 @@ def cross_validation(data):
         }])
 
 
+def sensibility_analysis(data):
+
+    print(SEP)
+    print('Sensibility analysis')
+    print(SEP)
+
+    for n_good in data.keys():
+
+        xp_label = f'{n_good} goods'
+
+        parameters = sorted([i for i in data[n_good].keys() if i[0] == '$'])
+
+        h = []
+        p = []
+        n = []
+
+        for param in parameters:
+
+            x_ticks = np.unique(data[n_good][param])
+
+            values_box_plot = [[] for _ in range(len(x_ticks))]
+
+            for idx, x in enumerate(x_ticks):
+                not_nan = np.invert(np.isnan(data[n_good]['ind0']))
+                relevant = data[n_good][param] == x
+                values = data[n_good]['ind0'][relevant * not_nan]
+                values_box_plot[idx] += list(values)
+
+            # Kruskal-Wallis H-test
+            _h, _p = scipy.stats.kruskal(*values_box_plot)
+            h.append(_h)
+            p.append(_p)
+            n.append(np.sum([len(i) for i in values_box_plot]))
+
+        valid, p_corr, alpha_c_sidak, alpha_c_bonf = \
+            statsmodels.stats.multitest.multipletests(pvals=p, alpha=0.05,
+                                                      method="b")
+
+        for i in range(len(p)):
+
+            comparison = f'{parameters[i]}-value'
+            measure = 'Ind. good 1'
+
+            corr = p_corr[i] != p[i]
+
+            p_c = f"{p_corr[i]:.3f}" if p_corr[i] >= 0.001 else '<0.001'
+            p_raw = f"{p[i]:.3f}" if p[i] >= 0.001 else '<0.001'
+
+            part0 = f"{xp_label} & {comparison} & {measure} & $H$ & " \
+                f"${h[i]:.2f}$ & ${p_raw}"
+            if corr:
+                part0 += f"$ & ${p_c}"
+            part1 = f"{'^*' if valid[i] else ''}$ & ${n[i]}$" + r"\\"
+
+            print(part0 + part1)
+
+
 if __name__ == "__main__":
     exit('Run the main.py script.')
