@@ -8,11 +8,12 @@ from simulation.model.RL.get_paths import get_paths
 from simulation.model.RL.rl_agent import RLAgent
 
 
-class RLAgentAsymmetric(RLAgent):
-
-    name = "RLAgent"
+class RLAgentEconomic(RLAgent):
+    name = "RLAgent2"
 
     def __init__(self, cognitive_parameters, **kwargs):
 
         super().__init__(**kwargs)
+
+
 
