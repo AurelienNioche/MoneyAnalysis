@@ -12,8 +12,8 @@ import simulation.economy
 
 
 def _get_phase_parameters(
+        agent_model,
         n_good=3,
-        agent_model='RLAgent',
         constant_x_value=np.array([50, ]),
         constant_x_index=np.array([0, ]),
         t_max=100,
@@ -27,10 +27,11 @@ def _get_phase_parameters(
     assert economy_model in ('prod: i-1', 'prod: i+1'), \
         'Bad argument for "economy_model"!'
 
-    first_cog_range = np.linspace(0.1, 0.25, n_cog_value)
-    second_cog_range = np.linspace(0.8, 1.2, n_cog_value)
-    third_cog_range = np.linspace(0.1, 0.15, n_cog_value)
-
+    ranges = []
+    for b in agent_model.bounds:
+        ranges.append(
+            np.linspace(b[1], b[2], n_cog_value)
+        )
     # ------------------------------ #
 
     repartition = list(itertools.product(range_repartition,
@@ -38,14 +39,18 @@ def _get_phase_parameters(
 
     # ---------- #
 
-    var_param = itertools.product(first_cog_range, second_cog_range,
-                                  third_cog_range, repartition)
+    ranges.append(repartition)
+
+    var_param = itertools.product(*ranges)
 
     # ----------- #
 
     parameters = []
 
-    for alpha, beta, gamma, rpt in var_param:
+    for v in var_param:
+
+        cog_param = v[:-1]
+        rpt = v[-1]
 
         complete_dist = np.zeros(n_good, dtype=int)
         gen_rpt = (i for i in rpt)
@@ -58,11 +63,11 @@ def _get_phase_parameters(
         complete_dist = tuple(complete_dist)
 
         param = {
-            'cognitive_parameters': (alpha, beta, gamma),
+            'cognitive_parameters': cog_param,
             'distribution': complete_dist,
             't_max': t_max,
             'economy_model': economy_model,
-            'agent_model': agent_model,
+            'agent_model': agent_model.__name__,
             'seed': np.random.randint(2**32-1)
         }
         parameters.append(param)
@@ -76,7 +81,7 @@ def _run(param):
     return param, e.run()
 
 
-def _produce_data(n_good, agent_model='RLAgent', fake=False):
+def _produce_data(n_good, agent_model, fake=False):
 
     tqdm.write("Compute parameters...", end=' ')
 
@@ -108,17 +113,19 @@ def _produce_data(n_good, agent_model='RLAgent', fake=False):
     return data
 
 
-def get_data(n_good, force=False, fake=False):
+def get_data(n_good, agent_model,
+             force=False, fake=False):
 
-    data_folder = os.path.join('data', f'phase_{n_good}_goods')
+    data_folder = os.path.join('data',
+                               f'phase_{n_good}_goods_{agent_model.__name__}')
 
     if fake:
-        _produce_data(n_good, fake=True)
+        _produce_data(n_good, agent_model, fake=True)
         return None
 
     elif force or not os.path.exists(data_folder):
 
-        bkp = _produce_data(n_good)
+        bkp = _produce_data(n_good, agent_model)
         bkp.save(data_folder)
 
     else:
