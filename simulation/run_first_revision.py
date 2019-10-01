@@ -23,7 +23,6 @@ def _get_phase_parameters(
 
     assert len(constant_x_value) == len(constant_x_index), \
         '"constant_x_value" and "constant_x_index" should have equal size!'
-    assert agent_model in ('RLAgent', ), 'Bad argument for "agent_model"!'
     assert economy_model in ('prod: i-1', 'prod: i+1'), \
         'Bad argument for "economy_model"!'
 
