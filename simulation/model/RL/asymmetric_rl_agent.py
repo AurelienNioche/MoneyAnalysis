@@ -10,13 +10,19 @@ from simulation.model.RL.rl_agent import RLAgent
 
 class RLAgentAsymmetric(RLAgent):
 
-    name = "RLAgentAsymmetric"
+    bounds = (
+        ('alpha_minus', 0.1, 0.25),
+        ('alpha_plus', 0.1, 0.25),
+        ('beta', 0.8, 1.2),
+        ('gamma', 0.1, 0.15),
+    )
 
     def __init__(self, cognitive_parameters, **kwargs):
 
         super().__init__(metaclass=True, **kwargs)
 
-        self.alpha_plus, self.alpha_minus, _, _ = cognitive_parameters
+        self.alpha_minus, self.alpha_plus, self.beta, self.gamma, = \
+            cognitive_parameters
 
     def learn_from_result(self, in_hand=None, desired=None, success=None):
 

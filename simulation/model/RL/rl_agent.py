@@ -10,12 +10,14 @@ class RLAgent(StupidAgent):
 
     name = "RLAgent"
 
-    def __init__(self, prod, cons, n_goods, cognitive_parameters, idx=None):
+    def __init__(self, prod, cons, n_goods, cognitive_parameters, idx=None,
+                 metaclass=False):
 
         super().__init__(prod=prod, cons=cons, n_goods=n_goods,
                          cognitive_parameters=cognitive_parameters)
 
-        self.alpha, self.beta, self.gamma = cognitive_parameters
+        if not metaclass:
+            self.alpha, self.beta, self.gamma = cognitive_parameters
 
         self.acceptance = self.get_acceptance_dic(n_goods)
 

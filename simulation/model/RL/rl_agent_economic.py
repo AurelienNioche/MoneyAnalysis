@@ -9,11 +9,22 @@ from simulation.model.RL.rl_agent import RLAgent
 
 
 class RLAgentEconomic(RLAgent):
-    name = "RLAgent2"
 
-    def __init__(self, cognitive_parameters, **kwargs):
+    bounds = \
+        ('epsilon', 0.01, 1.00),
 
-        super().__init__(**kwargs)
+    def __init__(self, cognitive_parameters, cons, n_goods, **kwargs):
+
+        super().__init__(metaclass=True, **kwargs)
+        self.gamma, = cognitive_parameters
+
+        self.paths = get_paths(final_node=cons, n_nodes=n_goods)
+
+    def which_exchange_do_you_want_to_try(self):
+        pass
+
+    def learn_from_result(self, in_hand=None, desired=None, success=None):
+        pass
 
 
 
