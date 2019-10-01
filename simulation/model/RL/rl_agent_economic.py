@@ -20,8 +20,12 @@ class RLAgentEconomic(RLAgent):
 
         self.paths = get_paths(final_node=cons, n_nodes=n_goods)
 
-    def which_exchange_do_you_want_to_try(self):
-        pass
+    def get_exchanges_and_values(self, in_hand):
+
+        exchanges = []
+        values = []
+        for path in self.paths[in_hand]:
+            pass
 
     def learn_from_result(self, in_hand=None, desired=None, success=None):
         pass
