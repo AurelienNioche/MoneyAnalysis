@@ -6,16 +6,15 @@ from simulation.model.RL.stupid_agent import StupidAgent
 from simulation.model.RL.get_paths import get_paths
 
 
-class RLAgent(StupidAgent):
+class RLAgent2(StupidAgent):
+    name = "RLAgent2"
 
-    name = "RLAgent"
-
-    def __init__(self, prod, cons, n_goods, cognitive_parameters, idx=None):
+    def __init__(self, prod, cons, n_goods, cognitive_parameters=None, idx=None):
 
         super().__init__(prod=prod, cons=cons, n_goods=n_goods,
                          cognitive_parameters=cognitive_parameters)
 
-        self.alpha, self.beta, self.gamma = cognitive_parameters
+        #self.alpha, self.beta, self.gamma = cognitive_parameters
 
         self.acceptance = self.get_acceptance_dic(n_goods)
 
@@ -38,13 +37,13 @@ class RLAgent(StupidAgent):
         return self.epsilon_rule(values=values, exchanges=exchanges)
 
     def p_choice(self, in_hand, desired):
-        
+
         exchanges, values = self.get_exchanges_and_values(in_hand=int(in_hand))
         max_idx = np.argmax(values)
         if exchanges[int(max_idx)] == (in_hand, desired):
             p = 1 - self.gamma
         else:
-            p = self.gamma / (len(exchanges)-1)
+            p = self.gamma / (len(exchanges) - 1)
 
         return p
 
@@ -109,4 +108,6 @@ class RLAgent(StupidAgent):
 
         self.acceptance[self.attempted_exchange] += \
             self.alpha * (success - self.acceptance[self.attempted_exchange])
+
+
 
