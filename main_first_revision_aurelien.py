@@ -7,7 +7,7 @@ from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 
 
-import analysis.first_revision
+import analysis.first_revision_aurelien
 import analysis.first_revision_basile
 
 
@@ -49,7 +49,7 @@ def revision_phase_diagram():
 
         print(f'Producing data for model "{agent_model.__name__}"...')
 
-        data, labels = analysis.first_revision.phase_diagram(
+        data, labels = analysis.first_revision_aurelien.phase_diagram(
             agent_model=agent_model)
         graph.phase_diagram.plot(data=data, labels=labels, f_name=f_name)
 
