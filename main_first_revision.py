@@ -8,6 +8,7 @@ application = get_wsgi_application()
 
 
 import analysis.first_revision
+import analysis.first_revision_basile
 
 
 import graph.sim_and_xp
@@ -53,6 +54,13 @@ def revision_phase_diagram():
         graph.phase_diagram.plot(data=data, labels=labels, f_name=f_name)
 
 
+def revision_learning_curves():
+    data = analysis.first_revision_basile.learning_curves_sim()
+    graph.exploratory.learning_curves.plot(
+        fig_data=data, f_name='fig/learning_curves_sim_{}.pdf')
+
+
 if __name__ == '__main__':
 
-    revision_phase_diagram()
+    #revision_phase_diagram()
+    revision_learning_curves()
