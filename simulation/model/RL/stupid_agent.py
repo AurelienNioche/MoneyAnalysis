@@ -1,7 +1,7 @@
 import numpy as np
 
 
-class StupidAgent(object):
+class StupidAgent:
     name = "StupidAgent"
 
     def __init__(self, prod, cons, n_goods, cognitive_parameters):

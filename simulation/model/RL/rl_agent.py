@@ -113,4 +113,3 @@ class RLAgent(StupidAgent):
 
         self.acceptance[self.attempted_exchange] += \
             self.alpha * (success - self.acceptance[self.attempted_exchange])
-
