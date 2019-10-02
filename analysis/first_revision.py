@@ -17,15 +17,16 @@ def phase_diagram(agent_model, m=0):
         f'formatted_phase_diagram_{agent_model.__name__}.p')
 
     if os.path.exists(data_file):
+
         data, labels = backup.load(data_file)
         return data, labels
-
     data = {}
 
     for n_good in (4, 3):
 
-        d = simulation.run_first_revision.get_data(agent_model=agent_model,
-                                                   n_good=n_good)
+        d = simulation.run_first_revision.get_data(
+            agent_model=agent_model,
+            n_good=n_good)
 
         formatted_d, labels = format_for_phase_diagram(d, m)
 

@@ -116,3 +116,4 @@ fig/
 # Mac stuff
 .DS_Store
 
+/data/phase_4_goods_RLAgentAsymmetric/

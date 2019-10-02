@@ -19,7 +19,7 @@ class RLAgentAsymmetric(RLAgent):
 
     def __init__(self, cognitive_parameters, **kwargs):
 
-        super().__init__(metaclass=True, **kwargs)
+        super().__init__(**kwargs)
 
         self.alpha_minus, self.alpha_plus, self.beta, self.gamma, = \
             cognitive_parameters
