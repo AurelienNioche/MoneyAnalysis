@@ -3,6 +3,7 @@ import itertools as it
 
 # noinspection PyUnresolvedReferences
 from simulation.model.RL.rl_agent import RLAgent
+from simulation.model.RL.asymmetric_rl_agent import RLAgentAsymmetric
 
 
 class Economy(object):

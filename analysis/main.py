@@ -61,6 +61,32 @@ def sim_and_xp(alpha=.175, beta=1, gamma=.125):
     return fig_data
 
 
+def format_for_phase_diagram(d, m):
+    dist = d.distribution
+
+    n = len(dist)  # Number of economies in this batch
+
+    observation = metric.get_economy_measure(in_hand=d.in_hand,
+                                             desired=d.desired,
+                                             prod=d.prod,
+                                             cons=d.cons,
+                                             m=m)
+
+    unq_repartition = np.unique(dist, axis=0)
+    labels = np.unique([i[-1] for i in unq_repartition])
+
+    n_side = len(labels)
+
+    scores = np.array([
+        np.mean([observation[i] for i in range(n) if np.all(dist[i] == r)])
+        for r in unq_repartition
+    ])
+
+    d = scores.reshape(n_side, n_side).T
+
+    return d, labels
+
+
 def phase_diagram(m=0):
 
     data_file = f'{DATA_FOLDER}/formatted_phase_diagram.p'
@@ -74,29 +100,10 @@ def phase_diagram(m=0):
     for n_good in (4, 3):
 
         d = simulation.run.get_data(n_good=n_good)
-        dist = d.distribution
 
-        n = len(dist)  # Number of economies in this batch
+        formatted_d, labels = format_for_phase_diagram(d, m)
 
-        observation = metric.get_economy_measure(in_hand=d.in_hand,
-                                                 desired=d.desired,
-                                                 prod=d.prod,
-                                                 cons=d.cons,
-                                                 m=m)
-
-        unq_repartition = np.unique(dist, axis=0)
-        labels = np.unique([i[-1] for i in unq_repartition])
-
-        n_side = len(labels)
-
-        scores = np.array([
-            np.mean([observation[i] for i in range(n) if np.all(dist[i] == r)])
-            for r in unq_repartition
-        ])
-
-        d = scores.reshape(n_side, n_side).T
-
-        data[n_good] = d
+        data[n_good] = formatted_d
 
     backup.save((data, labels), data_file)
 
