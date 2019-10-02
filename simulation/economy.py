@@ -4,6 +4,7 @@ import itertools as it
 # noinspection PyUnresolvedReferences
 from simulation.model.RL.rl_agent import RLAgent
 from simulation.model.RL.asymmetric_rl_agent import RLAgentAsymmetric
+from simulation.model.RL.rl_agent_no_alpha import RLAgentNoAlpha
 
 
 class Economy(object):
@@ -59,8 +60,9 @@ class Economy(object):
             idx = 0
 
             agents = np.zeros(n_agent, dtype=object)
-            prod, cons = np.zeros(n_agent, dtype=int), \
-                         np.zeros(n_agent, dtype=int)
+            prod, cons = \
+                np.zeros(n_agent, dtype=int), \
+                np.zeros(n_agent, dtype=int)
 
             for agent_type, n in enumerate(distribution):
 

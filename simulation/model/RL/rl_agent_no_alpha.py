@@ -1,17 +1,11 @@
-import numpy as np
-import itertools as it
-import math
-
-from simulation.model.RL.stupid_agent import StupidAgent
-from simulation.model.RL.get_paths import get_paths
-
 from simulation.model.RL.rl_agent import RLAgent
 
 
-class RLAgentEconomic(RLAgent):
+class RLAgentNoAlpha(RLAgent):
 
-    bounds = \
-        ('gamma', 0.01, 1.00),
+    bounds = (
+        ('gamma', 0.1, 0.15),
+    )
 
     def __init__(self, cognitive_parameters, **kwargs):
 
@@ -21,8 +15,6 @@ class RLAgentEconomic(RLAgent):
         self.t = 0
 
     def get_exchanges_and_values(self, in_hand):
-
-        self.t += 1
 
         exchanges = []
         values = []
@@ -43,7 +35,7 @@ class RLAgentEconomic(RLAgent):
             if num:
 
                 try:
-                    value = 1 / math.pow(1 + self.beta, num)
+                    value = 1 / num
                 except OverflowError:
                     value = 0
 
@@ -52,6 +44,8 @@ class RLAgentEconomic(RLAgent):
 
             exchanges.append(path[0])
             values.append(value)
+
+        self.t += 1
 
         return exchanges, values
 
@@ -62,8 +56,9 @@ class RLAgentEconomic(RLAgent):
         else:
             self.attempted_exchange = in_hand, desired
 
-        self.acceptance[self.attempted_exchange] += \
-            self.alpha * (success - self.acceptance[self.attempted_exchange])
+        self.acceptance[self.attempted_exchange] = \
+            ((self.t-1)/self.t) * self.acceptance[self.attempted_exchange] + \
+            (1/self.t) * (success - self.acceptance[self.attempted_exchange])
 
 
 

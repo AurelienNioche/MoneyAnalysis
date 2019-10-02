@@ -10,6 +10,12 @@ class RLAgent(StupidAgent):
 
     name = "RLAgent"
 
+    bounds = (
+        ('alpha', 0.1, 0.25),
+        ('beta', 0.8, 1.2),
+        ('gamma', 0.1, 0.15)
+    )
+
     def __init__(self, prod, cons, n_goods,
                  cognitive_parameters=None,
                  idx=None,

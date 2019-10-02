@@ -21,14 +21,15 @@ import graph.exploratory.learning_curves
 import graph.exploratory.cross_validation
 
 from simulation.model.RL.asymmetric_rl_agent import RLAgentAsymmetric
+from simulation.model.RL.rl_agent_no_alpha import RLAgentNoAlpha
 
 
 def revision_phase_diagram():
 
     """
-    plot phase diagram with asymmetric RL
+    plot phase diagram with other agent models
     """
-    agent_models = (RLAgentAsymmetric, )
+    agent_models = (RLAgentAsymmetric, RLAgentNoAlpha)
 
     for agent_model in agent_models:
 
