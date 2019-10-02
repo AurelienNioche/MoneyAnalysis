@@ -1,7 +1,7 @@
 from simulation.model.RL.rl_agent import RLAgent
 
 
-class RLAgentNoAlpha(RLAgent):
+class RLNoAlphaNoBeta(RLAgent):
 
     bounds = (
         ('gamma', 0.1, 0.15),
@@ -9,45 +9,21 @@ class RLAgentNoAlpha(RLAgent):
 
     def __init__(self, cognitive_parameters, **kwargs):
 
-        super().__init__(metaclass=True, **kwargs)
+        super().__init__(**kwargs)
         self.gamma, = cognitive_parameters
 
         self.t = 0
 
     def get_exchanges_and_values(self, in_hand):
 
-        exchanges = []
-        values = []
-        for path in self.paths[in_hand]:
-
-            num = 0
-            for exchange in path:
-
-                easiness = self.acceptance[exchange]
-                if easiness:
-
-                    num += 1 / easiness
-
-                else:
-                    num = 0
-                    break
-
-            if num:
-
-                try:
-                    value = 1 / num
-                except OverflowError:
-                    value = 0
-
-            else:
-                value = 0
-
-            exchanges.append(path[0])
-            values.append(value)
+        exchanges, values = super().get_exchanges_and_values(in_hand)
 
         self.t += 1
 
         return exchanges, values
+
+    def discounting_rule(self, delay):
+        return 1/delay
 
     def learn_from_result(self, in_hand=None, desired=None, success=None):
 

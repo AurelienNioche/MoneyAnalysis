@@ -16,15 +16,16 @@ class RLAgent(StupidAgent):
         ('gamma', 0.1, 0.15)
     )
 
+    u = 1
+
     def __init__(self, prod, cons, n_goods,
                  cognitive_parameters=None,
-                 idx=None,
-                 metaclass=False):
+                 idx=None):
 
         super().__init__(prod=prod, cons=cons, n_goods=n_goods,
                          cognitive_parameters=cognitive_parameters)
 
-        if not metaclass:
+        if cognitive_parameters is not None:
             self.alpha, self.beta, self.gamma = cognitive_parameters
 
         self.acceptance = self.get_acceptance_dic(n_goods)
@@ -45,7 +46,7 @@ class RLAgent(StupidAgent):
     def which_exchange_do_you_want_to_try(self):
 
         exchanges, values = self.get_exchanges_and_values(in_hand=self.H)
-        return self.epsilon_rule(values=values, exchanges=exchanges)
+        return self.decision_rule(values=values, exchanges=exchanges)
 
     def p_choice(self, in_hand, desired):
         
@@ -79,7 +80,7 @@ class RLAgent(StupidAgent):
             if num:
 
                 try:
-                    value = 1 / math.pow(1 + self.beta, num)
+                    value = self.discounting_rule(delay=num)
                 except OverflowError:
                     value = 0
 
@@ -91,8 +92,18 @@ class RLAgent(StupidAgent):
 
         return exchanges, values
 
-    def epsilon_rule(self, values, exchanges):
+    def discounting_rule(self, delay):
 
+        return self.u / math.pow(1 + self.beta, delay)
+
+    def decision_rule(self, values, exchanges):
+
+        """
+        epsilon rule
+        :param values:
+        :param exchanges:
+        :return:
+        """
         max_idx = np.argmax(values)
 
         if np.random.random() < self.gamma:

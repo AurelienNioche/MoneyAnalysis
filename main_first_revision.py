@@ -21,7 +21,12 @@ import graph.exploratory.learning_curves
 import graph.exploratory.cross_validation
 
 from simulation.model.RL.asymmetric_rl_agent import RLAgentAsymmetric
-from simulation.model.RL.rl_agent_no_alpha import RLAgentNoAlpha
+from simulation.model.RL.rl_no_alpha_no_beta import RLNoAlphaNoBeta
+from simulation.model.RL.rl_hyperbolic_discounting \
+    import RLHyperbolicDiscounting
+from simulation.model.RL.rl_exponential_discounting \
+    import RLExponentialDiscounting
+from simulation.model.RL.rl_softmax import RLSoftmax
 
 
 def revision_phase_diagram():
@@ -29,11 +34,19 @@ def revision_phase_diagram():
     """
     plot phase diagram with other agent models
     """
-    agent_models = (RLAgentAsymmetric, RLAgentNoAlpha)
+    agent_models = (
+        RLAgentAsymmetric,
+        RLNoAlphaNoBeta,
+        RLHyperbolicDiscounting,
+        RLExponentialDiscounting,
+        RLSoftmax,
+    )
 
     for agent_model in agent_models:
 
         f_name = f'phase_{agent_model.__name__}.pdf'
+
+        print(f'Producing data for model "{agent_model.__name__}"...')
 
         data, labels = analysis.first_revision.phase_diagram(
             agent_model=agent_model)
