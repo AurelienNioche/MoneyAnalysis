@@ -12,7 +12,9 @@ class RLSoftmax(RLAgent):
 
     def __init__(self, cognitive_parameters, **kwargs):
 
-        super().__init__(cognitive_parameters=cognitive_parameters, **kwargs)
+        super().__init__(**kwargs)
+
+        self.alpha, self.gamma, = cognitive_parameters
 
     def discounting_rule(self, delay):
         return 1/delay
@@ -27,11 +29,11 @@ class RLSoftmax(RLAgent):
         """
 
         try:
-            p = np.exp(values / self.beta) / \
-                   np.sum(np.exp(values / self.beta))
+            p = np.exp(values / self.gamma) / \
+                   np.sum(np.exp(values / self.gamma))
         except (Warning, FloatingPointError) as w:
-            raise Exception(f'{w} [x={values}, temp={self.beta}]')
+            raise Exception(f'{w} [x={values}, temp={self.gamma}]')
 
-        self.attempted_exchange = np.random.choice(exchanges,
-                                                   p=p)
+        self.attempted_exchange = \
+            exchanges[np.random.choice(range(len(exchanges)), p=p)]
         return self.attempted_exchange
