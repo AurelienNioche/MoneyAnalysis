@@ -7,13 +7,18 @@ import matplotlib.gridspec as grd
 from graph.parameters import FIG_FOLDER, AGENT_LABELLING
 
 
-def _subplot(
-        data, ax, labels, n_good,
+def phase_diagram(
+        data, labels, n_good,
         ticks_position=(10, 50, 100, 150, 200),
         n_levels=20,
         fontsize=10,
-        n_subplot=None
+        ax=None,
+        n_subplot=None,
+        f_name=None,
         ):
+
+    if ax is None:
+        fig, ax = plt.subplot(figsize=(8, 8))
 
     if n_subplot is not None:
 
@@ -78,6 +83,13 @@ def _subplot(
 
     ax.set_aspect(1)
 
+    if f_name is not None:
+        plt.tight_layout()
+
+        fig_path = os.path.join(FIG_FOLDER, f_name)
+        plt.savefig(fig_path)
+        print(f"Figure '{fig_path}' created.\n")
+
 
 def plot(data, labels, f_name='phase_diagram.pdf'):
 
@@ -89,7 +101,7 @@ def plot(data, labels, f_name='phase_diagram.pdf'):
 
         ax = fig.add_subplot(gs[0, i])
 
-        _subplot(
+        phase_diagram(
             data=data[n_good],
             labels=labels,
             ax=ax,

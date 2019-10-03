@@ -28,6 +28,10 @@ from simulation.model.RL.rl_hyperbolic_discounting \
 from simulation.model.RL.rl_exponential_discounting \
     import RLExponentialDiscounting
 from simulation.model.RL.rl_softmax import RLSoftmax
+from simulation.model.RL.rl_agent import RLAgent
+
+import analysis.main
+import simulation.run_first_revision
 
 
 def revision_phase_diagram():
@@ -54,6 +58,19 @@ def revision_phase_diagram():
         graph.phase_diagram.plot(data=data, labels=labels, f_name=f_name)
 
 
+def phase_diagram_n_good():
+
+    for n_good in (5, 6):
+        data = \
+            simulation.run_first_revision.get_data(
+                n_good=n_good,
+                agent_model=RLAgent)
+        data_f, labels = analysis.main.format_for_phase_diagram(d=data, m=0)
+        graph.phase_diagram.phase_diagram(
+            data=data_f, labels=labels,
+            f_name=f'phase_diagram_{n_good}_good.pdf')
+
+
 if __name__ == '__main__':
 
-    revision_phase_diagram()
+    phase_diagram_n_good()
