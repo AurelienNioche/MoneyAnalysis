@@ -88,6 +88,7 @@ def phase_diagram_n_good():
 def fit():
 
     agent_models = (
+        RLAgent,
         RLAgentAsymmetric,
         RLNoAlphaNoBeta,
         RLHyperbolicDiscounting,
@@ -102,6 +103,8 @@ def fit():
 
         print("-" * 20)
         print(f"{agent_model.__name__}: {np.mean(bic)}(+/-{np.std(bic)}STD)")
+        print("-" * 20)
+        print()
 
 
 if __name__ == '__main__':
