@@ -6,6 +6,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "MoneyAnalysis.settings")
 from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 
+import numpy as np
 
 import analysis.first_revision_aurelien
 import analysis.first_revision_basile
@@ -32,6 +33,9 @@ from simulation.model.RL.rl_agent import RLAgent
 
 import analysis.main
 import simulation.run_first_revision
+import analysis.fit.data
+
+from backup import backup
 
 
 def revision_phase_diagram():
@@ -59,18 +63,47 @@ def revision_phase_diagram():
 
 
 def phase_diagram_n_good():
+    data_path = os.path.join("data", "phase_diagram_n_good.p")
+    if os.path.exists(data_path):
+        (data, labels) = backup.load(data_path)
+    else:
+        data = {}
 
-    for n_good in (5, 6):
-        data = \
-            simulation.run_first_revision.get_data(
-                n_good=n_good,
-                agent_model=RLAgent)
-        data_f, labels = analysis.main.format_for_phase_diagram(d=data, m=0)
-        graph.phase_diagram.phase_diagram(
-            data=data_f, labels=labels,
-            f_name=f'phase_diagram_{n_good}_good.pdf')
+        for n_good in (5, 6):
+            d = \
+                simulation.run_first_revision.get_data(
+                    n_good=n_good,
+                    agent_model=RLAgent)
+            data_f, labels = analysis.main.format_for_phase_diagram(d=d, m=0)
+
+            data[n_good] = data_f
+        backup.save((data, labels), data_path)
+
+    graph.phase_diagram.plot(
+
+        data=data, labels=labels,
+        f_name=f'phase_diagram_more_good.pdf')
+
+
+def fit():
+
+    agent_models = (
+        RLAgentAsymmetric,
+        RLNoAlphaNoBeta,
+        RLHyperbolicDiscounting,
+        RLExponentialDiscounting,
+        RLSoftmax,
+    )
+
+    for agent_model in agent_models:
+
+        best_parameters, mean_p, lls, bic, eco = \
+            analysis.fit.data.get(model=agent_model)
+
+        print("-" * 20)
+        print(f"{agent_model.__name__}: {np.mean(bic)}(+/-{np.std(bic)}STD)")
 
 
 if __name__ == '__main__':
 
-    phase_diagram_n_good()
+    fit()

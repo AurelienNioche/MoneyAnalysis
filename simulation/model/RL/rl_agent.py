@@ -16,6 +16,12 @@ class RLAgent(StupidAgent):
         ('gamma', 0.1, 0.15)
     )
 
+    fit_bounds = (
+        ('alpha', 0.01, 0.9),  # Learning rate
+        ('beta', 0.1, 1.99),  # Decay
+        ('gamma', 0.01, 0.99)  # Stochasticity
+    )
+
     u = 1
 
     def __init__(self, prod, cons, n_goods,

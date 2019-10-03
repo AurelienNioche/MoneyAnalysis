@@ -39,6 +39,8 @@ import graph.supplementary.parameter_recovery
 import graph.exploratory.learning_curves
 import graph.exploratory.cross_validation
 
+from simulation.model.RL.rl_agent import RLAgent
+
 
 def main_reward():
 
@@ -105,7 +107,7 @@ def sup_age(obs_type='ind0'):
 
 def sup_parameter_recovery():
 
-    fig_data = analysis.supplementary.parameter_recovery()
+    fig_data = analysis.supplementary.parameter_recovery(model=RLAgent)
     graph.supplementary.parameter_recovery.plot(fig_data)
     analysis.stats.stats.parameter_recovery(fig_data)
 
@@ -113,7 +115,9 @@ def sup_parameter_recovery():
 def sup_fit():
 
     name_extension = '_fit'
-    fig_data = analysis.supplementary.fit(heterogeneous=True)
+    fig_data = analysis.supplementary.fit(
+        model=RLAgent,
+        heterogeneous=True)
     graph.sim_and_xp.plot(fig_data, name_extension=name_extension)
     stats.sim_and_xp(fig_data, name_extension=name_extension)
 
@@ -121,7 +125,9 @@ def sup_fit():
 def sup_effect_of_heterogeneous():
 
     name_extension = '_fit_non_heterogeneous'
-    fig_data = analysis.supplementary.fit(heterogeneous=False)
+    fig_data = analysis.supplementary.fit(
+        model=RLAgent,
+        heterogeneous=False)
     graph.sim_and_xp.plot(fig_data, name_extension=name_extension)
     analysis.stats.stats.sim_and_xp(fig_data, name_extension=name_extension)
 
@@ -129,7 +135,9 @@ def sup_effect_of_heterogeneous():
 def sup_effect_of_extended_time(t_max=1000):
 
     name_extension = '_fit_extended'
-    fig_data = analysis.supplementary.fit(heterogeneous=True, t_max=t_max)
+    fig_data = analysis.supplementary.fit(
+        model=RLAgent,
+        heterogeneous=True, t_max=t_max)
     graph.sim_and_xp.plot(fig_data, name_extension=name_extension)
     analysis.stats.stats.sim_and_xp(fig_data, name_extension=name_extension)
 

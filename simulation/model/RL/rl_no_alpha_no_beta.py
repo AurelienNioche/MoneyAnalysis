@@ -7,6 +7,10 @@ class RLNoAlphaNoBeta(RLAgent):
         ('gamma', 0.1, 0.15),
     )
 
+    fit_bounds = (
+        ('gamma', 0.01, 0.99)
+    )
+
     def __init__(self, cognitive_parameters, **kwargs):
 
         super().__init__(**kwargs)

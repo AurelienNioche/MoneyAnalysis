@@ -13,10 +13,11 @@ DATA_FOLDER = f'data'
 
 class PProvider:
 
-    def __init__(self, xp_data, agent_idx):
+    def __init__(self, xp_data, agent_idx, model):
 
         self.xp_data = xp_data
         self.agent_idx = agent_idx
+        self.model = model
 
     def get_p_choices(self, parameters):
 
@@ -26,10 +27,11 @@ class PProvider:
 
         t_max = len(self.xp_data.in_hand[self.agent_idx])
 
-        agent = RLAgent(prod=prod,
-                        cons=cons,
-                        n_goods=n_good,
-                        cognitive_parameters=parameters)
+        agent = self.model(
+            prod=prod,
+            cons=cons,
+            n_goods=n_good,
+            cognitive_parameters=parameters)
 
         p_choices = np.zeros(t_max)
 
@@ -54,15 +56,12 @@ class PProvider:
         return "RL"
 
 
-def produce_fit(xp_data_list, room_n_good, room_uniform):
+def produce_fit(xp_data_list, room_n_good, room_uniform, model):
 
-    bounds = (
-        ('alpha', 0.01, 0.9),  # Learning rate
-        ('beta', 0.1, 1.99),  # Decay
-        ('gamma', 0.01, 0.99)  # Stochasticity
-    )
+    bounds = model.fit_bounds
 
-    alpha, beta, gamma, mean_p, lls, bic, eco = [], [], [], [], [], [], []
+    best_parameters = {b[0]: [] for b in bounds}
+    mean_p, lls, bic, eco = [], [], [], []
 
     eco_idx = 0
 
@@ -72,16 +71,16 @@ def produce_fit(xp_data_list, room_n_good, room_uniform):
         for i in range(len(d.prod)):
             print("agent", i)
 
-            p_provider = PProvider(xp_data=d, agent_idx=i)
+            p_provider = PProvider(xp_data=d, agent_idx=i, model=model)
 
             fitter = fit.Fit()
             best_param, mean_p_, lls_, bic_ = \
                 fitter.evaluate(bounds=bounds,
                                 p_provider=p_provider)
 
-            alpha.append(best_param['alpha'])
-            beta.append(best_param['beta'])
-            gamma.append(best_param['gamma'])
+            for key in best_param:
+                best_parameters[key].append(best_param[key])
+
             mean_p.append(mean_p_)
             lls.append(lls_)
             bic.append(bic_)
@@ -91,24 +90,29 @@ def produce_fit(xp_data_list, room_n_good, room_uniform):
         eco_idx += 1
         print("___\n")
 
-    return alpha, beta, gamma, mean_p, lls, bic, eco
+    return best_parameters, mean_p, lls, bic, eco
 
 
-def get(xp_data_list=None, room_n_good=None, room_uniform=None, extension=''):
+def get(model,
+        xp_data_list=None, room_n_good=None, room_uniform=None, extension=''):
 
     if xp_data_list is None:
         xp_data_list, room_n_good, room_uniform = xp.get_data()
 
-    file_path = f'{DATA_FOLDER}/fit{extension}.p'
+    file_path = f'{DATA_FOLDER}/fit{extension}_{model.__name__}.p'
 
     if not os.path.exists(file_path):
-        alpha, beta, gamma, mean_p, lls, bic, eco = \
-            produce_fit(xp_data_list, room_n_good, room_uniform)
-        backup.save(obj=(alpha, beta, gamma, mean_p, lls, bic, eco),
+        best_parameters, mean_p, lls, bic, eco = \
+            produce_fit(
+                model=model,
+                xp_data_list=xp_data_list,
+                room_n_good=room_n_good,
+                room_uniform=room_uniform)
+        backup.save(obj=(best_parameters, mean_p, lls, bic, eco),
                     file_name=file_path)
 
     else:
-        alpha, beta, gamma, mean_p, lls, bic, eco = \
+        best_parameters, mean_p, lls, bic, eco = \
             backup.load(file_name=file_path)
 
-    return alpha, beta, gamma, mean_p, lls, bic, eco
+    return best_parameters, mean_p, lls, bic, eco

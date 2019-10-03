@@ -20,7 +20,7 @@ DATA_FOLDER = f"data"
 DATA_FILE = f"{DATA_FOLDER}/xp_data.p"
 
 
-def _load__data_from_db():
+def _load_data_from_db():
 
     rooms = Room.objects.all().order_by('id')
 
@@ -88,7 +88,7 @@ def get_data(force=False):
 
     if force or not os.path.exists(DATA_FILE):
 
-        data = _load__data_from_db()
+        data = _load_data_from_db()
         backup.save(obj=data, file_name=DATA_FILE)
 
     else:

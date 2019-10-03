@@ -10,6 +10,11 @@ class RLSoftmax(RLAgent):
         ('gamma', 0.01, 0.15)
     )
 
+    fit_bounds = (
+        ('alpha', 0.01, 0.9),  # Learning rate
+        ('gamma', 0.01, 0.99)  # Stochasticity
+    )
+
     def __init__(self, cognitive_parameters, **kwargs):
 
         super().__init__(**kwargs)
