@@ -97,7 +97,7 @@ def plot(data, labels, f_name='phase_diagram.pdf'):
 
     gs = grd.GridSpec(nrows=1, ncols=2)
 
-    for i, n_good in enumerate((3, 4)):
+    for i, n_good in sorted(data.keys()):
 
         ax = fig.add_subplot(gs[0, i])
 
