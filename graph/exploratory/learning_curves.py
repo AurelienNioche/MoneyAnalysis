@@ -3,13 +3,14 @@ import matplotlib.gridspec as grd
 import numpy as np
 
 
-def curve(mean, sem, cond='', n_good='', agent_type='', ax=None):
+def curve(mean, sem, cond='', n_good='', agent_type='', ax=None,
+          ylabel=None, legend=None):
 
     if ax is None:
         fig = plt.figure(figsize=(15, 12))
         ax = fig.subplots()
 
-    ax.plot(mean, lw=1.5)
+    ax.plot(mean, lw=1.5, label=legend)
     ax.fill_between(
         range(len(mean)),
         y1=mean - sem,
@@ -20,8 +21,7 @@ def curve(mean, sem, cond='', n_good='', agent_type='', ax=None):
     # ax.spines['right'].set_visible(0)
     # ax.spines['top'].set_visible(0)
     ax.set_xlabel('t')
-    ax.set_ylabel('p(choose ind. ex. with good 0)')
-
+    ax.set_ylabel(ylabel)
     ax.set_ylim((0, 1))
 
     if n_good == 3:
@@ -46,7 +46,7 @@ def curve(mean, sem, cond='', n_good='', agent_type='', ax=None):
     ax.set_title(f'{n_good} - {cond} - type{agent_type}')
 
 
-def plot(fig_data, f_name=None):
+def plot(fig_data, ylabel='ind. ex. frequency with good 0', f_name=None):
 
     n_good_cond = fig_data.keys()
 
@@ -65,10 +65,22 @@ def plot(fig_data, f_name=None):
 
             for row, at in enumerate(agent_types):
                 ax = fig.add_subplot(gs[row, col])
-                curve(fig_data[n_good][cond][at]['mean'],
-                      fig_data[n_good][cond][at]['sem'],
-                      n_good=n_good, cond=cond, agent_type=at,
-                      ax=ax)
+
+                exchange_type = fig_data[n_good][cond][at].get('exchange_type')
+
+                if exchange_type is not None:
+                    for ex_t in exchange_type:
+                        curve(fig_data[n_good][cond][at]['mean'][ex_t],
+                              fig_data[n_good][cond][at]['sem'][ex_t],
+                              n_good=n_good, cond=cond, agent_type=at,
+                              ax=ax, ylabel=ylabel, legend=str(ex_t))
+                        ax.legend()
+
+                else:
+                    curve(fig_data[n_good][cond][at]['mean'],
+                          fig_data[n_good][cond][at]['sem'],
+                          n_good=n_good, cond=cond, agent_type=at,
+                          ax=ax, ylabel=ylabel)
 
         plt.tight_layout()
 

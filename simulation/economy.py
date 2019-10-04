@@ -30,17 +30,22 @@ class Economy(object):
                                distribution=distribution,
                                prod=prod, cons=cons)
 
-        # ---- For backup ----- #
-        self.in_hand = np.zeros((self.n_agent, self.t_max), dtype=int)
-        self.desired = np.zeros((self.n_agent, self.t_max), dtype=int)
-        self.success = np.zeros((self.n_agent, self.t_max), dtype=bool)
-
         # ---------- #
 
         self.t = 0
 
         self.markets = self.get_markets(self.n_good)
         self.exchange_types = list(it.combinations(range(self.n_good), r=2))
+
+        # ---- For backup ----- #
+        self.in_hand = np.zeros((self.n_agent, self.t_max), dtype=int)
+        self.desired = np.zeros((self.n_agent, self.t_max), dtype=int)
+        self.success = np.zeros((self.n_agent, self.t_max), dtype=bool)
+
+        self.acceptance = {
+            k: np.zeros((self.n_agent, self.t_max))
+            for k in list(it.permutations(range(self.n_good), r=2))
+        }
 
     def create_agents(self, economy_model, heterogeneous, distribution,
                       prod, cons):
@@ -128,6 +133,8 @@ class Economy(object):
         # and adapt his behavior (or not).
         for agent in self.agents:
             agent.consume()
+            for ex_t in self.acceptance.keys():
+                self.acceptance[ex_t][agent.idx, t] = agent.acceptance[ex_t]
 
     def organize_encounters(self):
 
@@ -179,7 +186,8 @@ class Economy(object):
             'prod': self.prod,
             'cons': self.cons,
             'success': self.success,
-            'n_good': self.n_good
+            'n_good': self.n_good,
+            'acceptance': self.acceptance
         }
 
 
