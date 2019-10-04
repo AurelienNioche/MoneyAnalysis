@@ -185,40 +185,44 @@ def age(obs_type='dir', n_split=3):
     return fig_data
 
 
-def parameter_recovery():
+def parameter_recovery(model):
 
     data = {}
     data["Human"], room_n_good, room_uniform = xp.get_data()
-    alpha, beta, gamma, mean_p, lls, bic, eco = \
+    best_parameters, mean_p, lls, bic, eco = \
         analysis.fit.data.get(data["Human"], room_n_good, room_uniform)
 
     data["Simulation"] = \
         simulation.run_based_on_fit.get_data(
             xp_data_list=data["Human"],
-            alpha=alpha, beta=beta, gamma=gamma,
+            best_parameters=best_parameters,
             eco=eco)
 
-    r_alpha, r_beta, r_gamma, r_mean_p, r_lls, r_bic, r_eco = \
+    r_best_parameters, r_mean_p, r_lls, r_bic, r_eco = \
         analysis.fit.data.get(
-            data["Simulation"], room_n_good, room_uniform, extension="sim")
+            model=model,
+            xp_data_list=data["Simulation"],
+            room_n_good=room_n_good,
+            room_uniform=room_uniform, extension="sim")
 
     fig_data = {
-        r"$\alpha$": (alpha, r_alpha),
-        r"$\beta$": (beta, r_beta),
-        r"$\gamma$": (gamma, r_gamma)
+        k: (best_parameters[k], r_best_parameters[k])
+        for k in best_parameters
     }
 
     return fig_data
 
 
-def fit(heterogeneous=True, t_max=None):
+def fit(model, heterogeneous=True, t_max=None):
 
-    alpha, beta, gamma, mean_p, lls, bic, eco = analysis.fit.data.get()
+    best_parameters, mean_p, lls, bic, eco = \
+        analysis.fit.data.get(model=model)
 
     data = {}
     data["Human"], room_n_good, room_uniform = xp.get_data()
     data["Simulation"] = simulation.run_based_on_fit.get_data(
-        xp_data_list=data["Human"], alpha=alpha, beta=beta, gamma=gamma,
+        xp_data_list=data["Human"],
+        best_parameters=best_parameters,
         eco=eco,
         heterogeneous=heterogeneous, t_max=t_max)
 

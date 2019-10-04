@@ -17,6 +17,13 @@ class RLAgentAsymmetric(RLAgent):
         ('gamma', 0.1, 0.15),
     )
 
+    fit_bounds = (
+        ('alpha_minus', 0.01, 0.9),  # Learning rate
+        ('alpha_plus', 0.01, 0.9),
+        ('beta', 0.1, 1.99),  # Decay
+        ('gamma', 0.01, 0.99)  # Stochasticity
+    )
+
     def __init__(self, cognitive_parameters, **kwargs):
 
         super().__init__(**kwargs)

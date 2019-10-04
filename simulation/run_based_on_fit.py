@@ -11,12 +11,9 @@ DATA_FOLDER = f'{SCRIPT_FOLDER}/../data'
 FILE_PATH = f'{DATA_FOLDER}/fit.p'
 
 
-def get_data(xp_data_list, alpha, beta, gamma, eco,
+def get_data(xp_data_list, best_parameters, eco,
              heterogeneous=True, t_max=None, seed=123):
 
-    alpha = np.array(alpha)
-    beta = np.array(beta)
-    gamma = np.array(gamma)
     eco = np.array(eco)
 
     np.random.seed(seed=seed)
@@ -36,15 +33,16 @@ def get_data(xp_data_list, alpha, beta, gamma, eco,
         if t_max is None:
             t_max = xp_d.t_max
 
+        param = []
+        for k in sorted(best_parameters):
+            param.append(
+                np.asarray(best_parameters[k])[eco == i]
+            )
+
         if heterogeneous:
-            cognitive_parameters = [(a, b, g) for a, b, g in
-                                    zip(alpha[eco == i],
-                                        beta[eco == i],
-                                        gamma[eco == i])]
+            cognitive_parameters = list(zip(*param))
         else:
-            cognitive_parameters = alpha[eco == i].mean(), \
-                                   beta[eco == i].mean(), \
-                                   gamma[eco == i].mean()
+            cognitive_parameters = [p.mean() for p in param]
 
         param, bkp = _run({
             'cognitive_parameters': cognitive_parameters,

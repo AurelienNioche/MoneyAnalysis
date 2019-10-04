@@ -86,8 +86,8 @@ def _produce_data(n_good, agent_model, fake=False):
 
     n_constant = n_good-2
 
-    constant_x_index = np.arange(n_good-2)
-    constant_x_value = np.array([50, ] * 2 + [100 * n_constant-2])
+    constant_x_index = np.arange(n_constant)
+    constant_x_value = np.array([50, ] * 2 + [100, ] * (n_constant-2))
 
     params = _get_phase_parameters(
         n_good=n_good,

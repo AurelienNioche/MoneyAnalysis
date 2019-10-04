@@ -4,8 +4,9 @@ import os
 
 class MacOSFile(object):
 
-    def __init__(self, f):
+    def __init__(self, f, verbose=True):
         self.f = f
+        self.verbose = verbose
 
     def __getattr__(self, item):
         return getattr(self.f, item)
@@ -26,30 +27,37 @@ class MacOSFile(object):
 
     def write(self, buffer):
         n = len(buffer)
-        print("writing total_bytes=%s..." % n, flush=True)
+        if self.verbose:
+            print("writing total_bytes=%s..." % n, flush=True)
         idx = 0
         while idx < n:
             batch_size = min(n - idx, 1 << 31 - 1)
-            print("writing bytes [%s, %s)... " % (idx, idx + batch_size), end="", flush=True)
+            if self.verbose:
+                print("writing bytes [%s, %s)... " % (idx, idx + batch_size),
+                      end="", flush=True)
             self.f.write(buffer[idx:idx + batch_size])
-            print("done.", flush=True)
+            if self.verbose:
+                print("done.", flush=True)
             idx += batch_size
 
 
-def save(obj, file_name):
+def save(obj, file_name, verbose=True):
 
     dir_path = os.path.dirname(file_name)
     if dir_path:
         os.makedirs(dir_path, exist_ok=True)
-    print(f"Saving file '{file_name}'...")
+    if verbose is True:
+        print(f"Saving file '{file_name}'...")
     with open(file_name, 'wb') as f:
-        pickle.dump(obj=obj, file=MacOSFile(f))
+        pickle.dump(obj=obj, file=MacOSFile(f, verbose=verbose))
 
 
-def load(file_name):
+def load(file_name, verbose=True):
 
-    print(f"Loading file '{file_name}'...", end=" ")
+    if verbose is True:
+        print(f"Loading file '{file_name}'...", end=" ")
     with open(file_name, 'rb')as f:
         data = pickle.load(file=f)
-    print("Done!\n")
+    if verbose is True:
+        print("Done!\n")
     return data
