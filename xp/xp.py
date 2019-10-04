@@ -84,15 +84,15 @@ def _load_data_from_db():
     return data_session, room_n_good, room_uniform
 
 
-def get_data(force=False):
+def get_data(force=False, verbose=True):
 
     if force or not os.path.exists(DATA_FILE):
 
         data = _load_data_from_db()
-        backup.save(obj=data, file_name=DATA_FILE)
+        backup.save(obj=data, file_name=DATA_FILE, verbose=verbose)
 
     else:
 
-        data = backup.load(DATA_FILE)
+        data = backup.load(DATA_FILE, verbose=verbose)
 
     return data

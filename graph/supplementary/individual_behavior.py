@@ -5,7 +5,9 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as grd
 
 
-from graph.parameters import SUP_FIG_FOLDER, AGENT_LABELLING
+from graph.parameters import SUP_FIG_FOLDER
+
+from graph.labelling import agent_labeling
 
 
 def _plot(
@@ -118,7 +120,8 @@ def plot(fig_data, y_labels=None, colors=None,
 
                         ax = fig.add_subplot(gs[row, col])
 
-                        at_label = AGENT_LABELLING[n_good][at]
+                        al = agent_labeling(n_good)
+                        at_label = al[at]
 
                         title = f'{cat} - {cond} - Type {at_label}'
 

@@ -5,7 +5,8 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as grd
 import numpy as np
 
-from graph.parameters import FIG_FOLDER, AGENT_LABELLING, SUP_FIG_FOLDER
+from graph.parameters import FIG_FOLDER, SUP_FIG_FOLDER
+from graph.labelling import agent_labeling
 
 
 def boxplot(
@@ -119,7 +120,8 @@ def plot(fig_data, name_extension=''):
 
                 ax = fig.add_subplot(gs[row, col])
 
-                at_label = AGENT_LABELLING[n_good][at]
+                al = agent_labeling(n_good)
+                at_label = al[at]
 
                 results = fig_data[n_good][cat][at]
 

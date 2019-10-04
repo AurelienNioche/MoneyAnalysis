@@ -94,10 +94,11 @@ def produce_fit(xp_data_list, room_n_good, room_uniform, model):
 
 
 def get(model,
-        xp_data_list=None, room_n_good=None, room_uniform=None, extension=''):
+        xp_data_list=None, room_n_good=None, room_uniform=None, extension='',
+        verbose=True):
 
     if xp_data_list is None:
-        xp_data_list, room_n_good, room_uniform = xp.get_data()
+        xp_data_list, room_n_good, room_uniform = xp.get_data(verbose=verbose)
 
     file_path = f'{DATA_FOLDER}/fit{extension}_{model.__name__}.p'
 
@@ -109,10 +110,10 @@ def get(model,
                 room_n_good=room_n_good,
                 room_uniform=room_uniform)
         backup.save(obj=(best_parameters, mean_p, lls, bic, eco),
-                    file_name=file_path)
+                    file_name=file_path, verbose=verbose)
 
     else:
         best_parameters, mean_p, lls, bic, eco = \
-            backup.load(file_name=file_path)
+            backup.load(file_name=file_path, verbose=verbose)
 
     return best_parameters, mean_p, lls, bic, eco

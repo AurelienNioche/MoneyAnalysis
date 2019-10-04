@@ -4,7 +4,8 @@ import string
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as grd
 
-from graph.parameters import FIG_FOLDER, AGENT_LABELLING
+from graph.parameters import FIG_FOLDER
+from graph.labelling import agent_labeling
 
 
 def phase_diagram(
@@ -40,8 +41,10 @@ def phase_diagram(
     ax.tick_params(axis='both', labelsize=fontsize)
 
     # Axes labels
+    al = agent_labeling(n_good)
+
     x_agent_type = n_good-2
-    x_at_label = AGENT_LABELLING[n_good][x_agent_type]\
+    x_at_label = al[x_agent_type]\
         .replace('(', '').replace(')', '')\
         .replace(',', '').replace(' ', '')\
         .replace('$', '')
@@ -49,7 +52,7 @@ def phase_diagram(
     ax.set_xlabel(f'$x_{{{x_at_label}}}$', fontsize=fontsize*1.5)
 
     y_agent_type = n_good-1
-    y_at_label = AGENT_LABELLING[n_good][y_agent_type]\
+    y_at_label = al[y_agent_type]\
         .replace('(', '').replace(')', '')\
         .replace(',', '').replace(' ', '')\
         .replace('$', '')
@@ -64,10 +67,8 @@ def phase_diagram(
 
     if n_good == 3:
         y_ticks = [0, 0.25, 0.5, 0.75, 1]
-    elif n_good == 4:
-        y_ticks = [0, 0.33, 0.66, 1]
     else:
-        raise NotImplementedError
+        y_ticks = np.linspace(0, 1, n_good-1)
 
     x, y = np.meshgrid(range(data.shape[0]), range(data.shape[1]))
     z = data
@@ -97,7 +98,7 @@ def plot(data, labels, f_name='phase_diagram.pdf'):
 
     gs = grd.GridSpec(nrows=1, ncols=2)
 
-    for i, n_good in sorted(data.keys()):
+    for i, n_good in enumerate(sorted(data.keys())):
 
         ax = fig.add_subplot(gs[0, i])
 

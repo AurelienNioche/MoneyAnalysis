@@ -23,7 +23,8 @@ import graph.exploratory.learning_curves
 import graph.exploratory.cross_validation
 
 from simulation.model.RL.asymmetric_rl_agent import RLAgentAsymmetric
-from simulation.model.RL.rl_no_alpha_no_beta import RLNoAlphaNoBeta
+from simulation.model.RL.rl_no_alpha_no_beta \
+    import RLNoAlphaNoBeta, RLNoAlphaNoBetaV2
 from simulation.model.RL.rl_hyperbolic_discounting \
     import RLHyperbolicDiscounting
 from simulation.model.RL.rl_exponential_discounting \
@@ -44,6 +45,7 @@ def revision_phase_diagram():
     plot phase diagram with other agent models
     """
     agent_models = (
+        RLNoAlphaNoBetaV2,
         RLAgentAsymmetric,
         RLNoAlphaNoBeta,
         RLHyperbolicDiscounting,
@@ -88,6 +90,7 @@ def phase_diagram_n_good():
 def fit():
 
     agent_models = (
+        RLNoAlphaNoBetaV2,
         RLAgent,
         RLAgentAsymmetric,
         RLNoAlphaNoBeta,
@@ -99,7 +102,7 @@ def fit():
     for agent_model in agent_models:
 
         best_parameters, mean_p, lls, bic, eco = \
-            analysis.fit.data.get(model=agent_model)
+            analysis.fit.data.get(model=agent_model, verbose=False)
 
         print("-" * 20)
         print(f"{agent_model.__name__}: {np.mean(bic)}(+/-{np.std(bic)}STD)")
