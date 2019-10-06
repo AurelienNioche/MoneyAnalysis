@@ -16,6 +16,7 @@ class StupidAgent:
         self.consumption = 0
         self.attempted_exchange = None
 
+
     def which_exchange_do_you_want_to_try(self, *args):
 
         possible_desires = [i for i in range(self.n_goods) if i != self.H]

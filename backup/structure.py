@@ -11,6 +11,7 @@ class Data:
         self.desired = []
         self.prod = []
         self.cons = []
+        self.acceptance = []
 
         self.distribution = []
         self.cognitive_parameters = []
@@ -26,6 +27,7 @@ class Data:
         self.prod.append(bkp['prod'])
         self.cons.append(bkp['cons'])
         self.n_good.append(bkp['n_good'])
+        self.acceptance.append(bkp['acceptance'])
 
         self.distribution.append(param['distribution'])
         self.cognitive_parameters.append(param['cognitive_parameters'])
@@ -53,7 +55,7 @@ class Data:
 
 class DataXPSession:
 
-    def __init__(self, in_hand, desired, prod, cons, n_good, t_max,
+    def __init__(self, in_hand, desired, prod, cons, n_good, t_max, acceptance,
                  success=None, gender=None, age=None):
 
         self.age = age
@@ -62,6 +64,8 @@ class DataXPSession:
         self.in_hand = in_hand
         self.desired = desired
         self.success = success
+
+        self.acceptance = acceptance
 
         self.prod = prod
         self.cons = cons

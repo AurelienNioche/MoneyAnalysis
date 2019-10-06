@@ -5,7 +5,7 @@ from backup import structure
 from simulation.run import _run
 
 
-def get_data(xp_data, alpha=.175, beta=1, gamma=.125,
+def get_data(xp_data, t_max=None, alpha=.175, beta=1, gamma=.125,
              random_cognitive_param=False, seed=123):
 
     np.random.seed(seed)
@@ -18,7 +18,9 @@ def get_data(xp_data, alpha=.175, beta=1, gamma=.125,
     for i, xp_d in enumerate(xp_data):
 
         n_good = xp_d.n_good
-        t_max = xp_d.t_max
+
+        if t_max is None:
+            t_max = xp_d.t_max
 
         prod = xp_d.prod
         cons = xp_d.cons
@@ -42,6 +44,7 @@ def get_data(xp_data, alpha=.175, beta=1, gamma=.125,
             prod=bkp['prod'],
             cons=bkp['cons'],
             success=bkp['success'],
+            acceptance=bkp['acceptance'],
             n_good=n_good,
             t_max=t_max
         )
