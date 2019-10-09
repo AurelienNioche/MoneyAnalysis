@@ -190,7 +190,7 @@ if __name__ == '__main__':
     # n_eco()
 
     # # # Uncomment for running simulations used for phase diagram
-    # main_phase_diagram()
+    main_phase_diagram()
     #
     # # For stats about reward
     # main_reward()
@@ -199,7 +199,7 @@ if __name__ == '__main__':
     # main_sim_and_xp()
     #
     # # # Uncomment for sensitivity analysis
-    sup_sensitivity_analysis()
+    # sup_sensitivity_analysis()
     # #
     # # # # Uncomment demographic analysis
     # sup_gender()

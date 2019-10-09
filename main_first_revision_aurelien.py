@@ -181,4 +181,4 @@ def asymmetric_learning():
 
 if __name__ == '__main__':
 
-    asymmetric_learning()
+    revision_phase_diagram()

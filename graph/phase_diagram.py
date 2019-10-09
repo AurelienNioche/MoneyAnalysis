@@ -3,6 +3,8 @@ import string
 
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as grd
+import matplotlib.colors
+import matplotlib.cm
 
 from graph.parameters import FIG_FOLDER
 from graph.labelling import agent_labeling
@@ -61,20 +63,29 @@ def phase_diagram(
 
     if n_good == 3:
         y_ticks = [0, 0.25, 0.5, 0.75, 1]
+        vmax = 0.75
+    elif n_good == 4:
+        y_ticks = [0, 0.33, 0.66, 1]
+        vmax = 0.7
     else:
-        y_ticks = np.linspace(0, 1, n_good-1)
+        y_ticks = np.linspace(0, 1, n_good)
+        vmax = 0.75
 
     x, y = np.meshgrid(range(data.shape[0]), range(data.shape[1]))
     z = data
 
-    c = ax.contourf(x, y, z, n_levels, cmap='viridis')
+    c = ax.contourf(x, y, z, n_levels, cmap='viridis', vmax=vmax)
 
     from mpl_toolkits.axes_grid1 import make_axes_locatable
     divider = make_axes_locatable(ax)
 
     cax = divider.append_axes("right", size="5%", pad=0.05)
 
-    plt.colorbar(c, cax=cax, ticks=y_ticks)
+    # norm = matplotlib.colors.Normalize(vmin=0, vmax=vmax)
+
+    import matplotlib as mpl
+
+    cb = plt.colorbar(c, cax=cax, ticks=y_ticks)
 
     ax.set_aspect(1)
 
