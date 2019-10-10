@@ -3,6 +3,8 @@ import string
 
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as grd
+import matplotlib.colors
+import matplotlib.cm
 
 from graph.parameters import FIG_FOLDER
 from graph.labelling import agent_labeling
@@ -10,12 +12,15 @@ from graph.labelling import agent_labeling
 
 def phase_diagram(
         data, labels, n_good,
-        ticks_position=(10, 50, 100, 150, 200),
+        ticks_position=None,
+        ticks_index=None,
         n_levels=20,
         fontsize=10,
         ax=None,
         n_subplot=None,
         f_name=None,
+        x_label=None,
+        y_label=None,
         ):
 
     if ax is None:
@@ -29,35 +34,26 @@ def phase_diagram(
                 size=20, weight='bold')
 
     # Ticks
-    lab_to_display = ticks_position
+    if ticks_position or ticks_index:
+        if ticks_position:
+            ticks_labels = ticks_position
 
-    ax.set_xticklabels(lab_to_display)
-    ax.set_yticklabels(lab_to_display)
+            ticks = [list(labels).index(i) for i in ticks_position]
+        else:
+            ticks_labels = [f'{i:.2f}' for i in labels[ticks_index]]
+            ticks = ticks_index
 
-    ticks = [list(labels).index(i) for i in ticks_position]
+        ax.set_xticklabels(ticks_labels)
+        ax.set_yticklabels(ticks_labels)
 
-    ax.set_xticks(ticks)
-    ax.set_yticks(ticks)
-    ax.tick_params(axis='both', labelsize=fontsize)
+        ax.set_xticks(ticks)
+        ax.set_yticks(ticks)
+        ax.tick_params(axis='both', labelsize=fontsize)
 
     # Axes labels
-    al = agent_labeling(n_good)
 
-    x_agent_type = n_good-2
-    x_at_label = al[x_agent_type]\
-        .replace('(', '').replace(')', '')\
-        .replace(',', '').replace(' ', '')\
-        .replace('$', '')
-
-    ax.set_xlabel(f'$x_{{{x_at_label}}}$', fontsize=fontsize*1.5)
-
-    y_agent_type = n_good-1
-    y_at_label = al[y_agent_type]\
-        .replace('(', '').replace(')', '')\
-        .replace(',', '').replace(' ', '')\
-        .replace('$', '')
-
-    ax.set_ylabel(f'$x_{{{y_at_label}}}$', fontsize=fontsize*1.5)
+    ax.set_xlabel(x_label, fontsize=fontsize*1.5)
+    ax.set_ylabel(y_label, fontsize=fontsize*1.5)
 
     # Title
     title = f'{n_good} goods'
@@ -67,20 +63,29 @@ def phase_diagram(
 
     if n_good == 3:
         y_ticks = [0, 0.25, 0.5, 0.75, 1]
+        vmax = 0.75
+    elif n_good == 4:
+        y_ticks = [0, 0.33, 0.66, 1]
+        vmax = 0.7
     else:
-        y_ticks = np.linspace(0, 1, n_good-1)
+        y_ticks = np.linspace(0, 1, n_good)
+        vmax = 0.75
 
     x, y = np.meshgrid(range(data.shape[0]), range(data.shape[1]))
     z = data
 
-    c = ax.contourf(x, y, z, n_levels, cmap='viridis')
+    c = ax.contourf(x, y, z, n_levels, cmap='viridis', vmax=vmax)
 
     from mpl_toolkits.axes_grid1 import make_axes_locatable
     divider = make_axes_locatable(ax)
 
     cax = divider.append_axes("right", size="5%", pad=0.05)
 
-    plt.colorbar(c, cax=cax, ticks=y_ticks)
+    # norm = matplotlib.colors.Normalize(vmin=0, vmax=vmax)
+
+    import matplotlib as mpl
+
+    cb = plt.colorbar(c, cax=cax, ticks=y_ticks)
 
     ax.set_aspect(1)
 
@@ -92,7 +97,12 @@ def phase_diagram(
         print(f"Figure '{fig_path}' created.\n")
 
 
-def plot(data, labels, f_name='phase_diagram.pdf'):
+def plot(data, labels,
+         x_label=None,
+         y_label=None,
+         ticks_position=None,
+         ticks_index=None,
+         f_name='phase_diagram.pdf'):
 
     fig = plt.figure(figsize=(14, 8))
 
@@ -102,12 +112,39 @@ def plot(data, labels, f_name='phase_diagram.pdf'):
 
         ax = fig.add_subplot(gs[0, i])
 
+        if not ticks_index and not ticks_position:
+            ticks_position = (10, 50, 100, 150, 200)
+
+        if x_label is None or y_label is None:
+
+            al = agent_labeling(n_good)
+
+            x_agent_type = n_good - 2
+            x_at_label = al[x_agent_type] \
+                .replace('(', '').replace(')', '') \
+                .replace(',', '').replace(' ', '') \
+                .replace('$', '')
+
+            x_label = f'$x_{{{x_at_label}}}$'
+
+            y_agent_type = n_good - 1
+            y_at_label = al[y_agent_type] \
+                .replace('(', '').replace(')', '') \
+                .replace(',', '').replace(' ', '') \
+                .replace('$', '')
+
+            y_label = f'$x_{{{y_at_label}}}$'
+
         phase_diagram(
             data=data[n_good],
             labels=labels,
             ax=ax,
             n_good=n_good,
-            n_subplot=i
+            n_subplot=i,
+            x_label=x_label,
+            y_label=y_label,
+            ticks_position=ticks_position,
+            ticks_index=ticks_index
         )
 
     plt.tight_layout()

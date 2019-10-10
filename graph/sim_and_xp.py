@@ -10,19 +10,28 @@ from graph.labelling import agent_labeling
 
 
 def boxplot(
-        results, ax, n_good, colors=None, color=None, tick_labels=None,
-        y_label="y_label",
+        results, ax=None, chance_level=None,
+        y_ticks=None,
+        colors=None, color=None, tick_labels=None,
+        y_label=None,
         y_lim=(-0.02, 1.02),
         fontsize=10, aspect=3, title=None,
-        n_subplot=None):
+        n_subplot=None,
+        f_name=None,
+):
+
+    sorted_keys = sorted(results.keys())
+
+    if not ax:
+        fig, ax = plt.subplots(figsize=(20, 5))
 
     if tick_labels is None:
-        tick_labels = results.keys()
+        tick_labels = sorted_keys
 
     if colors is None:
         if color is None:
             color = 'black'
-        colors = [color for _ in range(len(results.keys()))]
+        colors = [color for _ in range(len(sorted_keys))]
 
     if title:
         ax.set_title(title, fontsize=fontsize)
@@ -33,7 +42,7 @@ def boxplot(
                 transform=ax.transAxes,
                 size=20, weight='bold')
 
-    n = len(results.keys())
+    n = len(sorted_keys)
 
     # For boxplot
     positions = list(range(n))
@@ -44,7 +53,7 @@ def boxplot(
     y_scatter = []
     colors_scatter = []
 
-    for i, cond in enumerate(results.keys()):
+    for i, cond in enumerate(sorted_keys):
 
         for v in results[cond]:
 
@@ -62,20 +71,13 @@ def boxplot(
                y_scatter, c=colors_scatter, s=30, alpha=0.5,
                linewidth=0.0, zorder=1)
 
-    if n_good == 3:
-        chance_level = 0.5
-        y_ticks = [0, 0.5, 1]
-    elif n_good == 4:
-        chance_level = 0.33
-        y_ticks = [0, 0.33, 0.66, 1]
-    else:
-        raise NotImplementedError
+    if chance_level:
+        # For horizontal line
+        ax.axhline(chance_level, linestyle='--', color='0.3', zorder=-10,
+                   linewidth=0.5)
+    if y_ticks:
+        ax.set_yticks(y_ticks)
 
-    # For horizontal line
-    ax.axhline(chance_level, linestyle='--', color='0.3', zorder=-10,
-               linewidth=0.5)
-
-    ax.set_yticks(y_ticks)
     ax.set_ylim(y_lim)
 
     # For boxplot
@@ -90,7 +92,16 @@ def boxplot(
 
     ax.tick_params(axis='both', labelsize=fontsize)
     ax.set_ylabel(y_label, fontsize=fontsize)
-    ax.set_aspect(aspect)
+
+    if aspect:
+        ax.set_aspect(aspect)
+
+    if f_name:
+        f_path = os.path.join(SUP_FIG_FOLDER, f_name)
+
+        plt.tight_layout()
+        plt.savefig(f_path)
+        print(f'{f_name} created.')
 
 
 def plot(fig_data, name_extension=''):
@@ -132,7 +143,21 @@ def plot(fig_data, name_extension=''):
 
                 title = f'{cat_label} - Type {at_label}'
 
-                boxplot(results=results, n_good=n_good,
+                chance_level = 1/(n_good-1)
+                y_ticks = np.linspace(0, 1, n_good)
+
+                # if n_good == 3:
+                #     chance_level = 0.5
+                #     y_ticks = [0, 0.5, 1]
+                # elif n_good == 4:
+                #     chance_level = 0.33
+                #     y_ticks = [0, 0.33, 0.66, 1]
+                # else:
+                #     raise NotImplementedError
+
+                boxplot(results=results,
+                        chance_level=chance_level,
+                        y_ticks=y_ticks,
                         ax=ax,
                         title=title,
                         y_label='Freq. ind. ex. with good 1',
