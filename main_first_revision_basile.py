@@ -16,11 +16,22 @@ def revision_learning_curves():
 
     t_max = 300
 
-    ind0_freq = analysis.first_revision_basile.learning_curves_sim_ind0_freq(t_max=t_max, agent_model=RLAgentAsymmetric)
+    # Optimism bias
+    ind0_freq = analysis.first_revision_basile.learning_curves_sim_ind0_freq(
+        t_max=t_max, agent_model=RLAgentAsymmetric, alpha_minus=.05, alpha_plus=.25)
     #exchange_value = analysis.first_revision_basile.learning_curves_sim_exchange_values(t_max=t_max)
 
     graph.exploratory.learning_curves.plot(
-        fig_data=ind0_freq, f_name='fig/first_revision_basile/learning_curves_sim_ind0_freq_{}.pdf')
+        fig_data=ind0_freq, f_name='fig/learning_curves_sim_ind0_freq_optimism_{}.pdf')
+
+    # Pessimism bias
+    ind0_freq = analysis.first_revision_basile.learning_curves_sim_ind0_freq(
+        t_max=t_max, agent_model=RLAgentAsymmetric, alpha_minus=.25, alpha_plus=.05)
+    #exchange_value = analysis.first_revision_basile.learning_curves_sim_exchange_values(t_max=t_max)
+
+    graph.exploratory.learning_curves.plot(
+        fig_data=ind0_freq, f_name='fig/learning_curves_sim_ind0_freq_pessimism_{}.pdf')
+
 
     #graph.exploratory.learning_curves.plot(
     #    fig_data=exchange_value, ylabel='Qvalue',
