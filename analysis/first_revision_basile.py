@@ -84,13 +84,12 @@ def learning_curves_xp(m=0):
     return fig_data
 
 
-def learning_curves_sim_ind0_freq(t_max=None, alpha=.175, beta=1, gamma=.125, m=0):
+def learning_curves_sim_ind0_freq(agent_model, t_max=None, alpha_minus=.05, alpha_plus=.25, beta=1, gamma=.125, m=0):
 
     raw_data, room_n_good, room_uniform = xp.get_data()
-
     data = \
-        simulation.run_xp_like.get_data(xp_data=raw_data, t_max=t_max,
-                                        alpha=alpha, beta=beta, gamma=gamma)
+        simulation.run_xp_like.get_data(agent_model=agent_model, xp_data=raw_data, t_max=t_max,
+                                        alpha_minus=alpha_minus, alpha_plus=alpha_plus, beta=beta, gamma=gamma)
 
     n_good_cond = np.unique(room_n_good)
     cond_labels = "NON-UNIF", "UNIF"

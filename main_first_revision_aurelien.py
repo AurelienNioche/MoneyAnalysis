@@ -61,6 +61,7 @@ def revision_phase_diagram():
 
         data, labels = analysis.first_revision_aurelien.phase_diagram(
             agent_model=agent_model)
+
         graph.phase_diagram.plot(data=data, labels=labels, f_name=f_name)
 
 
@@ -82,7 +83,6 @@ def phase_diagram_n_good():
         backup.save((data, labels), data_path)
 
     graph.phase_diagram.plot(
-
         data=data, labels=labels,
         f_name=f'phase_diagram_more_good.pdf')
 

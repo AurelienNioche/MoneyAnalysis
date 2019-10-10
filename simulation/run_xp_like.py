@@ -5,7 +5,7 @@ from backup import structure
 from simulation.run import _run
 
 
-def get_data(xp_data, t_max=None, alpha=.175, beta=1, gamma=.125,
+def get_data(xp_data, agent_model=None, t_max=None, alpha_minus=.175, alpha_plus=.175, beta=1, gamma=.125,
              random_cognitive_param=False, seed=123):
 
     np.random.seed(seed)
@@ -31,11 +31,12 @@ def get_data(xp_data, t_max=None, alpha=.175, beta=1, gamma=.125,
             gamma = np.random.uniform(0.1, 0.15)
 
         param, bkp = _run({
-            'cognitive_parameters': (alpha, beta, gamma),
+            'cognitive_parameters': (alpha_minus, alpha_plus, beta, gamma),
             'cons': cons,
             'prod': prod,
             't_max': t_max,
-            'seed': seed
+            'seed': seed,
+            'agent_model': agent_model.__name__
         })
 
         sim_d = structure.DataXPSession(
