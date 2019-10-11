@@ -48,6 +48,7 @@ def learning_curves_xp(m=0):
 
             p_choices_mean = {at: np.zeros(t_max) for at in agent_types}
             p_choices_sem = {at: np.zeros(t_max) for at in agent_types}
+            p_choices_std = {at: np.zeros(t_max) for at in agent_types}
 
             for at in agent_types:
 
@@ -74,22 +75,25 @@ def learning_curves_xp(m=0):
 
                     p_choices_mean[at][t] = np.mean(ind_matrix[:, t])
                     p_choices_sem[at][t] = scipy.stats.sem(ind_matrix[:, t])
+                    p_choices_std[at][t] = np.std(ind_matrix[:, t])
 
                 fig_data[n_good][cond_labels[uniform]][at] = \
                     {
                         'mean': p_choices_mean[at],
-                        'sem': p_choices_sem[at]
+                        'sem': p_choices_sem[at],
+                        'std': p_choices_std[at]
                     }
-
     return fig_data
 
 
-def learning_curves_sim_ind0_freq(agent_model, t_max=None, alpha_minus=.05, alpha_plus=.25, beta=1, gamma=.125, m=0):
+def learning_curves_sim_ind0_freq(agent_model, t_max=None, m=0,
+                                  **cognitive_parameters):
 
     raw_data, room_n_good, room_uniform = xp.get_data()
     data = \
-        simulation.run_xp_like.get_data(agent_model=agent_model, xp_data=raw_data, t_max=t_max,
-                                        alpha_minus=alpha_minus, alpha_plus=alpha_plus, beta=beta, gamma=gamma)
+        simulation.run_xp_like.get_data(
+            agent_model=agent_model, xp_data=raw_data, t_max=t_max,
+            **cognitive_parameters)
 
     n_good_cond = np.unique(room_n_good)
     cond_labels = "NON-UNIF", "UNIF"
@@ -126,7 +130,8 @@ def learning_curves_sim_ind0_freq(agent_model, t_max=None, alpha_minus=.05, alph
             agent_types = tuple(range(2, n_good))  # 2: prod + cons of m
 
             p_choices_mean = {at: np.zeros(t_max) for at in agent_types}
-            p_choices_sem = {at: np.zeros(t_max) for at in agent_types}
+            p_choices_sem = p_choices_mean.copy()
+            p_choices_std = p_choices_mean.copy()
 
             for at in agent_types:
 
@@ -150,19 +155,22 @@ def learning_curves_sim_ind0_freq(agent_model, t_max=None, alpha_minus=.05, alph
                         ind_matrix[i, t] = ind_ex[t, m] / n[t]
 
                 for t in range(t_max):
-                    p_choices_mean[at][t] = np.mean(ind_matrix[:, t])
-                    p_choices_sem[at][t] = scipy.stats.sem(ind_matrix[:, t])
+                    x_t = ind_matrix[:, t]
+                    p_choices_mean[at][t] = np.mean(x_t)
+                    p_choices_sem[at][t] = scipy.stats.sem(x_t)
+                    p_choices_std[at][t] = np.std(x_t)
 
                 fig_data[n_good][cond_labels[uniform]][at] = \
                     {
                         'mean': p_choices_mean[at],
                         'sem': p_choices_sem[at],
+                        'std': p_choices_std[at]
                     }
 
     return fig_data
 
 
-def learning_curves_sim_exchange_values(t_max=None, alpha=.175, beta=1, gamma=.125, m=0):
+def learning_curves_sim_exchange_values(t_max=None, alpha=.175, beta=1, gamma=.125):
 
     raw_data, room_n_good, room_uniform = xp.get_data()
 
@@ -209,10 +217,9 @@ def learning_curves_sim_exchange_values(t_max=None, alpha=.175, beta=1, gamma=.1
                 for at in agent_types
             }
 
-            value_sem = {
-                at: {ex_t: np.zeros(t_max) for ex_t in exchange_type}
-                for at in agent_types
-            }
+            value_sem = value_mean.copy()
+
+            value_std = value_mean.copy()
 
             for at in agent_types:
 
@@ -222,13 +229,18 @@ def learning_curves_sim_exchange_values(t_max=None, alpha=.175, beta=1, gamma=.1
                     agents = np.arange(len(cons))[cons == at]
 
                     for t in range(t_max):
-                        value_mean[at][ex_t][t] = np.mean(acceptance[ex_t][agents, t])
-                        value_sem[at][ex_t][t] = scipy.stats.sem(acceptance[ex_t][agents, t])
+
+                        x_t = acceptance[ex_t][agents, t]
+
+                        value_mean[at][ex_t][t] = np.mean(x_t)
+                        value_sem[at][ex_t][t] = scipy.stats.sem(x_t)
+                        value_std[at][ex_t][t] = np.std(x_t)
 
                 fig_data[n_good][cond_labels[uniform]][at] = \
                     {
                         'mean': value_mean[at],
                         'sem': value_sem[at],
+                        'std': value_std[at],
                         'exchange_type': selected_exchange_type
                     }
 

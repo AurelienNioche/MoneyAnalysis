@@ -130,6 +130,8 @@ def fit():
                      best_parameters["alpha_plus"]
             u, p = scipy.stats.mannwhitneyu(d1, d2)
             print(f"Comparison alpha - and alpha +: u={u:.1f}, p={p:.3f}")
+            print("")
+            print("")
 
     boxplot(results=results, y_label="BIC", f_name='bic.pdf', y_lim=None,
             aspect=None)

@@ -39,6 +39,8 @@ def curve(mean, sem, cond='', n_good='', agent_type='', ax=None,
     ax.set_xticks(x_ticks)
     ax.set_yticks(y_ticks)
 
+    ax.set_xlim((0, len(mean)))
+
     # For horizontal line
     ax.axhline(chance_level, linestyle='--', color='0.3',
                zorder=-10, linewidth=0.5)
@@ -46,7 +48,9 @@ def curve(mean, sem, cond='', n_good='', agent_type='', ax=None,
     ax.set_title(f'{n_good} - {cond} - type{agent_type}')
 
 
-def plot(fig_data, ylabel='ind. ex. frequency with good 0', f_name=None):
+def plot(fig_data, ylabel='ind. ex. frequency with good 0',
+         f_name=None,
+         use_std=False):
 
     n_good_cond = fig_data.keys()
 
@@ -70,15 +74,27 @@ def plot(fig_data, ylabel='ind. ex. frequency with good 0', f_name=None):
 
                 if exchange_type is not None:
                     for ex_t in exchange_type:
-                        curve(fig_data[n_good][cond][at]['mean'][ex_t],
-                              fig_data[n_good][cond][at]['sem'][ex_t],
+                        x = fig_data[n_good][cond][at]['mean'][ex_t]
+
+                        if use_std:
+                            dsp = fig_data[n_good][cond][at]['std'][ex_t]
+                        else:
+                            dsp = fig_data[n_good][cond][at]['sem'][ex_t]
+
+                        curve(x, dsp,
                               n_good=n_good, cond=cond, agent_type=at,
                               ax=ax, ylabel=ylabel, legend=str(ex_t))
                         ax.legend()
 
                 else:
-                    curve(fig_data[n_good][cond][at]['mean'],
-                          fig_data[n_good][cond][at]['sem'],
+                    x = fig_data[n_good][cond][at]['mean']
+                    if use_std:
+                        dsp = fig_data[n_good][cond][at]['std']
+                    else:
+                        dsp = fig_data[n_good][cond][at]['sem']
+
+                    curve(x,
+                          dsp,
                           n_good=n_good, cond=cond, agent_type=at,
                           ax=ax, ylabel=ylabel)
 

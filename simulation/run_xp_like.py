@@ -5,8 +5,8 @@ from backup import structure
 from simulation.run import _run
 
 
-def get_data(xp_data, agent_model=None, t_max=None, alpha_minus=.175, alpha_plus=.175, beta=1, gamma=.125,
-             random_cognitive_param=False, seed=123):
+def get_data(xp_data, agent_model=None, t_max=None,
+             random_cognitive_param=False, seed=123, **cognitive_parameters):
 
     np.random.seed(seed)
 
@@ -30,8 +30,20 @@ def get_data(xp_data, agent_model=None, t_max=None, alpha_minus=.175, alpha_plus
             beta = np.random.uniform(0.8, 1.2)
             gamma = np.random.uniform(0.1, 0.15)
 
+            cog_param = (alpha, beta, gamma)
+
+        elif not len(cognitive_parameters):
+            alpha = .175
+            beta = 1
+            gamma = .125
+
+            cog_param = (alpha, beta, gamma)
+        else:
+            cog_param = [cognitive_parameters[k]
+                         for k in sorted(cognitive_parameters.keys())]
+
         param, bkp = _run({
-            'cognitive_parameters': (alpha_minus, alpha_plus, beta, gamma),
+            'cognitive_parameters': cog_param,
             'cons': cons,
             'prod': prod,
             't_max': t_max,
