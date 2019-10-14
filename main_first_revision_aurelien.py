@@ -7,9 +7,18 @@ from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 
 import numpy as np
+import matplotlib.pyplot as plt
 
 import analysis.first_revision_aurelien
 import analysis.first_revision_basile
+import analysis.supplementary
+import analysis.metric.metric
+import analysis.stats.stats
+
+import simulation.run_based_on_fit
+import simulation.run_xp_like
+
+import xp.xp
 
 
 import graph.sim_and_xp
@@ -21,6 +30,9 @@ import graph.supplementary.sensitivity_analysis
 import graph.supplementary.parameter_recovery
 import graph.exploratory.learning_curves
 import graph.exploratory.cross_validation
+from graph.parameters import FIG_FOLDER, SUP_FIG_FOLDER
+from graph.labelling import agent_labeling
+import graph.exploratory.learning_curves
 
 from simulation.model.RL.asymmetric_rl_agent import RLAgentAsymmetric
 from simulation.model.RL.rl_no_alpha_no_beta \
@@ -181,6 +193,264 @@ def asymmetric_learning():
     )
 
 
+def main_sim_and_xp():
+
+    alpha, beta, gamma = .175, 1, .125
+    model = RLAgent
+    heterogeneous = True
+    m = 0
+
+    data = {}
+    data["Human"], room_n_good, room_uniform = xp.xp.get_data()
+
+    data['Simulation'] = \
+        simulation.run_xp_like.get_data(
+            agent_model=RLAgent,
+            xp_data=data['Human'],
+            alpha=alpha, beta=beta, gamma=gamma)
+
+    best_parameters, mean_p, lls, bic, eco = \
+        analysis.fit.data.get(model=model)
+
+    data["Post-Hoc Sim."] = simulation.run_based_on_fit.get_data(
+        xp_data_list=data["Human"],
+        best_parameters=best_parameters,
+        eco=eco,
+        heterogeneous=heterogeneous)
+
+    category = ["Simulation", "Human", "Post-Hoc Sim."]
+    assert np.all([i in data.keys() for i in category])
+    n_good_cond = np.unique(room_n_good)
+    cond_labels = "Uniform", "Non-uniform"
+
+    fig_data = {
+        n_good: {
+            cat: {} for cat in category
+        } for n_good in n_good_cond
+    }
+
+    learning_curve_data = {
+        n_good: {
+            cat: {} for cat in category
+        } for n_good in n_good_cond
+    }
+
+    for n_good in room_n_good:
+
+        for uniform in True, False:
+
+            # Find the good indexes
+            cond_n_good = room_n_good == n_good
+            cond_uniform = room_uniform == uniform
+
+            xp_cond = cond_n_good * cond_uniform
+            assert (np.sum(xp_cond) == 1)
+            d_idx = np.where(xp_cond == 1)[0][0]
+
+            cond = cond_labels[int(uniform)]
+
+            for cat in category:
+
+                # Get formatted data
+                d = data[cat][d_idx]
+                d_formatted = \
+                    analysis.metric.metric.dynamic_data(data_xp_session=d)
+
+                agent_types = d_formatted.keys()
+
+                for agent_type in sorted(agent_types):
+                    if agent_type not in fig_data[n_good][cat].keys():
+                        fig_data[n_good][cat][agent_type] = {}
+
+                    fig_data[n_good][cat][agent_type][cond] = \
+                        d_formatted[agent_type]
+
+                t_max = d.t_max
+
+                prod = d.prod
+                cons = d.cons
+                desired = d.desired
+                in_hand = d.in_hand
+                #
+                # n_good = d.n_good
+                #
+                # # Potential users of m
+                agent_types = tuple(range(2, n_good))  # 2: prod + cons of m
+                #
+                p_choices_mean = {at: np.zeros(t_max) for at in agent_types}
+                p_choices_sem = {at: np.zeros(t_max) for at in agent_types}
+                p_choices_std = {at: np.zeros(t_max) for at in agent_types}
+
+                for at in agent_types:
+
+                    agents = np.arange(len(cons))[cons == at]
+                    n_agent = len(agents)
+
+                    ind_matrix = np.zeros((n_agent, t_max))
+
+                    for i, agent_idx in enumerate(agents):
+
+                        _, ind_ex, n = analysis.metric.metric.exchange(
+                            n_good=n_good,
+                            prod=prod[agent_idx],
+                            cons=cons[agent_idx],
+                            desired=desired[agent_idx],
+                            in_hand=in_hand[agent_idx]
+                        )
+
+                        for t in range(t_max):
+                            ind_matrix[i, t] = ind_ex[t, m] / n[t]
+
+                    for t in range(t_max):
+                        x_t = ind_matrix[:, t]
+                        p_choices_mean[at][t] = np.mean(x_t)
+                        p_choices_sem[at][t] = scipy.stats.sem(x_t)
+                        p_choices_std[at][t] = np.std(x_t)
+
+                    if at not in learning_curve_data[n_good][cat].keys():
+                        learning_curve_data[n_good][cat][at] = {}
+
+                    dic = {
+                            'mean': p_choices_mean[at],
+                            'sem': p_choices_sem[at],
+                            'std': p_choices_std[at]
+                        }
+
+                    learning_curve_data[n_good][cat][at][cond] = dic
+
+
+    for n_good in room_n_good:
+
+        n_rows = len(category)
+
+        n_cols = (n_good - 2) * 2
+
+        print("n rows", n_rows)
+        print("n cols", n_cols)
+
+        fig, axes = plt.subplots(
+            figsize=(7, 4 * n_rows), ncols=n_cols, nrows=n_rows)
+
+        print("n rows")
+        print("n cols", n_cols)
+        print("n good", n_good)
+        print("axes.shape", axes.shape)
+
+        n = 0
+
+        for row, cat in enumerate(category):
+
+            agent_types = sorted(fig_data[n_good][cat].keys())
+
+            col = 0
+
+            for at in agent_types:
+
+                if n_rows == 1:
+                    print("Unique row")
+                    ax = axes[col]
+                elif n_cols == 1:
+                    print("Unique column")
+                    ax = axes[row]
+                else:
+                    ax = axes[row, col]
+
+                al = agent_labeling(n_good)
+                at_label = al[at]
+
+                results = fig_data[n_good][cat][at]
+
+                cat_label = cat
+
+                title = f'{cat_label} - Type {at_label}'
+
+                chance_level = 1 / (n_good - 1)
+                y_ticks = np.linspace(0, 1, n_good)
+
+                # ----------------------------- #
+
+                boxplot(results=results,
+                        chance_level=chance_level,
+                        y_ticks=y_ticks,
+                        ax=ax,
+                        title=title,
+                        y_label='Freq. ind. ex. with good 1',
+                        colors=('C0', 'C1'),
+                        n_subplot=n)
+
+                col += 1
+
+                if n_rows == 1:
+                    print("Unique row")
+                    ax = axes[col]
+                elif n_cols == 1:
+                    print("Unique column")
+                    ax = axes[row]
+                else:
+                    ax = axes[row, col]
+
+                # # if n_good == 3:
+                # #     chance_level = 0.5
+                # #     y_ticks = [0, 0.5, 1]
+                # # elif n_good == 4:
+                # #     chance_level = 0.33
+                # #     y_ticks = [0, 0.33, 0.66, 1]
+                # # else:
+                # #     raise NotImplementedError
+                #
+                # ax = fig.add_subplot(gs[row, col])
+                #
+
+                fig_d = learning_curve_data[n_good][cat][at]
+
+                # exchange_type = fig_d.get('exchange_type')
+                use_std = True
+                ylabel = 'ta mere'
+
+                for cond in fig_d.keys():
+
+                    x = fig_d[cond]['mean']
+                    if use_std:
+                        dsp = fig_d[cond]['std']
+                    else:
+                        dsp = fig_d[cond]['sem']
+
+                    graph.exploratory.learning_curves.curve(x,
+                          dsp,
+                          n_good=n_good, cond=cat, agent_type=at,
+                          ax=ax, ylabel=ylabel)
+
+                # if exchange_type is not None:
+                #     for ex_t in exchange_type:
+                #         x = fig_d['mean'][ex_t]
+                #
+                #         if use_std:
+                #             dsp = fig_d['std'][ex_t]
+                #         else:
+                #             dsp = fig_d['sem'][ex_t]
+                #
+                #         graph.exploratory.learning_curves.curve(x, dsp,
+                #               n_good=n_good, cond=cat, agent_type=at,
+                #               ax=ax, ylabel=ylabel, legend=str(ex_t))
+                #         ax.legend()
+                #
+                # else:
+
+                col +=1
+
+                n += 1
+
+        plt.tight_layout()
+
+        f_name = f'xp_{n_good}.pdf'
+        f_path = os.path.join(SUP_FIG_FOLDER, f_name)
+        plt.savefig(f_path)
+        print(f'{f_name} created.')
+
+    # graph.sim_and_xp.plot(fig_data)
+    analysis.stats.stats.sim_and_xp(fig_data)
+
+
 if __name__ == '__main__':
 
-    asymmetric_learning()
+    main_sim_and_xp()

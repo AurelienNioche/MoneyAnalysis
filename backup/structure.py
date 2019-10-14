@@ -55,7 +55,8 @@ class Data:
 
 class DataXPSession:
 
-    def __init__(self, in_hand, desired, prod, cons, n_good, t_max, acceptance,
+    def __init__(self, in_hand, desired, prod, cons, n_good, t_max,
+                 acceptance=None,
                  success=None, gender=None, age=None):
 
         self.age = age

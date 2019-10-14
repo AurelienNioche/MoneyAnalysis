@@ -75,7 +75,11 @@ def boxplot(
         # For horizontal line
         ax.axhline(chance_level, linestyle='--', color='0.3', zorder=-10,
                    linewidth=0.5)
-    if y_ticks:
+
+    try:
+        if y_ticks is not None:
+            ax.set_yticks(y_ticks)
+    except ValueError:
         ax.set_yticks(y_ticks)
 
     ax.set_ylim(y_lim)

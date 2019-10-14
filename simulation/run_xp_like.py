@@ -5,7 +5,7 @@ from backup import structure
 from simulation.run import _run
 
 
-def get_data(xp_data, agent_model=None, t_max=None,
+def get_data(xp_data, agent_model, t_max=None,
              random_cognitive_param=False, seed=123, **cognitive_parameters):
 
     np.random.seed(seed)

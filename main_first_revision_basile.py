@@ -28,7 +28,7 @@ def revision_learning_curves():
     alpha_strong = alpha+factor*alpha
     alpha_weak = alpha-factor*alpha
 
-    # Optimism bias
+    # 'Old' model
     ind0_freq = analysis.first_revision_basile.learning_curves_sim_ind0_freq(
         t_max=t_max, alpha=alpha, beta=1, gamma=.125, agent_model=RLAgent)
 
