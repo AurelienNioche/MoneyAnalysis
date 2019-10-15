@@ -6,6 +6,8 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "MoneyAnalysis.settings")
 from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 
+import string
+
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -280,6 +282,9 @@ def main_sim_and_xp():
                 p_choices_mean = {at: np.zeros(t_max) for at in agent_types}
                 p_choices_sem = {at: np.zeros(t_max) for at in agent_types}
                 p_choices_std = {at: np.zeros(t_max) for at in agent_types}
+                p_choices_median = {at: np.zeros(t_max) for at in agent_types}
+                p_choices_q1 = {at: np.zeros(t_max) for at in agent_types}
+                p_choices_q3 = {at: np.zeros(t_max) for at in agent_types}
 
                 for at in agent_types:
 
@@ -302,10 +307,17 @@ def main_sim_and_xp():
                             ind_matrix[i, t] = ind_ex[t, m] / n[t]
 
                     for t in range(t_max):
+
                         x_t = ind_matrix[:, t]
+
                         p_choices_mean[at][t] = np.mean(x_t)
                         p_choices_sem[at][t] = scipy.stats.sem(x_t)
                         p_choices_std[at][t] = np.std(x_t)
+
+                        q1, med, q3 = np.percentile(x_t, [25, 50, 75])
+                        p_choices_median[at][t] = med
+                        p_choices_q1[at][t] = q1
+                        p_choices_q3[at][t] = q3
 
                     if at not in learning_curve_data[n_good][cat].keys():
                         learning_curve_data[n_good][cat][at] = {}
@@ -313,11 +325,13 @@ def main_sim_and_xp():
                     dic = {
                             'mean': p_choices_mean[at],
                             'sem': p_choices_sem[at],
-                            'std': p_choices_std[at]
+                            'std': p_choices_std[at],
+                            'median': p_choices_median[at],
+                            'q1': p_choices_q1[at],
+                            'q3': p_choices_q3[at]
                         }
 
                     learning_curve_data[n_good][cat][at][cond] = dic
-
 
     for n_good in room_n_good:
 
@@ -325,16 +339,8 @@ def main_sim_and_xp():
 
         n_cols = (n_good - 2) * 2
 
-        print("n rows", n_rows)
-        print("n cols", n_cols)
-
         fig, axes = plt.subplots(
-            figsize=(7, 4 * n_rows), ncols=n_cols, nrows=n_rows)
-
-        print("n rows")
-        print("n cols", n_cols)
-        print("n good", n_good)
-        print("axes.shape", axes.shape)
+            figsize=(3.5*n_cols, 4 * n_rows), ncols=n_cols, nrows=n_rows)
 
         n = 0
 
@@ -356,38 +362,11 @@ def main_sim_and_xp():
                     ax = axes[row, col]
 
                 al = agent_labeling(n_good)
+
                 at_label = al[at]
-
-                results = fig_data[n_good][cat][at]
-
                 cat_label = cat
 
                 title = f'{cat_label} - Type {at_label}'
-
-                chance_level = 1 / (n_good - 1)
-                y_ticks = np.linspace(0, 1, n_good)
-
-                # ----------------------------- #
-
-                boxplot(results=results,
-                        chance_level=chance_level,
-                        y_ticks=y_ticks,
-                        ax=ax,
-                        title=title,
-                        y_label='Freq. ind. ex. with good 1',
-                        colors=('C0', 'C1'),
-                        n_subplot=n)
-
-                col += 1
-
-                if n_rows == 1:
-                    print("Unique row")
-                    ax = axes[col]
-                elif n_cols == 1:
-                    print("Unique column")
-                    ax = axes[row]
-                else:
-                    ax = axes[row, col]
 
                 # # if n_good == 3:
                 # #     chance_level = 0.5
@@ -404,22 +383,57 @@ def main_sim_and_xp():
                 fig_d = learning_curve_data[n_good][cat][at]
 
                 # exchange_type = fig_d.get('exchange_type')
-                use_std = True
-                ylabel = 'ta mere'
+                # use_std = True
+                ylabel = 'Freq. ind. ex. with good 1'
 
                 for cond in fig_d.keys():
 
-                    x = fig_d[cond]['mean']
-                    if use_std:
-                        dsp = fig_d[cond]['std']
-                    else:
-                        dsp = fig_d[cond]['sem']
+                    d = fig_d[cond]
 
-                    graph.exploratory.learning_curves.curve(x,
-                          dsp,
-                          n_good=n_good, cond=cat, agent_type=at,
-                          ax=ax, ylabel=ylabel)
+                    # x = fig_d[cond]['mean']
+                    # if use_std:
+                    #     dsp = fig_d[cond]['std']
+                    # else:
+                    #     dsp = fig_d[cond]['sem']
 
+                    graph.exploratory.learning_curves.curve(
+                        n_good=n_good, cond=cat, agent_type=at,
+                        ax=ax, ylabel=ylabel,
+                        q1=d['q1'], q3=d['q3'], median=d['median'],
+                        title=title
+                    )
+
+                # Add letter
+                if col == 0:
+                    ax.text(-0.2, 1.2, string.ascii_uppercase[row],
+                            transform=ax.transAxes,
+                            size=20, weight='bold')
+
+                col += 1
+
+                if n_rows == 1:
+                    print("Unique row")
+                    ax = axes[col]
+                elif n_cols == 1:
+                    print("Unique column")
+                    ax = axes[row]
+                else:
+                    ax = axes[row, col]
+
+                results = fig_data[n_good][cat][at]
+
+                chance_level = 1 / (n_good - 1)
+                y_ticks = np.linspace(0, 1, n_good)
+
+                boxplot(results=results,
+                        chance_level=chance_level,
+                        y_ticks=y_ticks,
+                        ax=ax,
+                        title=title,
+                        y_label=ylabel,
+                        colors=('C0', 'C1'))
+
+                col += 1
                 # if exchange_type is not None:
                 #     for ex_t in exchange_type:
                 #         x = fig_d['mean'][ex_t]
@@ -436,8 +450,8 @@ def main_sim_and_xp():
                 #
                 # else:
 
-                col +=1
 
+                # ----------------------------- #
                 n += 1
 
         plt.tight_layout()

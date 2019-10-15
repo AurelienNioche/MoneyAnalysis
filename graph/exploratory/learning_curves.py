@@ -3,19 +3,28 @@ import matplotlib.gridspec as grd
 import numpy as np
 
 
-def curve(mean, sem, cond='', n_good='', agent_type='', ax=None,
-          ylabel=None, legend=None):
+def curve(mean=None, sem=None,
+          q1=None, q3=None, median=None,
+          cond='', n_good='', agent_type='', ax=None,
+          ylabel=None, legend=None, title=None):
 
     if ax is None:
         fig = plt.figure(figsize=(15, 12))
         ax = fig.subplots()
 
-    ax.plot(mean, lw=1.5, label=legend)
+    if mean is not None and sem is not None:
+        y = mean
+        y1, y2 = mean - sem, mean + sem
+    else:
+        y = median
+        y1, y2 = q1, q3
+
+    ax.plot(y, lw=1.5, label=legend)
     ax.fill_between(
-        range(len(mean)),
-        y1=mean - sem,
-        y2=mean + sem,
-        alpha=0.5
+        range(len(y)),
+        y1=y1,
+        y2=y2,
+        alpha=0.2
     )
 
     # ax.spines['right'].set_visible(0)
@@ -34,18 +43,21 @@ def curve(mean, sem, cond='', n_good='', agent_type='', ax=None,
         raise NotImplementedError
 
     x_ticks = np.zeros(4, dtype=int)
-    x_ticks[:] = np.linspace(0, len(mean), 4)
+    x_ticks[:] = np.linspace(0, len(y), 4)
 
     ax.set_xticks(x_ticks)
     ax.set_yticks(y_ticks)
 
-    ax.set_xlim((0, len(mean)))
+    ax.set_xlim((0, len(y)))
 
     # For horizontal line
     ax.axhline(chance_level, linestyle='--', color='0.3',
                zorder=-10, linewidth=0.5)
 
-    ax.set_title(f'{n_good} - {cond} - type{agent_type}')
+    if title is None:
+        title = f'{n_good} - {cond} - type{agent_type}'
+    else:
+        ax.set_title(title)
 
 
 def plot(fig_data, ylabel='ind. ex. frequency with good 0',
