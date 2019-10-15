@@ -201,6 +201,7 @@ def main_sim_and_xp():
     model = RLAgent
     heterogeneous = True
     m = 0
+    window_ratio = 3
 
     data = {}
     data["Human"], room_n_good, room_uniform = xp.xp.get_data()
@@ -255,17 +256,6 @@ def main_sim_and_xp():
 
                 # Get formatted data
                 d = data[cat][d_idx]
-                d_formatted = \
-                    analysis.metric.metric.dynamic_data(data_xp_session=d)
-
-                agent_types = d_formatted.keys()
-
-                for agent_type in sorted(agent_types):
-                    if agent_type not in fig_data[n_good][cat].keys():
-                        fig_data[n_good][cat][agent_type] = {}
-
-                    fig_data[n_good][cat][agent_type][cond] = \
-                        d_formatted[agent_type]
 
                 t_max = d.t_max
 
@@ -273,12 +263,13 @@ def main_sim_and_xp():
                 cons = d.cons
                 desired = d.desired
                 in_hand = d.in_hand
-                #
                 # n_good = d.n_good
-                #
+
+                window = int(t_max / window_ratio)
+
                 # # Potential users of m
                 agent_types = tuple(range(2, n_good))  # 2: prod + cons of m
-                #
+
                 p_choices_mean = {at: np.zeros(t_max) for at in agent_types}
                 p_choices_sem = {at: np.zeros(t_max) for at in agent_types}
                 p_choices_std = {at: np.zeros(t_max) for at in agent_types}
@@ -304,7 +295,6 @@ def main_sim_and_xp():
                             m=m
                         )
 
-                        window = int(t_max/3)
                         for t in range(t_max):
 
                             sup = t
@@ -316,46 +306,36 @@ def main_sim_and_xp():
 
                             diff_n = last_n-begin_n
 
-                            assert diff_n >= 0
-
                             begin_ex = ex[inf] if inf != -1 else 0
                             last_ex = ex[sup]
 
                             diff_ex = last_ex - begin_ex
 
-                            assert diff_ex >= 0
-
-                            assert diff_ex <= diff_n
-
-                            # print("Idx", i)
-                            # print("t", t)
-                            # print("inf", inf)
-                            # print("sup", sup)
-                            # print("diff n", diff_n)
-                            # print("diff ex", diff_ex)
                             if diff_n > 0:
                                 st = diff_ex / diff_n
                             else:
                                 st = np.nan
                             ind_matrix[i, t] = st
 
-                        # print(ind_matrix[i, :])
-                        plt.plot(range(t_max), ind_matrix[i, :])
-                        plt.show()
-                        # raise Exception
-
                     for t in range(t_max):
 
                         x_t = ind_matrix[:, t]
 
                         p_choices_mean[at][t] = np.nanmean(x_t)
-                        p_choices_sem[at][t] = 0 #scipy.stats.sem(x_t, nan_policy='omit')
+                        p_choices_sem[at][t] = -99
                         p_choices_std[at][t] = np.nanstd(x_t)
 
                         q1, med, q3 = np.nanpercentile(x_t, [25, 50, 75])
                         p_choices_median[at][t] = med
                         p_choices_q1[at][t] = q1
                         p_choices_q3[at][t] = q3
+
+                        if t == (t_max-1):
+                            if at not in fig_data[n_good][cat].keys():
+                                fig_data[n_good][cat][at] = {}
+
+                            fig_data[n_good][cat][at][cond] = \
+                                x_t
 
                     if at not in learning_curve_data[n_good][cat].keys():
                         learning_curve_data[n_good][cat][at] = {}
@@ -380,8 +360,6 @@ def main_sim_and_xp():
         fig, axes = plt.subplots(
             figsize=(3.5*n_cols, 4 * n_rows), ncols=n_cols, nrows=n_rows)
 
-        n = 0
-
         for row, cat in enumerate(category):
 
             agent_types = sorted(fig_data[n_good][cat].keys())
@@ -405,24 +383,9 @@ def main_sim_and_xp():
                 cat_label = cat
 
                 title = f'{cat_label} - Type {at_label}'
-
-                # # if n_good == 3:
-                # #     chance_level = 0.5
-                # #     y_ticks = [0, 0.5, 1]
-                # # elif n_good == 4:
-                # #     chance_level = 0.33
-                # #     y_ticks = [0, 0.33, 0.66, 1]
-                # # else:
-                # #     raise NotImplementedError
-                #
-                # ax = fig.add_subplot(gs[row, col])
-                #
+                ylabel = 'Freq. ind. ex. with good 1'
 
                 fig_d = learning_curve_data[n_good][cat][at]
-
-                # exchange_type = fig_d.get('exchange_type')
-                # use_std = True
-                ylabel = 'Freq. ind. ex. with good 1'
 
                 for cond in fig_d.keys():
 
@@ -472,25 +435,6 @@ def main_sim_and_xp():
                         colors=('C0', 'C1'))
 
                 col += 1
-                # if exchange_type is not None:
-                #     for ex_t in exchange_type:
-                #         x = fig_d['mean'][ex_t]
-                #
-                #         if use_std:
-                #             dsp = fig_d['std'][ex_t]
-                #         else:
-                #             dsp = fig_d['sem'][ex_t]
-                #
-                #         graph.exploratory.learning_curves.curve(x, dsp,
-                #               n_good=n_good, cond=cat, agent_type=at,
-                #               ax=ax, ylabel=ylabel, legend=str(ex_t))
-                #         ax.legend()
-                #
-                # else:
-
-
-                # ----------------------------- #
-                n += 1
 
         plt.tight_layout()
 
