@@ -27,11 +27,11 @@ def exchange(n_good, in_hand, desired, prod, cons, m=None):
     _dir_ex = 0
 
     if m is None:
-        ind_ex = np.zeros((t_max, n_good))
-        _ind_ex = np.zeros(n_good)
+        ind_ex = np.zeros((t_max, n_good), dtype=int)
+        _ind_ex = np.zeros(n_good, dtype=int)
 
     else:
-        ind_ex = np.zeros(t_max)
+        ind_ex = np.zeros(t_max, dtype=int)
         _ind_ex = 0
 
     for t in range(t_max):

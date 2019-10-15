@@ -295,26 +295,64 @@ def main_sim_and_xp():
 
                     for i, agent_idx in enumerate(agents):
 
-                        _, ind_ex, n = analysis.metric.metric.exchange(
+                        _, ex, n = analysis.metric.metric.exchange(
                             n_good=n_good,
                             prod=prod[agent_idx],
                             cons=cons[agent_idx],
                             desired=desired[agent_idx],
-                            in_hand=in_hand[agent_idx]
+                            in_hand=in_hand[agent_idx],
+                            m=m
                         )
 
+                        window = int(t_max/3)
                         for t in range(t_max):
-                            ind_matrix[i, t] = ind_ex[t, m] / n[t]
+
+                            sup = t
+                            inf = max(-1, sup - window)
+
+                            # Number of attempts
+                            begin_n = n[inf] if inf != -1 else 0
+                            last_n = n[sup]
+
+                            diff_n = last_n-begin_n
+
+                            assert diff_n >= 0
+
+                            begin_ex = ex[inf] if inf != -1 else 0
+                            last_ex = ex[sup]
+
+                            diff_ex = last_ex - begin_ex
+
+                            assert diff_ex >= 0
+
+                            assert diff_ex <= diff_n
+
+                            # print("Idx", i)
+                            # print("t", t)
+                            # print("inf", inf)
+                            # print("sup", sup)
+                            # print("diff n", diff_n)
+                            # print("diff ex", diff_ex)
+                            if diff_n > 0:
+                                st = diff_ex / diff_n
+                            else:
+                                st = np.nan
+                            ind_matrix[i, t] = st
+
+                        # print(ind_matrix[i, :])
+                        plt.plot(range(t_max), ind_matrix[i, :])
+                        plt.show()
+                        # raise Exception
 
                     for t in range(t_max):
 
                         x_t = ind_matrix[:, t]
 
-                        p_choices_mean[at][t] = np.mean(x_t)
-                        p_choices_sem[at][t] = scipy.stats.sem(x_t)
-                        p_choices_std[at][t] = np.std(x_t)
+                        p_choices_mean[at][t] = np.nanmean(x_t)
+                        p_choices_sem[at][t] = 0 #scipy.stats.sem(x_t, nan_policy='omit')
+                        p_choices_std[at][t] = np.nanstd(x_t)
 
-                        q1, med, q3 = np.percentile(x_t, [25, 50, 75])
+                        q1, med, q3 = np.nanpercentile(x_t, [25, 50, 75])
                         p_choices_median[at][t] = med
                         p_choices_q1[at][t] = q1
                         p_choices_q3[at][t] = q3

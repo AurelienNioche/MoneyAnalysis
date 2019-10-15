@@ -6,7 +6,7 @@ import numpy as np
 def curve(mean=None, sem=None,
           q1=None, q3=None, median=None,
           cond='', n_good='', agent_type='', ax=None,
-          ylabel=None, legend=None, title=None):
+          ylabel=None, legend=None, title=None, fontsize=10):
 
     if ax is None:
         fig = plt.figure(figsize=(15, 12))
@@ -56,8 +56,8 @@ def curve(mean=None, sem=None,
 
     if title is None:
         title = f'{n_good} - {cond} - type{agent_type}'
-    else:
-        ax.set_title(title)
+
+    ax.set_title(title, fontsize=fontsize)
 
 
 def plot(fig_data, ylabel='ind. ex. frequency with good 0',
