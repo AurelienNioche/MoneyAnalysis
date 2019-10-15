@@ -66,6 +66,7 @@ def revision_phase_diagram():
     plot phase diagram with other agent models
     """
     agent_models = (
+        RLAgent,
         RLNoAlphaNoBetaV2,
         RLAgentAsymmetric,
         RLNoAlphaNoBeta,
@@ -201,7 +202,8 @@ def main_sim_and_xp():
     model = RLAgent
     heterogeneous = True
     m = 0
-    window_ratio = 3
+    learning_window = 25
+    boxplot_window = 25
 
     data = {}
     data["Human"], room_n_good, room_uniform = xp.xp.get_data()
@@ -265,8 +267,6 @@ def main_sim_and_xp():
                 in_hand = d.in_hand
                 # n_good = d.n_good
 
-                window = int(t_max / window_ratio)
-
                 # # Potential users of m
                 agent_types = tuple(range(2, n_good))  # 2: prod + cons of m
 
@@ -284,6 +284,8 @@ def main_sim_and_xp():
 
                     ind_matrix = np.zeros((n_agent, t_max))
 
+                    boxplot_data = np.zeros(n_agent)
+
                     for i, agent_idx in enumerate(agents):
 
                         _, ex, n = analysis.metric.metric.exchange(
@@ -297,45 +299,34 @@ def main_sim_and_xp():
 
                         for t in range(t_max):
 
-                            sup = t
-                            inf = max(-1, sup - window)
+                            ind_matrix[i, t] = \
+                                analysis.metric.metric.statistic(
+                                    ex=ex, n=n, t=t, window=learning_window
+                                )
 
-                            # Number of attempts
-                            begin_n = n[inf] if inf != -1 else 0
-                            last_n = n[sup]
+                        boxplot_data[i] = \
+                            analysis.metric.metric.statistic(
+                                ex=ex, n=n, t=t_max-1, window=boxplot_window
+                            )
 
-                            diff_n = last_n-begin_n
+                    if at not in fig_data[n_good][cat].keys():
+                        fig_data[n_good][cat][at] = {}
 
-                            begin_ex = ex[inf] if inf != -1 else 0
-                            last_ex = ex[sup]
-
-                            diff_ex = last_ex - begin_ex
-
-                            if diff_n > 0:
-                                st = diff_ex / diff_n
-                            else:
-                                st = np.nan
-                            ind_matrix[i, t] = st
+                    fig_data[n_good][cat][at][cond] = \
+                        boxplot_data
 
                     for t in range(t_max):
 
                         x_t = ind_matrix[:, t]
 
-                        p_choices_mean[at][t] = np.nanmean(x_t)
-                        p_choices_sem[at][t] = -99
-                        p_choices_std[at][t] = np.nanstd(x_t)
+                        p_choices_mean[at][t] = np.mean(x_t)
+                        p_choices_sem[at][t] = scipy.stats.sem(x_t)
+                        p_choices_std[at][t] = np.std(x_t)
 
                         q1, med, q3 = np.nanpercentile(x_t, [25, 50, 75])
                         p_choices_median[at][t] = med
                         p_choices_q1[at][t] = q1
                         p_choices_q3[at][t] = q3
-
-                        if t == (t_max-1):
-                            if at not in fig_data[n_good][cat].keys():
-                                fig_data[n_good][cat][at] = {}
-
-                            fig_data[n_good][cat][at][cond] = \
-                                x_t
 
                     if at not in learning_curve_data[n_good][cat].keys():
                         learning_curve_data[n_good][cat][at] = {}
@@ -350,6 +341,16 @@ def main_sim_and_xp():
                         }
 
                     learning_curve_data[n_good][cat][at][cond] = dic
+
+    for n_good in room_n_good:
+        for cat in category:
+            agent_types = fig_data[n_good][cat].keys()
+            for at in agent_types:
+                u, p = scipy.stats.mannwhitneyu(*fig_data[n_good][cat][at].values())
+                print(f"G={n_good}; cat={cat}; at={at}")
+                print(f"u={u}; p={p} {'*' if p <=0.05 else ''}")
+                print()
+
 
     for n_good in room_n_good:
 
@@ -449,4 +450,4 @@ def main_sim_and_xp():
 
 if __name__ == '__main__':
 
-    main_sim_and_xp()
+    revision_phase_diagram()

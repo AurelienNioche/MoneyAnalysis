@@ -50,7 +50,10 @@ class Data:
     def load(self, data_folder):
 
         for k, v in self._files_mapping(data_folder).items():
-            setattr(self, v, backup.load(file_name=k))
+            try:
+                setattr(self, v, backup.load(file_name=k))
+            except FileNotFoundError:
+                setattr(self, v, None)
 
 
 class DataXPSession:

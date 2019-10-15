@@ -103,8 +103,8 @@ game/migrations/
 .idea/
 
 # Data
-data/phase_3_goods/
-data/phase_4_goods/
+data/phase_3_goods_RLAgent/
+data/phase_4_goods_RLAgent/
 data/*.p
 
 # Figure
@@ -130,3 +130,5 @@ data/phase_4_goods_RLNoAlphaNoBetaV2/
 data/phase_4_goods_RLSoftmax/
 data/phase_5_goods_RLAgent/
 data/phase_6_goods_RLAgent/
+data/phase_3_goods_asymmetric/
+data/phase_4_goods_asymmetric/
