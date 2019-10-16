@@ -190,7 +190,7 @@ if __name__ == '__main__':
     # n_eco()
 
     # # # Uncomment for running simulations used for phase diagram
-    main_phase_diagram()
+    # main_phase_diagram()
     #
     # # For stats about reward
     # main_reward()
@@ -210,6 +210,6 @@ if __name__ == '__main__':
     #
     # # # Uncomment for supplementary analysis related to fit
     # sup_fit()
-    # sup_parameter_recovery()
-    # sup_effect_of_heterogeneous()
-    # sup_effect_of_extended_time()
+    sup_parameter_recovery()
+    sup_effect_of_heterogeneous()
+    sup_effect_of_extended_time()

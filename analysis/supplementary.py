@@ -190,7 +190,11 @@ def parameter_recovery(model):
     data = {}
     data["Human"], room_n_good, room_uniform = xp.get_data()
     best_parameters, mean_p, lls, bic, eco = \
-        analysis.fit.data.get(data["Human"], room_n_good, room_uniform)
+        analysis.fit.data.get(
+            model=model,
+            xp_data_list=data["Human"],
+            room_n_good=room_n_good,
+            room_uniform=room_uniform)
 
     data["Simulation"] = \
         simulation.run_based_on_fit.get_data(
@@ -252,7 +256,8 @@ def fit(model, heterogeneous=True, t_max=None):
 
                 # Get formatted data
                 d = data[cat][d_idx]
-                d_formatted = metric.dynamic_data(data_xp_session=d)
+                d_formatted = \
+                    metric.xp_session_economy_measure(data_xp_session=d)
 
                 for agent_type in sorted(d_formatted.keys()):
                     if agent_type not in fig_data[n_good][cat].keys():
@@ -287,7 +292,7 @@ def sensitivity_analysis(force=False):
         beta = [i[1] for i in d.cognitive_parameters]
         gamma = [i[2] for i in d.cognitive_parameters]
 
-        observation = analysis.metric.metric.get_economy_measure(
+        observation = analysis.metric.metric.get_multi_eco_statistic(
             in_hand=d.in_hand, desired=d.desired,
             prod=d.prod, cons=d.cons, m=0)
         data[n_good][r'$\alpha$'] = alpha

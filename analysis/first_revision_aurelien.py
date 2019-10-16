@@ -10,11 +10,13 @@ from . main import format_for_phase_diagram
 DATA_FOLDER = "data"
 
 
-def phase_diagram(agent_model, m=0):
+def phase_diagram(agent_model, n_good_condition, m=0):
 
     data_file = os.path.join(
         DATA_FOLDER,
-        f'formatted_phase_diagram_{agent_model.__name__}.p')
+        f'formatted_phase_diagram_'
+        f'{agent_model.__name__}_'
+        f'{"_".join(str(i) for i in n_good_condition)}.p')
 
     if os.path.exists(data_file):
 
@@ -22,7 +24,8 @@ def phase_diagram(agent_model, m=0):
         return data, labels
     data = {}
 
-    for n_good in (4, 3):
+    labels = None
+    for n_good in n_good_condition:
 
         d = simulation.run_first_revision.get_data(
             agent_model=agent_model,

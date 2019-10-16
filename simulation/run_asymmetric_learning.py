@@ -115,11 +115,11 @@ def format_for_phase_diagram(d, m):
     idx_alpha_plus = [b[0] for b in
                       RLAgentAsymmetric.bounds].index("alpha_plus")
 
-    observation = metric.get_economy_measure(in_hand=d.in_hand,
-                                             desired=d.desired,
-                                             prod=d.prod,
-                                             cons=d.cons,
-                                             m=m)
+    observation = metric.get_multi_eco_statistic(in_hand=d.in_hand,
+                                                 desired=d.desired,
+                                                 prod=d.prod,
+                                                 cons=d.cons,
+                                                 m=m)
 
     alpha_minus = np.array(
         [pr[idx_alpha_minus] for pr in d.cognitive_parameters])

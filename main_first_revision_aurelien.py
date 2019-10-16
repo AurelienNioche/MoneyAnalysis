@@ -60,7 +60,7 @@ import statsmodels.stats.multitest
 import simulation.run_asymmetric_learning
 
 
-def revision_phase_diagram():
+def phase_diagram():
 
     """
     plot phase diagram with other agent models
@@ -75,6 +75,8 @@ def revision_phase_diagram():
         RLSoftmax,
     )
 
+    # Different agent models
+
     for agent_model in agent_models:
 
         f_name = f'phase_{agent_model.__name__}.pdf'
@@ -82,31 +84,53 @@ def revision_phase_diagram():
         print(f'Producing data for model "{agent_model.__name__}"...')
 
         data, labels = analysis.first_revision_aurelien.phase_diagram(
-            agent_model=agent_model)
+            agent_model=agent_model, n_good_condition=(3, 4))
 
         graph.phase_diagram.plot(data=data, labels=labels, f_name=f_name)
 
+    # Multiple goods
+    f_name = f'phase_diagram_n_good.pdf'
 
-def phase_diagram_n_good():
-    data_path = os.path.join("data", "phase_diagram_n_good.p")
-    if os.path.exists(data_path):
-        (data, labels) = backup.load(data_path)
-    else:
-        data = {}
+    print(f'Producing data for multiple goods...')
 
-        for n_good in (5, 6):
-            d = \
-                simulation.run_first_revision.get_data(
-                    n_good=n_good,
-                    agent_model=RLAgent)
-            data_f, labels = analysis.main.format_for_phase_diagram(d=d, m=0)
+    data, labels = analysis.first_revision_aurelien.phase_diagram(
+        agent_model=RLAgent, n_good_condition=(5, 6))
 
-            data[n_good] = data_f
-        backup.save((data, labels), data_path)
+    graph.phase_diagram.plot(data=data, labels=labels, f_name=f_name)
 
+    # Asymmetric
+    data, labels = simulation.run_asymmetric_learning.phase_diagram(
+        force=False
+    )
     graph.phase_diagram.plot(
         data=data, labels=labels,
-        f_name=f'phase_diagram_more_good.pdf')
+        f_name=f'phase_diagram_asymmetric.pdf',
+        x_label='alpha_plus',
+        y_label='alpha_minus',
+        ticks_index=[0, 5, 9],
+    )
+
+
+# def phase_diagram_n_good():
+#     data_path = os.path.join("data", "phase_diagram_n_good.p")
+#     if os.path.exists(data_path):
+#         (data, labels) = backup.load(data_path)
+#     else:
+#         data = {}
+#
+#         for n_good in (5, 6):
+#             d = \
+#                 simulation.run_first_revision.get_data(
+#                     n_good=n_good,
+#                     agent_model=RLAgent)
+#             data_f, labels = analysis.main.format_for_phase_diagram(d=d, m=0)
+#
+#             data[n_good] = data_f
+#         backup.save((data, labels), data_path)
+#
+#     graph.phase_diagram.plot(
+#         data=data, labels=labels,
+#         f_name=f'phase_diagram_more_good.pdf')
 
 
 def fit():
@@ -182,20 +206,6 @@ def fit():
               f'valid={valid[i]}')
 
 
-def asymmetric_learning():
-
-    data, labels = simulation.run_asymmetric_learning.phase_diagram(
-        force=False
-    )
-    graph.phase_diagram.plot(
-        data=data, labels=labels,
-        f_name=f'phase_diagram_asymmetric.pdf',
-        x_label='alpha_plus',
-        y_label='alpha_minus',
-        ticks_index=[0, 5, 9],
-    )
-
-
 def main_sim_and_xp():
 
     alpha, beta, gamma = .175, 1, .125
@@ -203,7 +213,7 @@ def main_sim_and_xp():
     heterogeneous = True
     m = 0
     learning_window = 25
-    boxplot_window = 25
+    boxplot_window = 50
 
     data = {}
     data["Human"], room_n_good, room_uniform = xp.xp.get_data()
@@ -351,7 +361,6 @@ def main_sim_and_xp():
                 print(f"u={u}; p={p} {'*' if p <=0.05 else ''}")
                 print()
 
-
     for n_good in room_n_good:
 
         n_rows = len(category)
@@ -450,4 +459,4 @@ def main_sim_and_xp():
 
 if __name__ == '__main__':
 
-    revision_phase_diagram()
+    phase_diagram()

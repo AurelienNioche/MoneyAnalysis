@@ -66,11 +66,11 @@ def format_for_phase_diagram(d, m):
 
     n = len(dist)  # Number of economies in this batch
 
-    observation = metric.get_economy_measure(in_hand=d.in_hand,
-                                             desired=d.desired,
-                                             prod=d.prod,
-                                             cons=d.cons,
-                                             m=m)
+    observation = metric.get_multi_eco_statistic(in_hand=d.in_hand,
+                                                 desired=d.desired,
+                                                 prod=d.prod,
+                                                 cons=d.cons,
+                                                 m=m)
 
     unq_repartition = np.unique(dist, axis=0)
     labels = np.unique([i[-1] for i in unq_repartition])
@@ -87,24 +87,24 @@ def format_for_phase_diagram(d, m):
     return d, labels
 
 
-def phase_diagram(m=0):
-
-    data_file = f'{DATA_FOLDER}/formatted_phase_diagram.p'
-
-    if os.path.exists(data_file):
-        data, labels = backup.load(data_file)
-        return data, labels
-
-    data = {}
-
-    for n_good in (4, 3):
-
-        d = simulation.run.get_data(n_good=n_good)
-
-        formatted_d, labels = format_for_phase_diagram(d, m)
-
-        data[n_good] = formatted_d
-
-    backup.save((data, labels), data_file)
-
-    return data, labels
+# def phase_diagram(m=0):
+#
+#     data_file = f'{DATA_FOLDER}/formatted_phase_diagram.p'
+#
+#     if os.path.exists(data_file):
+#         data, labels = backup.load(data_file)
+#         return data, labels
+#
+#     data = {}
+#
+#     for n_good in (4, 3):
+#
+#         d = simulation.run.get_data(n_good=n_good)
+#
+#         formatted_d, labels = format_for_phase_diagram(d, m)
+#
+#         data[n_good] = formatted_d
+#
+#     backup.save((data, labels), data_file)
+#
+#     return data, labels

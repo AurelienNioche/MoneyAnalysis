@@ -83,9 +83,9 @@ def phase_diagram(
 
     # norm = matplotlib.colors.Normalize(vmin=0, vmax=vmax)
 
-    import matplotlib as mpl
+    # import matplotlib as mpl
 
-    cb = plt.colorbar(c, cax=cax, ticks=y_ticks)
+    plt.colorbar(c, cax=cax, ticks=y_ticks)
 
     ax.set_aspect(1)
 
