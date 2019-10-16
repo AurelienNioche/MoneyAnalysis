@@ -294,7 +294,7 @@ def xp_session_economy_measure(data_xp_session, m=0):
     prod = data_xp_session.prod
     cons = data_xp_session.cons
     desired = data_xp_session.desired
-    in_hand = data_xp_session.desired
+    in_hand = data_xp_session.in_hand
 
     money_users = get_money_users(prod=prod, cons=cons, m=m)
 
