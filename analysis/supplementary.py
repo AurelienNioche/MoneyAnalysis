@@ -257,7 +257,7 @@ def fit(model, heterogeneous=True, t_max=None):
                 # Get formatted data
                 d = data[cat][d_idx]
                 d_formatted = \
-                    metric.xp_session_economy_measure(data_xp_session=d)
+                    metric.xp_session_statistic(data_xp_session=d)
 
                 for agent_type in sorted(d_formatted.keys()):
                     if agent_type not in fig_data[n_good][cat].keys():

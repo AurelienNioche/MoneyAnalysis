@@ -280,7 +280,7 @@ def get_multi_eco_statistic(in_hand, desired, prod, cons, m=0):
 #     return d
 
 
-def xp_session_economy_measure(data_xp_session, m=0):
+def xp_session_statistic(data_xp_session, m=0):
 
     """
     :param data_xp_session: DataXPSession object
