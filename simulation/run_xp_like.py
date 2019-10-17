@@ -2,7 +2,13 @@ import numpy as np
 
 from backup import structure
 
-from simulation.run import _run
+import simulation.economy
+
+
+def _run(param):
+
+    e = simulation.economy.Economy(**param)
+    return param, e.run()
 
 
 def get_data(xp_data, agent_model, t_max=None,

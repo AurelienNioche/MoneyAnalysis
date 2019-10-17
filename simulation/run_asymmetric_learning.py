@@ -8,7 +8,7 @@ import backup.backup
 import backup.structure
 
 from simulation.model.RL.asymmetric_rl_agent import RLAgentAsymmetric
-from simulation.run_first_revision import Run
+from simulation.run import Run
 
 import analysis.metric.metric as metric
 

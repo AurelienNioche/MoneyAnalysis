@@ -1,15 +1,13 @@
-import os
 import string
 
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as grd
 
+import graph.boxplot
+from graph.utils import save_fig
 
-from graph.parameters import SUP_FIG_FOLDER
-import graph.sim_and_xp
 
-
-def plot(data_gender, obs_type, f_name='gender.pdf'):
+def plot(data_gender, obs_type, fig_name='gender.pdf', fig_folder="sup"):
 
     assert obs_type in ('dir', 'ind0'), "Observation type not recognized"
 
@@ -23,10 +21,22 @@ def plot(data_gender, obs_type, f_name='gender.pdf'):
 
     for i, n_good in enumerate(sorted(list(data_gender.keys()))):
 
+        if n_good == 3:
+            chance_level = 0.5
+            y_ticks = (0, 0.5, 1.0)
+        elif n_good == 4:
+            chance_level = 0.33
+            y_ticks = (0, 0.33, 0.66, 1.00)
+        else:
+            raise NotImplementedError
+
         ax = fig.add_subplot(gs[0, i])
-        graph.sim_and_xp.boxplot(data_gender[n_good], n_good=n_good, ax=ax,
-                                 y_label=y_label, color='C0',
-                                 title=f'{n_good} goods')
+        graph.boxplot.boxplot(data_gender[n_good],
+                              chance_level=chance_level,
+                              y_ticks=y_ticks,
+                              ax=ax,
+                              y_label=y_label, color='C0',
+                              title=f'{n_good} goods')
 
         # Add letter
         ax.text(-0.3, 1.1, string.ascii_uppercase[i],
@@ -35,6 +45,4 @@ def plot(data_gender, obs_type, f_name='gender.pdf'):
 
     plt.tight_layout()
 
-    fig_path = os.path.join(SUP_FIG_FOLDER, f_name)
-    plt.savefig(fig_path)
-    print(f"Figure '{fig_path}' created.\n")
+    save_fig(fig_folder=fig_folder, fig_name=fig_name)

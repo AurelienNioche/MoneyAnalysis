@@ -1,0 +1,53 @@
+# def main_phase_diagram(f_name='phase.pdf'):
+#
+#     """
+#     plot phase diagrams
+#     with 3 and 4 goods
+#     """
+#
+#     data, labels = analysis.main.phase_diagram()
+#     graph.phase_diagram.plot(data=data, labels=labels, f_name=f_name)
+#
+#
+# def main_sim_and_xp():
+#
+#     data = analysis.main.sim_and_xp()
+#     graph.sim_and_xp.plot(data)
+#     analysis.stats.stats.sim_and_xp(data)
+#
+#
+# # ------------------------------------------------- #
+
+
+# def sup_individual_behavior():
+#
+#     data = analysis.supplementary.individual_behavior()
+#     graph.supplementary.individual_behavior.plot(data)
+
+
+# def sup_fit():
+#
+#     name_extension = '_fit'
+#     fig_data = analysis.supplementary.fit(
+#         model=RLAgent,
+#         heterogeneous=True)
+#     graph.sim_and_xp.plot(fig_data, name_extension=name_extension)
+#     stats.sim_and_xp(fig_data, name_extension=name_extension)
+
+# # ------------------------------------------------- #
+#
+
+#
+#
+# def exploratory_learning_curves():
+#
+#     fig_data = analysis.exploratory.learning_curves()
+#     graph.exploratory.learning_curves.plot(fig_data)
+
+
+# def ind0_freq_over_time():
+#
+#     data = analysis.exploratory.ind0_freq_over_time()
+#     graph.supplementary.learning_curves.plot(
+#         data,
+#         f_name='fig/ind0_freq_over_time_{}.pdf')

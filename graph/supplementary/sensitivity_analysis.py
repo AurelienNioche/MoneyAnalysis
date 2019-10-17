@@ -5,12 +5,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as grd
 
-from graph.parameters import SUP_FIG_FOLDER
+from graph.utils import save_fig
 
 
 def plot(data,
-         f_name='sensitivity_analysis.pdf',
-         y_label='Freq. ind. ex. with good 1'):
+         y_label='Freq. ind. ex. with good 1',
+         fig_name='sensitivity_analysis.pdf',
+         fig_folder="sup"):
 
     fig = plt.figure(figsize=(8, 8))
     gs = grd.GridSpec(nrows=3, ncols=2)
@@ -93,7 +94,4 @@ def plot(data,
 
     plt.tight_layout()
 
-    fig_path = os.path.join(SUP_FIG_FOLDER, f_name)
-    plt.savefig(fig_path)
-
-    print(f"Figure '{fig_path}' created.\n")
+    save_fig(fig_folder=fig_folder, fig_name=fig_name)

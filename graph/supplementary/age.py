@@ -5,10 +5,10 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as grd
 
 
-from graph.parameters import SUP_FIG_FOLDER
+from graph.utils import save_fig
 
 
-def plot(data, obs_type, f_name='age.pdf'):
+def plot(data, obs_type, fig_name='age.pdf', fig_folder="sup"):
 
     assert obs_type in ('dir', 'ind0'), "Observation type not recognized"
 
@@ -65,6 +65,4 @@ def plot(data, obs_type, f_name='age.pdf'):
 
     plt.tight_layout()
 
-    fig_path = os.path.join(SUP_FIG_FOLDER, f_name)
-    plt.savefig(fig_path)
-    print(f"Figure '{fig_path}' created.\n")
+    save_fig(fig_folder=fig_folder, fig_name=fig_name)

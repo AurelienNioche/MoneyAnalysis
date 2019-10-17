@@ -1,10 +1,9 @@
-import os
 import string
 
 import matplotlib.pyplot as plt
 import numpy as np
 
-from graph.parameters import SUP_FIG_FOLDER
+from graph.utils import save_fig
 
 
 def _subplot(ax, title, values, r_values, n_subplot=None):
@@ -33,7 +32,7 @@ def _subplot(ax, title, values, r_values, n_subplot=None):
     ax.set_aspect(1)
 
 
-def plot(data):
+def plot(data, fig_name="parameter_recovery.pdf", fig_folder="main"):
 
     fig, axes = plt.subplots(ncols=len(data.keys()),
                              figsize=(15, 5))
@@ -47,7 +46,5 @@ def plot(data):
         i += 1
 
     plt.tight_layout()
-    f_name = "parameter_recovery.pdf"
-    fig_path = os.path.join(SUP_FIG_FOLDER, f_name)
-    plt.savefig(fig_path)
-    print(f"Figure '{fig_path}' created.\n")
+
+    save_fig(fig_name=fig_name, fig_folder=fig_folder)

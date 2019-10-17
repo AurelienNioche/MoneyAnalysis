@@ -3,12 +3,19 @@ import numpy as np
 
 from backup import structure
 
-from simulation.run import _run
+import simulation.economy
+
 
 SCRIPT_FOLDER = os.path.dirname(os.path.abspath(__file__))
 DATA_FOLDER = f'{SCRIPT_FOLDER}/../data'
 
 FILE_PATH = f'{DATA_FOLDER}/fit.p'
+
+
+def _run(param):
+
+    e = simulation.economy.Economy(**param)
+    return param, e.run()
 
 
 def get_data(n_good, prod, cons, alpha, beta, gamma, t_max,

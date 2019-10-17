@@ -3,11 +3,11 @@ import string
 
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as grd
-import matplotlib.colors
-import matplotlib.cm
+# import matplotlib.colors
+# import matplotlib.cm
 
-from graph.parameters import FIG_FOLDER
 from graph.labelling import agent_labeling
+from graph.utils import save_fig
 
 
 def phase_diagram(
@@ -18,9 +18,10 @@ def phase_diagram(
         fontsize=10,
         ax=None,
         n_subplot=None,
-        f_name=None,
         x_label=None,
         y_label=None,
+        fig_folder=None,
+        fig_name=None,
         ):
 
     if ax is None:
@@ -89,12 +90,7 @@ def phase_diagram(
 
     ax.set_aspect(1)
 
-    if f_name is not None:
-        plt.tight_layout()
-
-        fig_path = os.path.join(FIG_FOLDER, f_name)
-        plt.savefig(fig_path)
-        print(f"Figure '{fig_path}' created.\n")
+    save_fig(fig_folder=fig_folder, fig_name=fig_name)
 
 
 def plot(data, labels,
@@ -102,7 +98,8 @@ def plot(data, labels,
          y_label=None,
          ticks_position=None,
          ticks_index=None,
-         f_name='phase_diagram.pdf'):
+         fig_folder=None,
+         fig_name='phase_diagram.pdf'):
 
     fig = plt.figure(figsize=(14, 8))
 
@@ -149,6 +146,4 @@ def plot(data, labels,
 
     plt.tight_layout()
 
-    fig_path = os.path.join(FIG_FOLDER, f_name)
-    plt.savefig(fig_path)
-    print(f"Figure '{fig_path}' created.\n")
+    save_fig(fig_folder=fig_folder, fig_name=fig_name)

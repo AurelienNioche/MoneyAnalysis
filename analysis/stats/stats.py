@@ -323,4 +323,4 @@ def sensitivity_analysis(data):
 
 
 if __name__ == "__main__":
-    exit('Run the main.py script.')
+    exit('Run the additional_info.py.old script.')

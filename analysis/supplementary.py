@@ -11,6 +11,8 @@ from backup import backup
 
 from game.models import User, Room
 
+from analysis.metric.metric import exchange, get_money_users
+
 DATA_FOLDER = "data"
 
 
@@ -119,13 +121,7 @@ def individual_behavior():
     return fig_data
 
 
-def gender(obs_type='dir', n_split=3):
-    """
-    Selection of agents able to proceed to indirect exchanges with good 0
-    :param obs_type:
-    :param n_split:
-    :return:
-    """
+def gender(m=0):
 
     data, room_n_good, room_uniform = xp.get_data()
 
@@ -141,28 +137,31 @@ def gender(obs_type='dir', n_split=3):
 
     for d, n_good in zip(data, room_n_good):
 
-        # get agent types depending on the number of good
-        agent_types = tuple(range(2, n_good))
+        money_users = get_money_users(prod=d.prod, cons=d.cons, m=m)
 
-        # get agents of this type
-        agent_of_interest = []
-        for at in agent_types:
-            agent_of_interest += np.arange(len(d.cons))[d.cons == at].tolist()
+        for i_agent in money_users:
 
-        for i, g in enumerate(d.gender):
+            _, ex, n = exchange(
+                n_good=n_good,
+                in_hand=d.in_hand[i_agent],
+                desired=d.desired[i_agent],
+                prod=d.prod[i_agent],
+                cons=d.cons[i_agent],
+                m=m)
 
-            # only compute and append for this agent type
-            if i in agent_of_interest:
-                to_append = metric.get_individual_measure(
-                    data_xp_session=d, i=i, n_split=n_split, slice_idx=-1,
-                    obs_type=obs_type)
+            obs = ex[-1] / n[-1]
 
-                data_gender[n_good][categories[int(g)]].append(to_append)
+            g = d.gender[i_agent]
+            data_gender[n_good][categories[int(g)]].append(obs)
 
     return data_gender
 
 
-def age(obs_type='dir', n_split=3):
+def age(m=0):
+
+    """
+    Compute frequency of indirect exchange according to age
+    """
 
     data, room_n_good, room_uniform = xp.get_data()
 
@@ -174,12 +173,21 @@ def age(obs_type='dir', n_split=3):
 
     for d, n_good in zip(data, room_n_good):
 
-        for i, a in enumerate(d.age):
+        money_users = get_money_users(prod=d.prod, cons=d.cons, m=m)
 
-            to_append = metric.get_individual_measure(
-                data_xp_session=d, i=i, n_split=n_split, slice_idx=-1,
-                obs_type=obs_type)
-            fig_data[n_good]['obs'].append(to_append)
+        for i_agent in money_users:
+            _, ex, n = exchange(
+                n_good=n_good,
+                in_hand=d.in_hand[i_agent],
+                desired=d.desired[i_agent],
+                prod=d.prod[i_agent],
+                cons=d.cons[i_agent],
+                m=0)
+
+            obs = ex[-1] / n[-1]
+            a = d.age[i_agent]
+
+            fig_data[n_good]['obs'].append(obs)
             fig_data[n_good]['age'].append(a)
 
     return fig_data

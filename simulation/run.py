@@ -9,120 +9,134 @@ import backup.backup
 import backup.structure
 
 import simulation.economy
+from simulation.model.RL.rl_agent import RLAgent
 
 
-def _get_phase_parameters(
-        n_good=3,
-        agent_model='RLAgent',
-        constant_x_value=np.array([50, ]),
-        constant_x_index=np.array([0, ]),
-        t_max=100,
-        economy_model='prod: i-1',
-        range_repartition=range(10, 210, 10),
-        n_cog_value=3):
+class Run:
 
-    assert len(constant_x_value) == len(constant_x_index), \
-        '"constant_x_value" and "constant_x_index" should have equal size!'
-    assert agent_model in ('RLAgent', ), 'Bad argument for "agent_model"!'
-    assert economy_model in ('prod: i-1', 'prod: i+1'), \
-        'Bad argument for "economy_model"!'
+    @staticmethod
+    def _get_phase_parameters(
+            agent_model,
+            n_good=3,
+            t_max=100,
+            economy_model='prod: i-1',
+            range_repartition=range(10, 210, 10),
+            n_cog_value=3):
 
-    first_cog_range = np.linspace(0.1, 0.25, n_cog_value)
-    second_cog_range = np.linspace(0.8, 1.2, n_cog_value)
-    third_cog_range = np.linspace(0.1, 0.15, n_cog_value)
+        tqdm.write("Compute parameters...", end=' ')
+        n_constant = n_good - 2
 
-    # ------------------------------ #
+        constant_x_index = np.arange(n_constant)
+        constant_x_value = np.array([50, ] * (1 if n_good <= 3 else 2)
+                                    + [100, ] * (n_constant - 2))
 
-    repartition = list(itertools.product(range_repartition,
-                                         repeat=n_good-len(constant_x_index)))
+        assert len(constant_x_value) == len(constant_x_index), \
+            '"constant_x_value" and "constant_x_index" should have equal size!'
+        assert economy_model in ('prod: i-1', 'prod: i+1'), \
+            'Bad argument for "economy_model"!'
 
-    # ---------- #
+        ranges = []
+        for b in agent_model.bounds:
+            ranges.append(
+                np.linspace(b[1], b[2], n_cog_value)
+            )
+        # ------------------------------ #
 
-    var_param = itertools.product(first_cog_range, second_cog_range,
-                                  third_cog_range, repartition)
+        repartition = list(itertools.product(range_repartition,
+                                             repeat=n_good-len(constant_x_index)))
 
-    # ----------- #
+        # ---------- #
 
-    parameters = []
+        ranges.append(repartition)
 
-    for alpha, beta, gamma, rpt in var_param:
+        var_param = itertools.product(*ranges)
 
-        complete_dist = np.zeros(n_good, dtype=int)
-        gen_rpt = (i for i in rpt)
-        gen_cst = (i for i in constant_x_value)
-        for i in range(n_good):
-            if i in constant_x_index:
-                complete_dist[i] = next(gen_cst)
-            else:
-                complete_dist[i] = next(gen_rpt)
-        complete_dist = tuple(complete_dist)
+        # ----------- #
 
-        param = {
-            'cognitive_parameters': (alpha, beta, gamma),
-            'distribution': complete_dist,
-            't_max': t_max,
-            'economy_model': economy_model,
-            'agent_model': agent_model,
-            'seed': np.random.randint(2**32-1)
-        }
-        parameters.append(param)
+        parameters = []
 
-    return parameters
+        for v in var_param:
+
+            cog_param = v[:-1]
+            rpt = v[-1]
+
+            complete_dist = np.zeros(n_good, dtype=int)
+            gen_rpt = (i for i in rpt)
+            gen_cst = (i for i in constant_x_value)
+            for i in range(n_good):
+                if i in constant_x_index:
+                    complete_dist[i] = next(gen_cst)
+                else:
+                    complete_dist[i] = next(gen_rpt)
+            complete_dist = tuple(complete_dist)
+
+            param = {
+                'cognitive_parameters': cog_param,
+                'distribution': complete_dist,
+                't_max': t_max,
+                'economy_model': economy_model,
+                'agent_model': agent_model.__name__,
+                'seed': np.random.randint(2**32-1)
+            }
+            parameters.append(param)
+
+        print('Done!')
+        return parameters
+
+    @staticmethod
+    def _run(param):
+
+        e = simulation.economy.Economy(**param)
+        return param, e.run()
+
+    def _produce_data(self, params, fake=False):
+
+        max_ = len(params)
+
+        if fake:
+            print(f"I would have compute the results of {max_} economies")
+            return
+
+        data = backup.structure.Data()
+
+        with multiprocessing.Pool(processes=os.cpu_count()) as p:
+
+            with tqdm(total=max_) as pbar:
+                for pr, b in p.imap_unordered(self._run, params):
+                    data.append(bkp=b, param=pr)
+                    pbar.update()
+
+        return data
+
+    def get_data(
+            self, n_good, agent_model=None,
+            force=False, fake=False):
+
+        if agent_model is None:
+            agent_model = RLAgent
+
+        data_folder = os.path.join('data',
+                                   f'phase_{n_good}_goods_{agent_model.__name__}')
+
+        params = \
+            self._get_phase_parameters(n_good=n_good, agent_model=agent_model)
+
+        if fake:
+            self._produce_data(params=params, fake=True)
+            return None
+
+        elif force or not os.path.exists(data_folder):
+
+            bkp = self._produce_data(params=params)
+            bkp.save(data_folder)
+
+        else:
+            bkp = backup.structure.Data()
+            bkp.load(data_folder)
+
+        return bkp
 
 
-def _run(param):
+def get_data(**kwargs):
 
-    e = simulation.economy.Economy(**param)
-    return param, e.run()
-
-
-def _produce_data(n_good, fake=False):
-
-    tqdm.write("Compute parameters...", end=' ')
-
-    params = _get_phase_parameters(
-        n_good=n_good,
-        agent_model='RLAgent',
-        constant_x_index=np.array([0, ]) if n_good == 3
-        else np.array([0, 1]),
-        constant_x_value=np.array([50, ]) if n_good == 3
-        else np.array([50, 50])
-    )
-    print('Done!')
-
-    max_ = len(params)
-
-    if fake:
-        print(f"I would have compute the results of {max_} economies")
-        return
-
-    data = backup.structure.Data()
-
-    with multiprocessing.Pool(processes=os.cpu_count()) as p:
-
-        with tqdm(total=max_) as pbar:
-            for pr, b in p.imap_unordered(_run, params):
-                data.append(bkp=b, param=pr)
-                pbar.update()
-
-    return data
-
-
-def get_data(n_good, force=False, fake=False):
-
-    data_folder = os.path.join('data', f'phase_{n_good}_goods')
-
-    if fake:
-        _produce_data(n_good, fake=True)
-        return None
-
-    elif force or not os.path.exists(data_folder):
-
-        bkp = _produce_data(n_good)
-        bkp.save(data_folder)
-
-    else:
-        bkp = backup.structure.Data()
-        bkp.load(data_folder)
-
-    return bkp
+    return Run().get_data(**kwargs)
