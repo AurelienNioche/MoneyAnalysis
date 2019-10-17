@@ -34,14 +34,13 @@ SEP = '-' * 30
 
 
 def _mw(to_compare, print_latex=False, **kwargs):
-    ns = []
 
+    ns = []
     ps = []
     us = []
 
     for dic in to_compare:
-        u, p = scipy.stats.mannwhitneyu(dic["data"][0], dic["data"][1],
-                                        alternative="two-sided")
+        u, p = scipy.stats.mannwhitneyu(dic["data"][0], dic["data"][1])
         n = len(dic["data"][0]) + len(dic["data"][1])
         ps.append(p)
         us.append(u)
@@ -109,7 +108,12 @@ def sim_and_xp(data, data_type=('Human', 'Simulation'),
                     'agent_type=2, obs=ind_0',
             'comparison':
                 'Agent type dist. in artificial agents of type (2, 3)'
-        },
+        }, ]
+    _mw(to_compare=to_compare, print_latex=print_latex,
+        xp_label='3 goods', measure=measure,
+        comparison=comparison)
+
+    to_compare = [
         {
             'data': np.array([
                 data[3][human][2][unif],
@@ -147,6 +151,13 @@ def sim_and_xp(data, data_type=('Human', 'Simulation'),
             'comparison':
                 'Agent type dist. in artificial agents of type (3, 4)'
         },
+    ]
+
+    _mw(to_compare=to_compare, print_latex=print_latex,
+        xp_label='4 goods', measure=measure,
+        comparison=comparison)
+
+    to_compare = [
         {
             'data': np.array([
                 data[4][human][2][unif],
@@ -174,14 +185,9 @@ def sim_and_xp(data, data_type=('Human', 'Simulation'),
         comparison=comparison)
 
 
-def supplementary_age(data, obs_type, print_latex=True):
+def supplementary_age(data, print_latex=True):
 
-    assert obs_type in ('dir', 'ind0'), "Observation type not recognized"
-
-    if obs_type == 'dir':
-        measure_label = 'Dir.'
-    else:
-        measure_label = 'Ind. good 1'
+    measure_label = 'Ind. good 1'
 
     print(SEP)
     print(f'SUPPLEMENTARY AGE TEST')
@@ -206,16 +212,10 @@ def supplementary_age(data, obs_type, print_latex=True):
     print(SEP)
 
 
-def supplementary_gender(data,
-                         obs_type,
-                         print_latex=True):
+def supplementary_gender(data, print_latex=True):
 
-    assert obs_type in ('dir', 'ind0'), "Observation type not recognized"
-
-    if obs_type == 'dir':
-        measure_label = 'Dir.'
-    else:
-        measure_label = 'Ind. good 1'
+    measure_label = 'Ind. good 1'
+    obs_type = 'ind0'
 
     print(SEP)
     print('SUPPLEMENTARY GENDER TEST')
@@ -225,7 +225,7 @@ def supplementary_gender(data,
 
         _mw(to_compare=[{
             'data': np.array([data[n_good]['Male'], data[n_good]['Female']]),
-            'name': f'MALE VS FEMALE, obs={obs_type}',
+            'name': f'MALE VS FEMALE, & {measure_label}',
             'comparison': 'Gender'
         }],
             print_latex=print_latex,

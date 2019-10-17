@@ -5,8 +5,8 @@ import numpy as np
 
 # import matplotlib.gridspec as grd
 
-# from graph.labelling import agent_labeling
-from graph.utils import save_fig
+from graph.labelling import agent_labeling
+from graph.utils import save_fig, get_ax
 
 
 def boxplot(
@@ -104,69 +104,70 @@ def boxplot(
     save_fig(fig_folder=fig_folder, fig_name=fig_name)
 
 
-# def plot(fig_data, fig_folder, name_extension=''):
-#
-#     post_hoc = 'fit' in name_extension
-#
-#     n_good_cond = sorted(list(fig_data.keys()))
-#
-#     category = sorted(fig_data[n_good_cond[0]].keys())
-#     if not post_hoc:
-#         # Simulation would on the left column
-#         category = category[::-1]
-#
-#     for n_good in n_good_cond:
-#
-#         n_rows = n_good-2
-#
-#         fig = plt.figure(figsize=(7, 4*n_rows))
-#         gs = grd.GridSpec(ncols=len(category), nrows=n_rows)
-#
-#         n = 0
-#
-#         for col, cat in enumerate(category):
-#
-#             agent_type = sorted(fig_data[n_good][cat].keys())
-#             for row, at in enumerate(agent_type):
-#
-#                 ax = fig.add_subplot(gs[row, col])
-#
-#                 al = agent_labeling(n_good)
-#                 at_label = al[at]
-#
-#                 results = fig_data[n_good][cat][at]
-#
-#                 if post_hoc and cat == 'Simulation':
-#                     cat_label = 'Post hoc simulation'
-#                 else:
-#                     cat_label = cat
-#
-#                 title = f'{cat_label} - Type {at_label}'
-#
-#                 chance_level = 1/(n_good-1)
-#                 y_ticks = np.linspace(0, 1, n_good)
-#
-#                 # if n_good == 3:
-#                 #     chance_level = 0.5
-#                 #     y_ticks = [0, 0.5, 1]
-#                 # elif n_good == 4:
-#                 #     chance_level = 0.33
-#                 #     y_ticks = [0, 0.33, 0.66, 1]
-#                 # else:
-#                 #     raise NotImplementedError
-#
-#                 boxplot(results=results,
-#                         chance_level=chance_level,
-#                         y_ticks=y_ticks,
-#                         ax=ax,
-#                         title=title,
-#                         y_label='Freq. ind. ex. with good 1',
-#                         colors=('C0', 'C1'),
-#                         n_subplot=n)
-#
-#                 n += 1
-#
-#         plt.tight_layout()
-#
-#         fig_name = f'xp_{n_good}{name_extension}.pdf'
-#         save_fig(fig_folder=fig_folder, fig_name=fig_name)
+def plot(fig_data, fig_folder=None, name_extension=''):
+
+    post_hoc = 'fit' in name_extension
+
+    n_good_cond = sorted(list(fig_data.keys()))
+
+    category = sorted(fig_data[n_good_cond[0]].keys())
+    if not post_hoc:
+        # Simulation would on the left column
+        category = category[::-1]
+
+    for n_good in n_good_cond:
+
+        n_rows = n_good-2
+
+        fig, axes = plt.subplots(
+            ncols=len(category), nrows=n_rows,
+            figsize=(7, 4*n_rows))
+
+        n = 0
+
+        for col, cat in enumerate(category):
+
+            agent_type = sorted(fig_data[n_good][cat].keys())
+            for row, at in enumerate(agent_type):
+
+                ax = get_ax(axes=axes, col=col, row=row)
+
+                al = agent_labeling(n_good)
+                at_label = al[at]
+
+                results = fig_data[n_good][cat][at]
+
+                if post_hoc and cat == 'Simulation':
+                    cat_label = 'Post hoc simulation'
+                else:
+                    cat_label = cat
+
+                title = f'{cat_label} - Type {at_label}'
+
+                chance_level = 1/(n_good-1)
+                y_ticks = np.linspace(0, 1, n_good)
+
+                # if n_good == 3:
+                #     chance_level = 0.5
+                #     y_ticks = [0, 0.5, 1]
+                # elif n_good == 4:
+                #     chance_level = 0.33
+                #     y_ticks = [0, 0.33, 0.66, 1]
+                # else:
+                #     raise NotImplementedError
+
+                boxplot(results=results,
+                        chance_level=chance_level,
+                        y_ticks=y_ticks,
+                        ax=ax,
+                        title=title,
+                        y_label='Freq. ind. ex. with good 1',
+                        colors=('C0', 'C1'),
+                        n_subplot=n)
+
+                n += 1
+
+        plt.tight_layout()
+
+        fig_name = f'xp_{n_good}{name_extension}.pdf'
+        save_fig(fig_folder=fig_folder, fig_name=fig_name)

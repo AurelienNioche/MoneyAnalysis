@@ -22,14 +22,12 @@ from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 
 import analysis.exploratory
-import analysis.main
 import analysis.supplementary
 
 from analysis.stats import stats
 
 import graph.boxplot
 import graph.phase_diagram
-import graph.supplementary.individual_behavior
 import graph.supplementary.age
 import graph.supplementary.gender
 import graph.supplementary.sensitivity_analysis
@@ -47,18 +45,18 @@ def sup_sensitivity_analysis():
     stats.sensitivity_analysis(data)
 
 
-def sup_gender(obs_type='ind0'):
+def sup_gender():
 
-    data = analysis.supplementary.gender(obs_type=obs_type)
-    graph.supplementary.gender.plot(data, obs_type=obs_type)
-    analysis.stats.stats.supplementary_gender(data, obs_type=obs_type)
+    data = analysis.supplementary.gender()
+    graph.supplementary.gender.plot(data)
+    analysis.stats.stats.supplementary_gender(data)
 
 
-def sup_age(obs_type='ind0'):
+def sup_age():
 
-    data = analysis.supplementary.age(obs_type=obs_type)
-    graph.supplementary.age.plot(data, obs_type=obs_type)
-    analysis.stats.stats.supplementary_age(data, obs_type=obs_type)
+    data = analysis.supplementary.age()
+    graph.supplementary.age.plot(data)
+    analysis.stats.stats.supplementary_age(data)
 
 
 def sup_parameter_recovery():
@@ -74,22 +72,30 @@ def sup_effect_of_heterogeneous():
     fig_data = analysis.supplementary.fit(
         model=RLAgent,
         heterogeneous=False)
-    graph.boxplot.plot(fig_data, name_extension=name_extension)
-    analysis.stats.stats.sim_and_xp(fig_data, name_extension=name_extension)
+    graph.boxplot.plot(fig_data,
+                       fig_folder="sup",
+                       name_extension=name_extension)
+    analysis.stats.stats.sim_and_xp(fig_data,
+                                    name_extension=name_extension)
 
 
-def sup_effect_of_extended_time(t_max=1000):
+def sup_effect_of_extended_time(t_max=10000):
 
     name_extension = '_fit_extended'
     fig_data = analysis.supplementary.fit(
         model=RLAgent,
         heterogeneous=True, t_max=t_max)
-    graph.boxplot.plot(fig_data, name_extension=name_extension)
+    graph.boxplot.plot(fig_data,
+                       fig_folder="sup",
+                       name_extension=name_extension)
     analysis.stats.stats.sim_and_xp(fig_data, name_extension=name_extension)
 
 
 if __name__ == '__main__':
 
-    sup_parameter_recovery()
-    sup_effect_of_heterogeneous()
+    # sup_parameter_recovery()
+    # sup_effect_of_heterogeneous()
+    sup_sensitivity_analysis()
+    sup_age()
+    sup_gender()
     sup_effect_of_extended_time()

@@ -16,3 +16,17 @@ def save_fig(fig_name, fig_folder=None):
         fig_path = os.path.join(fig_folder, fig_name)
         plt.savefig(fig_path)
         print(f"Figure '{fig_path}' created.\n")
+
+
+def get_ax(axes, col, row):
+
+    if len(axes.shape) == 1:
+        if col > row:
+            return axes[col]
+        elif col < row:
+            return axes[row]
+        else:
+            assert row == col == 0
+            return axes[0]
+    else:
+        return axes[col, row]
