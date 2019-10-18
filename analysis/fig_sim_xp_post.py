@@ -47,10 +47,90 @@ import scipy.stats
 
 import simulation.run_asymmetric_learning
 
-from graph.utils import save_fig
+from graph.utils import save_fig, get_ax
 
 
-def _fig(room_n_good, category, fig_data, learning_curve_data):
+def _fig_ind(
+        fig_data, colors=None,
+        x_label='Time',
+        y_label='Freq. ind. ex. with good 1',
+        fig_folder="sup"
+):
+
+    if colors is None:
+        colors = {
+            'Uniform': 'C0',
+            'Non-uniform': 'C1'
+        }
+
+    n_good_cond = fig_data.keys()
+
+    for n_good in n_good_cond:
+
+        # Human or artificial
+        category = sorted(list(fig_data[n_good].keys()))[::-1]
+
+        n_cols = 2*len(category)  # '2' because 2 conditions
+        n_rows = n_good - 2
+
+        fig, axes = \
+            plt.subplots(
+                ncols=n_cols, nrows=n_rows,
+                figsize=(3*n_cols, 3*n_rows))
+
+        agent_type = sorted(fig_data[n_good][list(category)[0]].keys())
+
+        idx_fig = 0
+
+        for row, at in enumerate(agent_type):
+
+            col = 0
+
+            for cat in category:
+
+                conditions = fig_data[n_good][cat][at].keys()
+                assert len(conditions) == 2
+
+                for cond in conditions:
+
+                    ax = get_ax(axes=axes, row=row, col=col)
+
+                    al = agent_labeling(n_good)
+                    at_label = al[at]
+
+                    title = f'{cat} - {cond} - Type {at_label}'
+
+                    color = colors[cond]
+
+                    y = fig_data[n_good][cat][at][cond]
+
+                    ax.plot(y,
+                          x_label=x_label,
+                          y_label=y_label,
+                          title=title,
+                          color=color)
+
+                    if col % 2 == 0 and row == 0:
+                        # Add letter
+                        ax.text(-0.2, 1.1,
+                                string.ascii_uppercase[idx_fig],
+                                transform=ax.transAxes,
+                                size=20, weight='bold')
+                        idx_fig += 1
+
+                    col += 1
+
+        plt.tight_layout()
+
+        fig_name = f'individual_behavior_{n_good}.pdf'
+
+        plt.tight_layout()
+
+        save_fig(fig_name=fig_name, fig_folder=fig_folder)
+
+
+def _fig(room_n_good, category, fig_data, learning_curve_data,
+         fig_folder):
 
     for n_good in room_n_good:
 
@@ -69,14 +149,7 @@ def _fig(room_n_good, category, fig_data, learning_curve_data):
 
             for at in agent_types:
 
-                if n_rows == 1:
-                    print("Unique row")
-                    ax = axes[col]
-                elif n_cols == 1:
-                    print("Unique column")
-                    ax = axes[row]
-                else:
-                    ax = axes[row, col]
+                ax = get_ax(axes=axes, row=row, col=col)
 
                 al = agent_labeling(n_good)
 
@@ -112,14 +185,7 @@ def _fig(room_n_good, category, fig_data, learning_curve_data):
 
                 col += 1
 
-                if n_rows == 1:
-                    print("Unique row")
-                    ax = axes[col]
-                elif n_cols == 1:
-                    print("Unique column")
-                    ax = axes[row]
-                else:
-                    ax = axes[row, col]
+                ax = get_ax(axes=axes, row=row, col=col)
 
                 results = fig_data[n_good][cat][at]
 
@@ -306,8 +372,11 @@ def fig_sim_xp_post(fig_folder="main"):
     #             print(f"u={u}; p={p} {'*' if p <= 0.05 else ''}")
     #             print()
 
+    _fig_ind(ind_learning_curve_data=ind_learning_curve_data)
+
     _fig(room_n_good=room_n_good, category=category,
-         fig_data=fig_data, learning_curve_data=learning_curve_data)
+         fig_data=fig_data, learning_curve_data=learning_curve_data,
+         fig_folder=fig_folder)
 
     # graph.sim_and_xp.plot(fig_data)
     analysis.stats.stats.sim_and_xp(fig_data)

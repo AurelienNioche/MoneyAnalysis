@@ -29,3 +29,4 @@ if __name__ == '__main__':
 
     fig_bic()
     main_sim_and_xp()
+    phase_diagram()
