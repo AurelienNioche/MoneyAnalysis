@@ -66,36 +66,36 @@ def sup_parameter_recovery():
     analysis.stats.stats.parameter_recovery(fig_data)
 
 
-def sup_effect_of_heterogeneous():
-
-    name_extension = '_fit_non_heterogeneous'
-    fig_data = analysis.supplementary.fit(
-        model=RLAgent,
-        heterogeneous=False)
-    graph.boxplot.plot(fig_data,
-                       fig_folder="sup",
-                       name_extension=name_extension)
-    analysis.stats.stats.sim_and_xp(fig_data,
-                                    name_extension=name_extension)
-
-
-def sup_effect_of_extended_time(t_max=10000):
-
-    name_extension = '_fit_extended'
-    fig_data = analysis.supplementary.fit(
-        model=RLAgent,
-        heterogeneous=True, t_max=t_max)
-    graph.boxplot.plot(fig_data,
-                       fig_folder="sup",
-                       name_extension=name_extension)
-    analysis.stats.stats.sim_and_xp(fig_data, name_extension=name_extension)
+# def sup_effect_of_heterogeneous():
+#
+#     name_extension = '_fit_non_heterogeneous'
+#     fig_data = analysis.supplementary.fit(
+#         model=RLAgent,
+#         heterogeneous=False)
+#     graph.boxplot.plot(fig_data,
+#                        fig_folder="sup",
+#                        name_extension=name_extension)
+#     analysis.stats.stats.sim_and_xp(fig_data,
+#                                     name_extension=name_extension)
+#
+#
+# def sup_effect_of_extended_time(t_max=10000):
+#
+#     name_extension = '_fit_extended'
+#     fig_data = analysis.supplementary.fit(
+#         model=RLAgent,
+#         heterogeneous=True, t_max=t_max)
+#     graph.boxplot.plot(fig_data,
+#                        fig_folder="sup",
+#                        name_extension=name_extension)
+#     analysis.stats.stats.sim_and_xp(fig_data, name_extension=name_extension)
 
 
 if __name__ == '__main__':
 
     # sup_parameter_recovery()
     # sup_effect_of_heterogeneous()
+    # sup_effect_of_extended_time()
     sup_sensitivity_analysis()
     sup_age()
     sup_gender()
-    sup_effect_of_extended_time()
