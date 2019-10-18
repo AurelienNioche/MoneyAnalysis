@@ -18,15 +18,19 @@ def save_fig(fig_name, fig_folder=None):
         print(f"Figure '{fig_path}' created.\n")
 
 
-def get_ax(axes, col, row):
+def get_ax(axes, row, col):
 
     if len(axes.shape) == 1:
         if col > row:
             return axes[col]
-        elif col < row:
+        elif row > col:
             return axes[row]
         else:
             assert row == col == 0
             return axes[0]
     else:
-        return axes[col, row]
+        try:
+            return axes[row, col]
+        except IndexError as e:
+            print(row, col, axes.shape)
+            raise e

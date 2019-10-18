@@ -50,11 +50,24 @@ import simulation.run_asymmetric_learning
 from graph.utils import save_fig, get_ax
 
 
+y_ticks = {
+    3: [0, 0.5, 1],
+    4: [0, 0.33, 0.66, 1]
+}
+
+
+chance_level = {
+    n_good: 1 / (n_good - 1) for n_good in (3, 4)
+}
+
+
 def _fig_ind(
-        fig_data, colors=None,
+        fig_data, 
+        category,
+        colors=None,
         x_label='Time',
         y_label='Freq. ind. ex. with good 1',
-        fig_folder="sup"
+        fig_folder="fig/sup"
 ):
 
     if colors is None:
@@ -63,69 +76,73 @@ def _fig_ind(
             'Non-uniform': 'C1'
         }
 
-    n_good_cond = fig_data.keys()
+    room_n_good = fig_data.keys()
+    
+    for n_good in room_n_good:
 
-    for n_good in n_good_cond:
+        n_rows = len(category)
+        n_cols = (n_good - 2) * 2
 
-        # Human or artificial
-        category = sorted(list(fig_data[n_good].keys()))[::-1]
+        fig, axes = plt.subplots(
+            figsize=(3.5 * n_cols, 4 * n_rows), ncols=n_cols, nrows=n_rows)
 
-        n_cols = 2*len(category)  # '2' because 2 conditions
-        n_rows = n_good - 2
+        for row, cat in enumerate(category):
 
-        fig, axes = \
-            plt.subplots(
-                ncols=n_cols, nrows=n_rows,
-                figsize=(3*n_cols, 3*n_rows))
-
-        agent_type = sorted(fig_data[n_good][list(category)[0]].keys())
-
-        idx_fig = 0
-
-        for row, at in enumerate(agent_type):
+            agent_types = sorted(fig_data[n_good][cat].keys())
 
             col = 0
 
-            for cat in category:
+            for at in agent_types:
 
-                conditions = fig_data[n_good][cat][at].keys()
-                assert len(conditions) == 2
+                conditions = \
+                    sorted(fig_data[n_good][cat][at].keys())[::-1]
+                # Uniform, Non-uniform
 
                 for cond in conditions:
-
+    
                     ax = get_ax(axes=axes, row=row, col=col)
-
+    
                     al = agent_labeling(n_good)
+    
                     at_label = al[at]
-
-                    title = f'{cat} - {cond} - Type {at_label}'
+                    cat_label = cat
+    
+                    title = f'{cat_label} - Type {at_label}'
 
                     color = colors[cond]
 
-                    y = fig_data[n_good][cat][at][cond]
+                    ys = fig_data[n_good][cat][at][cond][:, :]
 
-                    ax.plot(y,
-                          x_label=x_label,
-                          y_label=y_label,
-                          title=title,
-                          color=color)
+                    # For horizontal line
+                    ax.axhline(chance_level[n_good], linestyle='--',
+                               color='0.3', zorder=-10,
+                               linewidth=0.5)
 
-                    if col % 2 == 0 and row == 0:
-                        # Add letter
-                        ax.text(-0.2, 1.1,
-                                string.ascii_uppercase[idx_fig],
+                    for y in ys:
+                        ax.plot(y, color=color, alpha=0.5)
+                        x_ticks = np.zeros(3, dtype=int)
+                        x_ticks[:] = np.linspace(0, len(y), 3)
+
+                        ax.set_xticks(x_ticks)
+
+                    ax.set_xlabel(x_label)
+                    ax.set_ylabel(y_label)
+                    ax.set_title(title)
+                    ax.set_yticks(y_ticks[n_good])
+
+                    # Add letter
+                    if col == 0:
+                        ax.text(-0.2, 1.2, string.ascii_uppercase[row],
                                 transform=ax.transAxes,
                                 size=20, weight='bold')
-                        idx_fig += 1
 
                     col += 1
+
+            row += 1
 
         plt.tight_layout()
 
         fig_name = f'individual_behavior_{n_good}.pdf'
-
-        plt.tight_layout()
-
         save_fig(fig_name=fig_name, fig_folder=fig_folder)
 
 
@@ -161,7 +178,8 @@ def _fig(room_n_good, category, fig_data, learning_curve_data,
 
                 fig_d = learning_curve_data[n_good][cat][at]
 
-                for cond in fig_d.keys():
+                # Uniform, Non-uniform
+                for cond in sorted(fig_d.keys())[::-1]:
                     d = fig_d[cond]
 
                     # x = fig_d[cond]['mean']
@@ -189,14 +207,11 @@ def _fig(room_n_good, category, fig_data, learning_curve_data,
 
                 results = fig_data[n_good][cat][at]
 
-                chance_level = 1 / (n_good - 1)
-                y_ticks = np.linspace(0, 1, n_good)
-
                 boxplot(results=results,
-                        chance_level=chance_level,
-                        y_ticks=y_ticks,
+                        chance_level=chance_level[n_good],
                         ax=ax,
                         title=title,
+                        y_ticks=y_ticks[n_good],
                         y_label=ylabel,
                         colors=('C0', 'C1'))
 
@@ -208,37 +223,20 @@ def _fig(room_n_good, category, fig_data, learning_curve_data,
         save_fig(fig_name=fig_name, fig_folder=fig_folder)
 
 
-def fig_sim_xp_post(fig_folder="main"):
+def fig_sim_xp_post(room_n_good,
+                    room_uniform,
+                    category,
+                    data,
+                    fig_ind=False,
+                    stats=False,
+                    fig_folder="fig/main",
+                    m=0,
+                    learning_window=25,
+                    boxplot_window=50
+                    ):
 
-    alpha, beta, gamma = .175, 1, .125
-    model = RLAgent
-    heterogeneous = True
-    m = 0
-    learning_window = 25
-    boxplot_window = 50
-
-    data = {}
-    data["Human"], room_n_good, room_uniform = xp.xp.get_data()
-
-    data['Simulation'] = \
-        simulation.run_xp_like.get_data(
-            agent_model=RLAgent,
-            xp_data=data['Human'],
-            alpha=alpha, beta=beta, gamma=gamma)
-
-    best_parameters, mean_p, lls, bic, eco = \
-        analysis.fit.data.get(model=model)
-
-    data["Post-Hoc Sim."] = simulation.run_based_on_fit.get_data(
-        xp_data_list=data["Human"],
-        best_parameters=best_parameters,
-        eco=eco,
-        heterogeneous=heterogeneous)
-
-    category = ["Simulation", "Human", "Post-Hoc Sim."]
-    assert np.all([i in data.keys() for i in category])
     n_good_cond = np.unique(room_n_good)
-    cond_labels = "Uniform", "Non-uniform"
+    cond_labels = "Non-uniform", "Uniform"
 
     fig_data = {
         n_good: {
@@ -260,7 +258,7 @@ def fig_sim_xp_post(fig_folder="main"):
 
     for n_good in room_n_good:
 
-        for uniform in True, False:
+        for uniform in (True, False):
 
             # Find the good indexes
             cond_n_good = room_n_good == n_good
@@ -348,8 +346,7 @@ def fig_sim_xp_post(fig_folder="main"):
                         learning_curve_data[n_good][cat][at] = {}
 
                     if at not in ind_learning_curve_data[n_good][cat].keys():
-                        ind_learning_curve_data[n_good][cat][at] = \
-                            ind_matrix
+                        ind_learning_curve_data[n_good][cat][at] = {}
 
                     dic = {
                         'mean': p_choices_mean[at],
@@ -361,6 +358,7 @@ def fig_sim_xp_post(fig_folder="main"):
                     }
 
                     learning_curve_data[n_good][cat][at][cond] = dic
+                    ind_learning_curve_data[n_good][cat][at][cond] = ind_matrix
 
     # for n_good in room_n_good:
     #     for cat in category:
@@ -372,11 +370,13 @@ def fig_sim_xp_post(fig_folder="main"):
     #             print(f"u={u}; p={p} {'*' if p <= 0.05 else ''}")
     #             print()
 
-    _fig_ind(ind_learning_curve_data=ind_learning_curve_data)
+    if fig_ind:
+        _fig_ind(fig_data=ind_learning_curve_data,
+                 category=category)
 
     _fig(room_n_good=room_n_good, category=category,
          fig_data=fig_data, learning_curve_data=learning_curve_data,
          fig_folder=fig_folder)
 
-    # graph.sim_and_xp.plot(fig_data)
-    analysis.stats.stats.sim_and_xp(fig_data)
+    if stats:
+        analysis.stats.stats.sim_and_xp(fig_data)

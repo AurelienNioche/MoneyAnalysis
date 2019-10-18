@@ -42,8 +42,8 @@ def curve(mean=None, sem=None,
     else:
         raise NotImplementedError
 
-    x_ticks = np.zeros(4, dtype=int)
-    x_ticks[:] = np.linspace(0, len(y), 4)
+    x_ticks = np.zeros(3, dtype=int)
+    x_ticks[:] = np.linspace(0, len(y), 3)
 
     ax.set_xticks(x_ticks)
     ax.set_yticks(y_ticks)

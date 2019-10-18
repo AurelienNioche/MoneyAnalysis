@@ -21,7 +21,7 @@ def boxplot(
         fig_folder=None
 ):
 
-    sorted_keys = sorted(results.keys())
+    sorted_keys = sorted(results.keys())[::-1]
 
     if not ax:
         fig, ax = plt.subplots(figsize=(20, 5))
@@ -110,7 +110,7 @@ def plot(fig_data, fig_folder=None, name_extension=''):
 
     n_good_cond = sorted(list(fig_data.keys()))
 
-    category = sorted(fig_data[n_good_cond[0]].keys())
+    category = sorted(fig_data[n_good_cond[0]].keys())[::-1]
     if not post_hoc:
         # Simulation would on the left column
         category = category[::-1]
