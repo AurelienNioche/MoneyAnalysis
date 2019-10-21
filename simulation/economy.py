@@ -3,7 +3,7 @@ import itertools as it
 
 # noinspection PyUnresolvedReferences
 from simulation.model.RL.rl_agent import RLAgent
-from simulation.model.RL.asymmetric_rl_agent import RLAgentAsymmetric
+from simulation.model.RL.asymmetric_rl_agent import RLAsymmetric
 from simulation.model.RL.rl_no_alpha_no_beta \
     import RLNoAlphaNoBeta, RLNoAlphaNoBetaV2
 from simulation.model.RL.rl_hyperbolic_discounting \

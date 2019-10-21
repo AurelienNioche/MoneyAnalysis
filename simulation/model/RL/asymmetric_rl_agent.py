@@ -8,7 +8,7 @@ from simulation.model.RL.get_paths import get_paths
 from simulation.model.RL.rl_agent import RLAgent
 
 
-class RLAgentAsymmetric(RLAgent):
+class RLAsymmetric(RLAgent):
 
     bounds = (
         ('alpha_minus', 0.1, 0.25),

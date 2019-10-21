@@ -23,7 +23,7 @@ def plot(data, fig_name='age.pdf', fig_folder="fig/sup",
             data[n_good]['age'],
             data[n_good]['obs'],
             s=15, alpha=1,
-            facecolor="black", edgecolor='white',
+            facecolor="C0", edgecolor='white',
         )
 
         ax.set_ylabel(y_label)

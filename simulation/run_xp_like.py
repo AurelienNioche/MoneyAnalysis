@@ -11,17 +11,17 @@ def _run(param):
     return param, e.run()
 
 
-def get_data(xp_data, agent_model, t_max=None,
+def get_data(xp_data_list, agent_model, t_max=None,
              random_cognitive_param=False, seed=123, **cognitive_parameters):
 
     np.random.seed(seed)
 
-    n_rooms = len(xp_data)
+    n_rooms = len(xp_data_list)
 
     # list of DataXpSession
     data = np.zeros(n_rooms, dtype=object)
 
-    for i, xp_d in enumerate(xp_data):
+    for i, xp_d in enumerate(xp_data_list):
 
         n_good = xp_d.n_good
 

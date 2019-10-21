@@ -67,7 +67,8 @@ def _fig_ind(
         colors=None,
         x_label='Time',
         y_label='Freq. ind. ex. with good 1',
-        fig_folder="fig/sup"
+        fig_folder="fig/sup",
+        fig_extension=""
 ):
 
     if colors is None:
@@ -146,12 +147,12 @@ def _fig_ind(
 
         plt.tight_layout()
 
-        fig_name = f'individual_behavior_{n_good}.pdf'
+        fig_name = f'individual_behavior_{n_good}{fig_extension}.pdf'
         save_fig(fig_name=fig_name, fig_folder=fig_folder)
 
 
 def _fig(room_n_good, category, fig_data, learning_curve_data,
-         fig_folder):
+         fig_folder, fig_extension):
 
     for n_good in room_n_good:
 
@@ -223,7 +224,7 @@ def _fig(room_n_good, category, fig_data, learning_curve_data,
 
         plt.tight_layout()
 
-        fig_name = f'xp_{n_good}.pdf'
+        fig_name = f'xp_{n_good}{fig_extension}.pdf'
         save_fig(fig_name=fig_name, fig_folder=fig_folder)
 
 
@@ -234,6 +235,7 @@ def fig_sim_xp_post(room_n_good,
                     fig_ind=False,
                     stats=False,
                     fig_folder="fig/main",
+                    fig_extension="",
                     m=0,
                     learning_window=25,
                     boxplot_window=50
@@ -376,11 +378,15 @@ def fig_sim_xp_post(room_n_good,
 
     if fig_ind:
         _fig_ind(fig_data=ind_learning_curve_data,
-                 category=category)
+                 category=category,
+                 fig_extension=fig_extension)
 
     _fig(room_n_good=room_n_good, category=category,
          fig_data=fig_data, learning_curve_data=learning_curve_data,
-         fig_folder=fig_folder)
+         fig_folder=fig_folder,
+         fig_extension=fig_extension)
 
     if stats:
         analysis.stats.stats.sim_and_xp(fig_data)
+
+    return fig_data

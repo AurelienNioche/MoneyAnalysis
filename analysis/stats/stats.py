@@ -33,7 +33,7 @@ import statsmodels.stats.multitest
 SEP = '-' * 30
 
 
-def _mw(to_compare, print_latex=False, **kwargs):
+def mann_whitney(to_compare, print_latex=False, **kwargs):
 
     ns = []
     ps = []
@@ -55,8 +55,6 @@ def _mw(to_compare, print_latex=False, **kwargs):
 
     for p, u, n, p_c, v, dic in zip(ps, us, ns, p_corr, valid, to_compare):
 
-        cond_name = dic['name']
-
         if print_latex:
 
             comparison = dic["comparison"]
@@ -76,6 +74,7 @@ def _mw(to_compare, print_latex=False, **kwargs):
             print(part0 + part1)
 
         else:
+            cond_name = dic['name']
             print(
                 f"[{cond_name}] Mann-Whitney rank test: $u={u}$, "
                 f"$p corr={p_c:.3f}$, p raw {p:.3f}, $n={n}$, sign.: {v}")
@@ -109,9 +108,9 @@ def sim_and_xp(data, data_type=('Human', 'Simulation'),
             'comparison':
                 'Agent type dist. in artificial agents of type (2, 3)'
         }, ]
-    _mw(to_compare=to_compare, print_latex=print_latex,
-        xp_label='3 goods', measure=measure,
-        comparison=comparison)
+    mann_whitney(to_compare=to_compare, print_latex=print_latex,
+                 xp_label='3 goods', measure=measure,
+                 comparison=comparison)
 
     to_compare = [
         {
@@ -126,9 +125,9 @@ def sim_and_xp(data, data_type=('Human', 'Simulation'),
         },
     ]
 
-    _mw(to_compare=to_compare, print_latex=print_latex,
-        xp_label='3 goods', measure=measure,
-        comparison=comparison)
+    mann_whitney(to_compare=to_compare, print_latex=print_latex,
+                 xp_label='3 goods', measure=measure,
+                 comparison=comparison)
 
     to_compare = [
         {
@@ -153,9 +152,9 @@ def sim_and_xp(data, data_type=('Human', 'Simulation'),
         },
     ]
 
-    _mw(to_compare=to_compare, print_latex=print_latex,
-        xp_label='4 goods', measure=measure,
-        comparison=comparison)
+    mann_whitney(to_compare=to_compare, print_latex=print_latex,
+                 xp_label='4 goods', measure=measure,
+                 comparison=comparison)
 
     to_compare = [
         {
@@ -180,9 +179,9 @@ def sim_and_xp(data, data_type=('Human', 'Simulation'),
         }
     ]
 
-    _mw(to_compare=to_compare, print_latex=print_latex,
-        xp_label='4 goods', measure=measure,
-        comparison=comparison)
+    mann_whitney(to_compare=to_compare, print_latex=print_latex,
+                 xp_label='4 goods', measure=measure,
+                 comparison=comparison)
 
 
 def supplementary_age(data, print_latex=True):
@@ -223,7 +222,7 @@ def supplementary_gender(data, print_latex=True):
 
     for n_good in data.keys():
 
-        _mw(to_compare=[{
+        mann_whitney(to_compare=[{
             'data': np.array([data[n_good]['Male'], data[n_good]['Female']]),
             'name': f'MALE VS FEMALE, & {measure_label}',
             'comparison': 'Gender'
@@ -259,7 +258,7 @@ def parameter_recovery(data, print_latex=True):
 
 def cross_validation(data):
 
-    _mw(to_compare=[{
+    mann_whitney(to_compare=[{
             'data': np.array([data['UNIF'], data['NON-UNIF']]),
             'name': 'CROSS-VALIDATION obs_type=ind_0'
         }])

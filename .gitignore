@@ -116,7 +116,7 @@ fig/
 # Mac stuff
 .DS_Store
 
-/data/phase_4_goods_RLAgentAsymmetric/
+/data/phase_4_goods_RLAsymmetric/
 /data/phase_3_goods_RLExponentialDiscounting/
 /data/phase_3_goods_RLHyperbolicDiscounting/
 /data/phase_3_goods_RLNoAlphaNoBeta/

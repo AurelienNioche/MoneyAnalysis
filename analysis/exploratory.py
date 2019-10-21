@@ -18,9 +18,10 @@ def sim_and_xp_exploration(alpha=.175, beta=1, gamma=.125, random_cognitive_para
 
     raw_data['HUMAN'], room_n_good, room_uniform = xp.get_data()
 
-    raw_data['SIM'] = simulation.run_xp_like.get_data(xp_data=raw_data['HUMAN'],
-                                                      gamma=gamma, beta=beta, alpha=alpha,
-                                                      random_cognitive_param=random_cognitive_param)
+    raw_data['SIM'] = simulation.run_xp_like.get_data(
+        xp_data_list=raw_data['HUMAN'],
+        gamma=gamma, beta=beta, alpha=alpha,
+        random_cognitive_param=random_cognitive_param)
 
     category = raw_data.keys()
     n_good_cond = np.unique(room_n_good)

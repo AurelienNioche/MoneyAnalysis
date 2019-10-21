@@ -71,7 +71,7 @@ def individual_behavior():
     raw_data['Human'], room_n_good, room_uniform = xp.get_data()
 
     raw_data['Simulation'] \
-        = simulation.run_xp_like.get_data(xp_data=raw_data['Human'])
+        = simulation.run_xp_like.get_data(xp_data_list=raw_data['Human'])
 
     category = raw_data.keys()
     n_good_cond = np.unique(room_n_good)

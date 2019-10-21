@@ -31,7 +31,7 @@ def boxplot(
 
     if colors is None:
         if color is None:
-            color = 'black'
+            color = 'C0'
         colors = [color for _ in range(len(sorted_keys))]
 
     if title:

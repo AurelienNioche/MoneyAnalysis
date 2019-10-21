@@ -7,7 +7,7 @@ import os
 import backup.backup
 import backup.structure
 
-from simulation.model.RL.asymmetric_rl_agent import RLAgentAsymmetric
+from simulation.model.RL.asymmetric_rl_agent import RLAsymmetric
 from simulation.run import Run
 
 import analysis.metric.metric as metric
@@ -33,10 +33,10 @@ class RunAsymmetric(Run):
 
         bounds_alpha = {}
         for key in 'alpha_minus', "alpha_plus":
-            bounds_alpha[key] = RLAgentAsymmetric.fit_bounds[
-                [b[0] for b in RLAgentAsymmetric.fit_bounds].index(key)
+            bounds_alpha[key] = RLAsymmetric.fit_bounds[
+                [b[0] for b in RLAsymmetric.fit_bounds].index(key)
             ]
-        for b in RLAgentAsymmetric.bounds:
+        for b in RLAsymmetric.bounds:
             if "alpha" in b[0]:
                 r = np.linspace(
                     bounds_alpha[b[0]][1],
@@ -70,7 +70,7 @@ class RunAsymmetric(Run):
                 'distribution': complete_dist,
                 't_max': cls.t_max,
                 'economy_model': cls.economy_model,
-                'agent_model': RLAgentAsymmetric.__name__,
+                'agent_model': RLAsymmetric.__name__,
                 'seed': np.random.randint(2**32-1)
             }
             parameters.append(param)
@@ -111,9 +111,9 @@ def get_data(**kwargs):
 def format_for_phase_diagram(d, m):
 
     idx_alpha_minus = [b[0] for b in
-                       RLAgentAsymmetric.bounds].index("alpha_minus")
+                       RLAsymmetric.bounds].index("alpha_minus")
     idx_alpha_plus = [b[0] for b in
-                      RLAgentAsymmetric.bounds].index("alpha_plus")
+                      RLAsymmetric.bounds].index("alpha_plus")
 
     observation = metric.get_multi_eco_statistic(in_hand=d.in_hand,
                                                  desired=d.desired,

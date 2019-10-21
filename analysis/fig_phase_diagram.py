@@ -26,7 +26,7 @@ import graph.learning_curves
 import graph.exploratory.cross_validation
 import graph.learning_curves
 
-from simulation.model.RL.asymmetric_rl_agent import RLAgentAsymmetric
+from simulation.model.RL.asymmetric_rl_agent import RLAsymmetric
 from simulation.model.RL.rl_no_alpha_no_beta \
     import RLNoAlphaNoBeta, RLNoAlphaNoBetaV2
 from simulation.model.RL.rl_hyperbolic_discounting \
@@ -103,7 +103,7 @@ def all_phase_diagram():
     agent_models = (
         RLAgent,
         RLNoAlphaNoBetaV2,
-        RLAgentAsymmetric,
+        RLAsymmetric,
         RLNoAlphaNoBeta,
         RLHyperbolicDiscounting,
         RLExponentialDiscounting,
@@ -127,7 +127,7 @@ def all_phase_diagram():
 
     # Multiple goods
     fig_name = f'phase_diagram_n_good.pdf'
-    fig_folder = "sup"
+    fig_folder = "fig/sup"
 
     print(f'Producing data for multiple goods...')
 

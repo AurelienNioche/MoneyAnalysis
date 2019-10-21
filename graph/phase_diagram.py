@@ -64,18 +64,20 @@ def phase_diagram(
 
     if n_good == 3:
         y_ticks = [0, 0.25, 0.5, 0.75, 1]
-        vmax = 0.75
+        #vmax = 0.66
     elif n_good == 4:
         y_ticks = [0, 0.33, 0.66, 1]
-        vmax = 0.7
+        #vmax = 0.7
     else:
         y_ticks = np.linspace(0, 1, n_good)
-        vmax = 0.75
+        #vmax = 0.75
 
     x, y = np.meshgrid(range(data.shape[0]), range(data.shape[1]))
     z = data
 
-    c = ax.contourf(x, y, z, n_levels, cmap='viridis', vmax=vmax)
+    print("n good", n_good, "max", np.max(data))
+
+    c = ax.contourf(x, y, z, n_levels, cmap='viridis') #, vmax=vmax)
 
     from mpl_toolkits.axes_grid1 import make_axes_locatable
     divider = make_axes_locatable(ax)

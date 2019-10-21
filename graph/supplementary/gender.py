@@ -29,7 +29,7 @@ def plot(data_gender, fig_name='gender.pdf', fig_folder="fig/sup",
                               chance_level=chance_level,
                               y_ticks=y_ticks,
                               ax=ax,
-                              y_label=y_label, color='C0',
+                              y_label=y_label, colors=('C0', 'C1'),
                               title=f'{n_good} goods')
 
         # Add letter
