@@ -15,6 +15,7 @@ def save_fig(fig_name, fig_folder=None):
         os.makedirs(fig_folder, exist_ok=True)
         fig_path = os.path.join(fig_folder, fig_name)
         plt.savefig(fig_path)
+        plt.close()
         print(f"Figure '{fig_path}' created.\n")
 
 

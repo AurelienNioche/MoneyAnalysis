@@ -115,7 +115,7 @@ def all_phase_diagram():
     for agent_model in agent_models:
 
         fig_name = f'phase_{agent_model.__name__}.pdf'
-        fig_folder = "main" if agent_model == RLAgent else "sup"
+        fig_folder = "fig/main" if agent_model == RLAgent else "fig/sup"
 
         print(f'Producing data for model "{agent_model.__name__}"...')
 

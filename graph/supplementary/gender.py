@@ -7,7 +7,7 @@ import graph.boxplot
 from graph.utils import save_fig
 
 
-def plot(data_gender, fig_name='gender.pdf', fig_folder="sup",
+def plot(data_gender, fig_name='gender.pdf', fig_folder="fig/sup",
          y_label='Freq. ind. ex. with good 1'):
 
     fig = plt.figure(figsize=(6, 4))

@@ -1,7 +1,7 @@
-import string
+# import string
 
 import numpy as np
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 
 # import analysis.first_revision_aurelien
 # import analysis.first_revision_basile
@@ -28,7 +28,8 @@ import scipy.stats
 import statsmodels.stats.multitest
 
 
-def fig_bic():
+def fig_bic(fig_folder='fig/sup'):
+
     agent_models = (
         RLNoAlphaNoBetaV2,
         RLAgent,
@@ -55,9 +56,11 @@ def fig_bic():
 
         boxplot(results=best_parameters,
                 y_label="best-fit value",
-                fig_name=f'best_parameters_{agent_model.__name__}.pdf',
                 y_lim=None,
-                aspect=None)
+                aspect=None,
+                fig_name=f'best_parameters_{agent_model.__name__}.pdf',
+                fig_folder=fig_folder
+                )
         if agent_model.__name__ == 'RLAgentAsymmetric':
             d1, d2 = best_parameters["alpha_minus"], \
                      best_parameters["alpha_plus"]
@@ -66,8 +69,12 @@ def fig_bic():
             print("")
             print("")
 
-    boxplot(results=results, y_label="BIC", fig_name='bic.pdf', y_lim=None,
-            aspect=None)
+    boxplot(results=results,
+            y_label="BIC",
+            y_lim=None,
+            aspect=None,
+            fig_name='bic.pdf',
+            fig_folder=fig_folder)
 
     ns = []
 

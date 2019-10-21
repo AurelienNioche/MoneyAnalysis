@@ -6,35 +6,61 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "MoneyAnalysis.settings")
 from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 
+import numpy as np
+import inspect
 
+import simulation.run_based_on_fit
+import simulation.run_xp_like
+from simulation.model.RL.rl_agent import RLAgent
+
+import analysis.metric.metric
+from analysis.fig_phase_diagram import all_phase_diagram
+from analysis.fig_sim_xp_post import fig_sim_xp_post
+import analysis.fit.data
+import analysis.exploratory
+import analysis.supplementary
+from analysis.stats import stats
+
+import graph.boxplot
+import graph.phase_diagram
+import graph.supplementary.age
+import graph.supplementary.gender
+import graph.supplementary.sensitivity_analysis
+import graph.parameter_recovery
+import graph.learning_curves
+import graph.exploratory.cross_validation
+
+from backup import backup
+
+import xp.xp
+
+
+def print_info(func, ):
+
+    def inner(*args, **kwargs):
+        print("-" * 20)
+        print(func.__name__.upper())
+        print("-" * 20)
+        func(*args, **kwargs)
+        print()
+
+    return inner
+
+
+@print_info
 def phase_diagram():
-
-    from analysis.fig_phase_diagram import all_phase_diagram
     all_phase_diagram()
 
 
+@print_info
 def fig_bic():
 
     from analysis.fig_bic import fig_bic
-    fig_bic()
+    fig_bic(fig_folder="fig/sup")
 
 
+@print_info
 def main_sim_and_xp():
-
-    from analysis.fig_sim_xp_post import fig_sim_xp_post
-    from analysis.fig_sim_xp_post import _fig
-    import analysis.fit.data
-
-    import simulation.run_based_on_fit
-    import simulation.run_xp_like
-    import numpy as np
-
-    from simulation.model.RL.rl_agent import RLAgent
-    import analysis.metric.metric
-
-    import scipy.stats
-
-    import xp.xp
 
     alpha, beta, gamma = .175, 1, .125
     model = RLAgent
@@ -72,33 +98,45 @@ def main_sim_and_xp():
         m=0,
     )
 
-    # --------------- #
 
-    t_max = 10000
+@print_info
+def sup_post_hoc():
 
-    model = RLAgent
-    heterogeneous = True
+    bkp_file = "data/sup_post_hoc.p"
+    os.makedirs(os.path.dirname(bkp_file), exist_ok=True)
 
-    data_human, room_n_good, room_uniform = xp.xp.get_data()
+    if os.path.exists(bkp_file):
+        (data, room_n_good, room_uniform) = backup.load(file_name=bkp_file)
 
-    data = {}
+    else:
 
-    best_parameters, mean_p, lls, bic, eco = \
-        analysis.fit.data.get(model=model)
+        t_max = 10000
 
-    data["Post-Hoc Sim. Extended"] = simulation.run_based_on_fit.get_data(
-        xp_data_list=data_human,
-        best_parameters=best_parameters,
-        eco=eco,
-        heterogeneous=heterogeneous,
-        t_max=t_max,
-    )
+        model = RLAgent
+        heterogeneous = True
 
-    data["Post-Hoc Sim. Non-Het."] = simulation.run_based_on_fit.get_data(
-        xp_data_list=data_human,
-        best_parameters=best_parameters,
-        eco=eco,
-        heterogeneous=False)
+        data_human, room_n_good, room_uniform = xp.xp.get_data()
+
+        data = {}
+
+        best_parameters, mean_p, lls, bic, eco = \
+            analysis.fit.data.get(model=model)
+
+        data["Post-Hoc Sim. Extended"] = simulation.run_based_on_fit.get_data(
+            xp_data_list=data_human,
+            best_parameters=best_parameters,
+            eco=eco,
+            heterogeneous=heterogeneous,
+            t_max=t_max,
+        )
+
+        data["Post-Hoc Sim. Non-Het."] = simulation.run_based_on_fit.get_data(
+            xp_data_list=data_human,
+            best_parameters=best_parameters,
+            eco=eco,
+            heterogeneous=False)
+
+        backup.save(obj=(data, room_n_good, room_uniform), file_name=bkp_file)
 
     category = ["Post-Hoc Sim. Non-Het.", "Post-Hoc Sim. Extended"]
     assert np.all([i in data.keys() for i in category])
@@ -115,8 +153,56 @@ def main_sim_and_xp():
     )
 
 
+@print_info
+def sup_sensitivity_analysis():
+
+    data = analysis.supplementary.sensitivity_analysis()
+    graph.supplementary.sensitivity_analysis.plot(data)
+    stats.sensitivity_analysis(data)
+
+
+@print_info
+def sup_gender():
+
+    print("-")
+
+    data = analysis.supplementary.gender()
+    graph.supplementary.gender.plot(data)
+    analysis.stats.stats.supplementary_gender(data)
+
+
+@print_info
+def sup_age():
+
+    print("-" * 10)
+    print("SUP AGE")
+    print("-" * 10)
+
+    data = analysis.supplementary.age()
+    graph.supplementary.age.plot(data)
+    analysis.stats.stats.supplementary_age(data)
+
+
+@print_info
+def sup_parameter_recovery():
+
+    print("-" * 10)
+    print("SUP PARAMETER RECOVERY")
+    print("-" * 10)
+
+    fig_data = analysis.supplementary.parameter_recovery(model=RLAgent)
+    graph.parameter_recovery.plot(fig_data)
+    analysis.stats.stats.parameter_recovery(fig_data)
+
+    print()
+
+
 if __name__ == '__main__':
 
-    # fig_bic()
+    phase_diagram()
     main_sim_and_xp()
-    # phase_diagram()
+    sup_post_hoc()
+    fig_bic()
+    sup_sensitivity_analysis()
+    sup_age()
+    sup_gender()

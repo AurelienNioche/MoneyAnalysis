@@ -32,7 +32,7 @@ def _subplot(ax, title, values, r_values, n_subplot=None):
     ax.set_aspect(1)
 
 
-def plot(data, fig_name="parameter_recovery.pdf", fig_folder="main"):
+def plot(data, fig_name="parameter_recovery.pdf", fig_folder="fig/main"):
 
     fig, axes = plt.subplots(ncols=len(data.keys()),
                              figsize=(15, 5))

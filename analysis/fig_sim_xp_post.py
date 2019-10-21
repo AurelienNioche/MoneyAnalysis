@@ -118,12 +118,16 @@ def _fig_ind(
                                color='0.3', zorder=-10,
                                linewidth=0.5)
 
+                    q1, med, q3 = np.nanpercentile(ys, [25, 50, 75], axis=0)
+
                     for y in ys:
-                        ax.plot(y, color=color, alpha=0.5)
+                        ax.plot(y, color=color, alpha=0.5, linewidth=0.5)
                         x_ticks = np.zeros(3, dtype=int)
                         x_ticks[:] = np.linspace(0, len(y), 3)
 
                         ax.set_xticks(x_ticks)
+
+                    ax.plot(med, color=color, alpha=1)
 
                     ax.set_xlabel(x_label)
                     ax.set_ylabel(y_label)

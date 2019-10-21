@@ -8,7 +8,7 @@ import matplotlib.gridspec as grd
 from graph.utils import save_fig
 
 
-def plot(data, fig_name='age.pdf', fig_folder="sup",
+def plot(data, fig_name='age.pdf', fig_folder="fig/sup",
          y_label='Freq. ind. ex. with good 1'):
 
     fig = plt.figure(figsize=(7, 4))
