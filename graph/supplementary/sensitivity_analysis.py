@@ -11,7 +11,7 @@ from graph.utils import save_fig
 def plot(data,
          y_label='Freq. ind. ex. with good 1',
          fig_name='sensitivity_analysis.pdf',
-         fig_folder="sup"):
+         fig_folder="fig/sup"):
 
     fig = plt.figure(figsize=(8, 8))
     gs = grd.GridSpec(nrows=3, ncols=2)
@@ -40,20 +40,22 @@ def plot(data,
 
             ax = fig.add_subplot(gs[j, i])
 
+            x_ticks = np.unique(data[n_good][param])
+            span = x_ticks[-1] - x_ticks[0]
+
             if j == 0:
                 ax.set_title(f'{n_good} goods\n')
 
-            ax.scatter(data[n_good][param],
+            ax.scatter(data[n_good][param]+np.random.uniform(
+                -0.05*span, 0.05*span, size=len(data[n_good][param])),
                        data[n_good]['ind0'],
-                       alpha=0.01,
+                       alpha=0.03,
                        s=0.5)
 
             ax.set_xlabel(param)
             ax.set_ylabel(y_label)
             ax.set_ylim(0, 1)
             ax.set_yticks(y_ticks)
-
-            x_ticks = np.unique(data[n_good][param])
 
             # For horizontal line
             ax.axhline(chance_level,
@@ -68,8 +70,6 @@ def plot(data,
                 relevant = data[n_good][param] == x
                 values = data[n_good]['ind0'][relevant * not_nan]
                 values_box_plot[idx] += list(values)
-
-            span = x_ticks[-1] - x_ticks[0]
 
             # For boxplot
             bp = ax.boxplot(values_box_plot, positions=x_ticks,

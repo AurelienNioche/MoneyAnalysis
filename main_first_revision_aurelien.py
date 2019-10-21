@@ -279,6 +279,7 @@ def sup_parameter_recovery():
 
 if __name__ == '__main__':
 
+    sup_parameter_recovery()
     sup_post_hoc()
     sup_asymmetric()
     phase_diagram()
