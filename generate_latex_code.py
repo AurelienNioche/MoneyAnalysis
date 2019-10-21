@@ -14,18 +14,19 @@ def main():
 
         code = r"\begin{figure}[htpb]" + "\n" +\
                 "\centering" + "\n" +\
-                "\includegraphics[width=\textwidth]{" + \
+                r"\includegraphics[width=\textwidth]{" + \
                 f"fig/{f}" + \
                 "}" + "\n" +\
                 "\caption{" + "\n" +\
-                f"{f_without_end}" + \
+                f"{f_without_end.replace('_', ' ')}" + "\n"+  \
                 r"\textbf{A.}" + "\n" +\
                 r"\textbf{B.}" + "\n" +\
-                r"} " \
-                r"\label{fig:" + "\n" +\
-                f"{f_without_end}" + "\n" +\
+                r"} " + "\n" \
+                r"\label{fig:" +\
+                f"{f_without_end}" +\
                 r"}" + "\n" +\
-                "\end{figure}"
+                "\end{figure}\n" +\
+                "\clearpage\n"
 
         print()
         print(code)
