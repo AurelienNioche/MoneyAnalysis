@@ -15,7 +15,10 @@ def boxplot(
         colors=None, color=None, tick_labels=None,
         y_label=None,
         y_lim=(-0.02, 1.02),
-        fontsize=10, aspect=3, title=None,
+        fontsize=10,
+        dot_size=10,
+        aspect=3,
+        title=None,
         n_subplot=None,
         fig_name=None,
         fig_folder=None
@@ -67,9 +70,10 @@ def boxplot(
             colors_scatter.append(colors[i])
 
     # For scatter
-    ax.scatter(x_scatter+np.random.random(size=len(x_scatter)) * 0.05 *
+    ax.scatter(x_scatter+np.random.uniform(min(positions), max(1, max(positions)),
+                                           size=len(x_scatter)) * 0.05 *
                np.random.choice([-1, 1], size=len(x_scatter)),
-               y_scatter, c=colors_scatter, s=30, alpha=0.5,
+               y_scatter, c=colors_scatter, s=dot_size, alpha=0.5,
                linewidth=0.0, zorder=1)
 
     if chance_level:

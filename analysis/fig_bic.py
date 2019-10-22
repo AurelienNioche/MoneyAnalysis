@@ -1,18 +1,11 @@
-# import string
-
 import numpy as np
-# import matplotlib.pyplot as plt
-
-# import analysis.first_revision_aurelien
-# import analysis.first_revision_basile
-import analysis.supplementary
-import analysis.metric.metric
-import analysis.stats.stats
-
+import matplotlib.pyplot as plt
+import string
+import scipy.stats
 
 from simulation.model.RL.asymmetric_rl_agent import RLAsymmetric
 from simulation.model.RL.rl_no_alpha_no_beta \
-    import RLNoAlphaNoBeta, RLNoAlphaNoBetaV2
+    import RLNoAlphaNoBeta
 from simulation.model.RL.rl_hyperbolic_discounting \
     import RLHyperbolicDiscounting
 from simulation.model.RL.rl_exponential_discounting \
@@ -20,31 +13,37 @@ from simulation.model.RL.rl_exponential_discounting \
 from simulation.model.RL.rl_softmax import RLSoftmax
 from simulation.model.RL.rl_agent import RLAgent
 
+import analysis.supplementary
+import analysis.metric.metric
+import analysis.stats.stats
 import analysis.fit.data
 
 from graph.boxplot import boxplot
-import scipy.stats
+from graph.utils import save_fig
 
 import statsmodels.stats.multitest
+
+import re
 
 
 def fig_bic(fig_folder='fig/sup'):
 
-    agent_models = (
-        RLNoAlphaNoBetaV2,
+    agent_models = [
         RLAgent,
-        RLAsymmetric,
         RLNoAlphaNoBeta,
+        RLSoftmax,
         RLHyperbolicDiscounting,
         RLExponentialDiscounting,
-        RLSoftmax,
-    )
+        RLAsymmetric,
+    ]
 
     results = {}
 
+    best_parameters = {}
+
     for agent_model in agent_models:
 
-        best_parameters, mean_p, lls, bic, eco = \
+        bp, mean_p, lls, bic, eco = \
             analysis.fit.data.get(model=agent_model, verbose=False)
 
         print("-" * 20)
@@ -54,20 +53,46 @@ def fig_bic(fig_folder='fig/sup'):
 
         results[agent_model.__name__] = bic
 
-        boxplot(results=best_parameters,
-                y_label="best-fit value",
-                y_lim=None,
-                aspect=None,
-                fig_name=f'best_parameters_{agent_model.__name__}.pdf',
-                fig_folder=fig_folder
-                )
-        if agent_model.__name__ == 'RLAgentAsymmetric':
-            d1, d2 = best_parameters["alpha_minus"], \
-                     best_parameters["alpha_plus"]
+        best_parameters[agent_model.__name__] = bp
+
+        if agent_model == RLAsymmetric:
+            d1, d2 = bp["alpha_minus"], \
+                     bp["alpha_plus"]
             u, p = scipy.stats.mannwhitneyu(d1, d2)
             print(f"Comparison alpha - and alpha +: u={u:.1f}, p={p:.3f}")
             print("")
             print("")
+
+    n_cols = 3.5
+    n_rows = 4
+
+    fig, axes = plt.subplots(nrows=len(best_parameters),
+                             figsize=(3 * n_cols, 3 * n_rows))
+
+    for i, m in enumerate(agent_models):
+
+        ax = axes[i]
+
+        title = re.sub(r'([A-Z])', r' \1', m.__name__)
+        title = title.replace("R L", "RL")
+
+        boxplot(results=best_parameters[m.__name__],
+                y_label="best-fit value",
+                y_lim=None,
+                aspect=None,
+                ax=ax,
+                dot_size=7.5
+                )
+
+        ax.set_title(title)
+
+        # Add letter
+        ax.text(-0.02, 1.1, string.ascii_uppercase[i],
+                transform=ax.transAxes,
+                size=20, weight='bold')
+
+    plt.tight_layout()
+    save_fig("best_fit_value.pdf", fig_folder=fig_folder)
 
     boxplot(results=results,
             y_label="BIC",

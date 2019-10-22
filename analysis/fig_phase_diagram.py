@@ -28,7 +28,7 @@ import graph.learning_curves
 
 from simulation.model.RL.asymmetric_rl_agent import RLAsymmetric
 from simulation.model.RL.rl_no_alpha_no_beta \
-    import RLNoAlphaNoBeta, RLNoAlphaNoBetaV2
+    import RLNoAlphaNoBeta
 from simulation.model.RL.rl_hyperbolic_discounting \
     import RLHyperbolicDiscounting
 from simulation.model.RL.rl_exponential_discounting \
@@ -102,7 +102,6 @@ def all_phase_diagram():
     """
     agent_models = (
         RLAgent,
-        RLNoAlphaNoBetaV2,
         RLAsymmetric,
         RLNoAlphaNoBeta,
         RLHyperbolicDiscounting,

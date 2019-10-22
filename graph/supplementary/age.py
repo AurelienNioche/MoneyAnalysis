@@ -9,21 +9,23 @@ from graph.utils import save_fig
 
 
 def plot(data, fig_name='age.pdf', fig_folder="fig/sup",
-         y_label='Freq. ind. ex. with good 1'):
+         y_label='Freq. ind. ex. with good 1',
+         dot_size=15):
 
-    fig = plt.figure(figsize=(7, 4))
-    gs = grd.GridSpec(nrows=1, ncols=2)
+    fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(7, 4))
 
     for i, n_good in enumerate(sorted(list(data.keys()))):
 
-        ax = fig.add_subplot(gs[0, i])
+        ax = axes[i]
         ax.set_title(f'{n_good} goods', fontsize=10)
 
         ax.scatter(
             data[n_good]['age'],
             data[n_good]['obs'],
-            s=15, alpha=1,
-            facecolor="C0", edgecolor='white',
+            # =15, alpha=1,
+            facecolor="C0",
+            s=dot_size, alpha=0.5,
+            #edgecolor='white',
         )
 
         ax.set_ylabel(y_label)
