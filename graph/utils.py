@@ -12,6 +12,8 @@ def save_fig(fig_name, fig_folder=None):
         if fig_folder is None:
             fig_folder = DEFAULT_FIG_FOLDER
 
+        plt.tight_layout()
+
         os.makedirs(fig_folder, exist_ok=True)
         fig_path = os.path.join(fig_folder, fig_name)
         plt.savefig(fig_path)

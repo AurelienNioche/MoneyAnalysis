@@ -214,7 +214,6 @@ def supplementary_age(data, print_latex=True):
 def supplementary_gender(data, print_latex=True):
 
     measure_label = 'Ind. good 1'
-    obs_type = 'ind0'
 
     print(SEP)
     print('SUPPLEMENTARY GENDER TEST')

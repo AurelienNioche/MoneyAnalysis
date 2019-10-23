@@ -244,8 +244,6 @@ def sup_sensitivity_analysis():
 @print_info
 def sup_gender():
 
-    print("-")
-
     data = analysis.supplementary.gender()
     graph.supplementary.gender.plot(data)
     analysis.stats.stats.supplementary_gender(data)
@@ -253,10 +251,6 @@ def sup_gender():
 
 @print_info
 def sup_age():
-
-    print("-" * 10)
-    print("SUP AGE")
-    print("-" * 10)
 
     data = analysis.supplementary.age()
     graph.supplementary.age.plot(data)
@@ -266,25 +260,19 @@ def sup_age():
 @print_info
 def sup_parameter_recovery():
 
-    print("-" * 10)
-    print("SUP PARAMETER RECOVERY")
-    print("-" * 10)
-
     fig_data = analysis.supplementary.parameter_recovery(model=RLAgent)
     graph.parameter_recovery.plot(fig_data)
     analysis.stats.stats.parameter_recovery(fig_data)
 
-    print()
-
 
 if __name__ == '__main__':
 
+    main_sim_and_xp()
+    fig_bic()
     sup_parameter_recovery()
     sup_post_hoc()
     sup_asymmetric()
     phase_diagram()
-    main_sim_and_xp()
-    fig_bic()
     sup_sensitivity_analysis()
     sup_age()
     sup_gender()

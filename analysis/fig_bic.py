@@ -26,6 +26,12 @@ import statsmodels.stats.multitest
 import re
 
 
+def _format_model_name(model):
+    title = re.sub(r'([A-Z])', r' \1', model.__name__)
+    title = title.replace("R L", "RL")
+    return title
+
+
 def fig_bic(fig_folder='fig/sup'):
 
     agent_models = [
@@ -47,7 +53,11 @@ def fig_bic(fig_folder='fig/sup'):
             analysis.fit.data.get(model=agent_model, verbose=False)
 
         print("-" * 20)
-        print(f"{agent_model.__name__}: {np.mean(bic)}(+/-{np.std(bic)}STD)")
+        print(f"{agent_model.__name__}: {np.mean(bic):.2f}(+/-{np.std(bic):.2f}STD)")
+        print(f"{_format_model_name(agent_model)} & "
+              f"${np.mean(bic):.2f} \pm {np.std(bic):.2f} STD$ & "
+              f"${len(agent_model.bounds)}$ & "
+              f"${len(list(bp.values())[0])}$" + r"\\")
         print("-" * 20)
         print()
 
@@ -73,8 +83,7 @@ def fig_bic(fig_folder='fig/sup'):
 
         ax = axes[i]
 
-        title = re.sub(r'([A-Z])', r' \1', m.__name__)
-        title = title.replace("R L", "RL")
+        title = _format_model_name(m)
 
         boxplot(results=best_parameters[m.__name__],
                 y_label="best-fit value",
@@ -94,12 +103,14 @@ def fig_bic(fig_folder='fig/sup'):
     plt.tight_layout()
     save_fig("best_fit_value.pdf", fig_folder=fig_folder)
 
+    fig, ax = plt.subplots(figsize=(12, 3))
     boxplot(results=results,
+            dot_size=17,
             y_label="BIC",
             y_lim=None,
             aspect=None,
-            fig_name='bic.pdf',
-            fig_folder=fig_folder)
+            ax=ax)
+    save_fig(fig_name='bic.pdf', fig_folder=fig_folder)
 
     ns = []
 
@@ -127,3 +138,9 @@ def fig_bic(fig_folder='fig/sup'):
     for i in range(len(ns)):
         print(f'{keys[i]}: p={ps[i]:.3f}, p_cor={p_corr[i]:.3f}, '
               f'valid={valid[i]}')
+
+    print("For latex:")
+    for i in range(len(ns)):
+        raw_p = f"{ps[i]:.3f}" if ps[i] >= 0.001 else '<0.001'
+        p = f"{p_corr[i]:.3f}" if p_corr[i] >= 0.001 else '<0.001'
+        print(f'{keys[i]} & ${raw_p}$ & ${p}{"^{*}" if valid[i] else ""}$')
