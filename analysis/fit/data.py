@@ -113,7 +113,10 @@ def get(model,
                     file_name=file_path, verbose=verbose)
 
     else:
-        best_parameters, mean_p, lls, bic, eco = \
-            backup.load(file_name=file_path, verbose=verbose)
+        try:
+            best_parameters, mean_p, lls, bic, eco = \
+                backup.load(file_name=file_path, verbose=verbose)
+        except EOFError:
+            raise EOFError(f"I encountered a problem with file '{file_path}'")
 
     return best_parameters, mean_p, lls, bic, eco

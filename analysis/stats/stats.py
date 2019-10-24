@@ -33,6 +33,22 @@ import statsmodels.stats.multitest
 SEP = '-' * 30
 
 
+def format_p_value(p, threshold=0.05):
+
+    f = '$'
+
+    if p >= 0.001:
+        f += f"{p:.3f}"
+    else:
+        f += '<0.001'
+
+    if p < threshold:
+        f += '^*$'
+    else:
+        f += '$'
+    return f
+
+
 def mann_whitney(to_compare, print_latex=False, **kwargs):
 
     ns = []
@@ -249,7 +265,9 @@ def parameter_recovery(data, print_latex=True):
         )
 
         if print_latex:
-            print(f'{param} & $r_pearson$ & ${cor:.2f}$ & ${p:.3f}$ & ${n}$')
+            print(f'$\{param}$ & ' +
+                  '$r_{pearson}$ & ' +
+                  f'${cor:.2f}$ & {format_p_value(p)} & ${n}$')
 
         else:
             print(f'Pearson corr: $r_pearson={cor:.2f}$, $p={p:.3f}$')

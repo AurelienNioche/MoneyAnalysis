@@ -57,7 +57,10 @@ def load(file_name, verbose=True):
     if verbose is True:
         print(f"Loading file '{file_name}'...", end=" ")
     with open(file_name, 'rb')as f:
-        data = pickle.load(file=f)
+        try:
+            data = pickle.load(file=f)
+        except EOFError:
+            raise EOFError(f"I encountered a problem with file '{file_name}'")
     if verbose is True:
         print("Done!\n")
     return data
