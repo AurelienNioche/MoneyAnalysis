@@ -49,7 +49,7 @@ def format_p_value(p, threshold=0.05):
     return f
 
 
-def mann_whitney(to_compare, print_latex=False, **kwargs):
+def mann_whitney(to_compare, print_latex=False, display_corr=False, **kwargs):
 
     ns = []
     ps = []
@@ -84,7 +84,7 @@ def mann_whitney(to_compare, print_latex=False, **kwargs):
             p = f"{p:.3f}" if p >= 0.001 else '<0.001'
 
             part0 = f"{xp_label} & {comparison} & {measure} & $U$ & ${u}$ & ${p}"
-            if corr:
+            if display_corr or corr:
                 part0 += f"$ & ${p_c}"
             part1 = f"{'^*' if v else ''}$ & ${n}$" + r"\\"
             print(part0 + part1)
@@ -103,12 +103,6 @@ def sim_and_xp(data, data_type=('Human', 'Simulation'),
                name_extension='', print_latex=True,
                comparison='Agent type dist.',
                measure='Ind. good 1'):
-
-    # keys: ngood, HUMAN/SIM, agent_type, UNIF/NON-UNIF (1, 0)
-    # Main tests
-    print(SEP)
-    print(f'MAIN SIM AND XP TESTS {name_extension}')
-    print(SEP)
 
     human, sim = data_type
     unif, non_unif = conditions
@@ -204,10 +198,6 @@ def supplementary_age(data, print_latex=True):
 
     measure_label = 'Ind. good 1'
 
-    print(SEP)
-    print(f'SUPPLEMENTARY AGE TEST')
-    print(SEP)
-
     for n_good in data.keys():
 
         n = len(data[n_good]['obs'])
@@ -218,24 +208,21 @@ def supplementary_age(data, print_latex=True):
         )
 
         if print_latex:
-            print(f'{n_good} goods & Age & {measure_label} & '
+            xp_label = "I" if n_good == 3 else "II"
+            print(f'{xp_label} & Age & {measure_label} & '
                   f'$r_pearson$ & {cor:.2f}$ & ${p:.3f} & ${n}$\\\\')
         else:
             print(f'[{n_good} goods] Pearson corr age - measure: '
                   f'$r_pearson={cor:.2f}$, $p={p:.3f}$')
-
-    print(SEP)
 
 
 def supplementary_gender(data, print_latex=True):
 
     measure_label = 'Ind. good 1'
 
-    print(SEP)
-    print('SUPPLEMENTARY GENDER TEST')
-    print(SEP)
-
     for n_good in data.keys():
+
+        xp_label = "I" if n_good == 3 else "II"
 
         mann_whitney(to_compare=[{
             'data': np.array([data[n_good]['Male'], data[n_good]['Female']]),
@@ -243,17 +230,12 @@ def supplementary_gender(data, print_latex=True):
             'comparison': 'Gender'
         }],
             print_latex=print_latex,
-            xp_label=f'{n_good} goods',
+            xp_label=xp_label,
             measure=measure_label,
             )
-    print()
 
 
 def parameter_recovery(data, print_latex=True):
-
-    print(SEP)
-    print(f'SUPPLEMENTARY PARAM RECOVERY TEST')
-    print(SEP)
 
     for param, (value, r_value) in sorted(data.items()):
 
@@ -282,10 +264,6 @@ def cross_validation(data):
 
 
 def sensitivity_analysis(data):
-
-    print(SEP)
-    print('Sensitivity analysis')
-    print(SEP)
 
     for n_good in data.keys():
 

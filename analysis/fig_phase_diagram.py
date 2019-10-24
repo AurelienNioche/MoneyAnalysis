@@ -57,6 +57,8 @@ def _data_for_phase_diagram(agent_model, n_good_condition, m=0):
 
         data, labels = backup.load(data_file)
         return data, labels
+
+    print(f'Producing data for model "{agent_model.__name__}"...')
     data = {}
 
     labels = None
@@ -115,8 +117,6 @@ def all_phase_diagram():
 
         fig_name = f'phase_{agent_model.__name__}.pdf'
         fig_folder = "fig/main" if agent_model == RLAgent else "fig/sup"
-
-        print(f'Producing data for model "{agent_model.__name__}"...')
 
         data, labels = _data_for_phase_diagram(
             agent_model=agent_model, n_good_condition=(3, 4))

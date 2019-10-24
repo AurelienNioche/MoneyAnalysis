@@ -233,7 +233,6 @@ def fig_sim_xp_post(room_n_good,
                     category,
                     data,
                     fig_ind=False,
-                    stats=False,
                     fig_folder="fig/main",
                     fig_extension="",
                     m=0,
@@ -385,8 +384,5 @@ def fig_sim_xp_post(room_n_good,
          fig_data=fig_data, learning_curve_data=learning_curve_data,
          fig_folder=fig_folder,
          fig_extension=fig_extension)
-
-    if stats:
-        analysis.stats.stats.sim_and_xp(fig_data)
 
     return fig_data

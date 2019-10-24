@@ -25,14 +25,20 @@ import statsmodels.stats.multitest
 
 import re
 
+from analysis.stats.stats import format_p_value
+
 
 def _format_model_name(model):
-    title = re.sub(r'([A-Z])', r' \1', model.__name__)
+    if isinstance(model, str):
+        model_name = model
+    else:
+        model_name = model.__name__
+    title = re.sub(r'([A-Z])', r' \1', model_name)
     title = title.replace("R L", "RL")
     return title
 
 
-def fig_bic(fig_folder='fig/sup'):
+def fig_bic(fig_folder='fig/sup', print_latex=True):
 
     agent_models = [
         RLAgent,
@@ -52,14 +58,14 @@ def fig_bic(fig_folder='fig/sup'):
         bp, mean_p, lls, bic, eco = \
             analysis.fit.data.get(model=agent_model, verbose=False)
 
-        print("-" * 20)
-        print(f"{agent_model.__name__}: {np.mean(bic):.2f}(+/-{np.std(bic):.2f}STD)")
+        # print("-" * 20)
+        # print(f"{agent_model.__name__}: {np.mean(bic):.2f}(+/-{np.std(bic):.2f}STD)")
         print(f"{_format_model_name(agent_model)} & "
               f"${np.mean(bic):.2f} \pm {np.std(bic):.2f} STD$ & "
               f"${len(agent_model.bounds)}$ & "
               f"${len(list(bp.values())[0])}$" + r"\\")
-        print("-" * 20)
-        print()
+        # print("-" * 20)
+        # print()
 
         results[agent_model.__name__] = bic
 
@@ -69,6 +75,11 @@ def fig_bic(fig_folder='fig/sup'):
             d1, d2 = bp["alpha_minus"], \
                      bp["alpha_plus"]
             u, p = scipy.stats.mannwhitneyu(d1, d2)
+            print()
+            print(f"beta {np.mean(bp['beta']):.3f}")
+            print(f"gamma {np.mean(bp['gamma']):.3f}")
+            print(f"alpha -  {np.mean(d1):.3f}")
+            print(f"alpha + {np.mean(d2):.3f}")
             print(f"Comparison alpha - and alpha +: u={u:.1f}, p={p:.3f}")
             print("")
             print("")
@@ -119,28 +130,42 @@ def fig_bic(fig_folder='fig/sup'):
 
     keys = []
 
-    for key in sorted(results.keys()):
-        for second_key in sorted(results.keys()):
-            if key != second_key:
-                d1 = results[key]
-                d2 = results[second_key]
-                u, p = scipy.stats.mannwhitneyu(d1, d2)
-                n = len(d1) + len(d2)
-                ps.append(p)
-                us.append(u)
-                ns.append(n)
-                keys.append((key, second_key))
+    from itertools import combinations
+
+    for (key, second_key) in combinations(results.keys(), 2):
+        d1 = results[key]
+        d2 = results[second_key]
+        u, p = scipy.stats.mannwhitneyu(d1, d2)
+        n = len(d1) + len(d2)
+        ps.append(p)
+        us.append(u)
+        ns.append(n)
+        keys.append((key, second_key))
 
     valid, p_corr, alpha_c_sidak, alpha_c_bonf = \
         statsmodels.stats.multitest.multipletests(pvals=ps, alpha=0.05,
                                                   method="b")
 
-    for i in range(len(ns)):
-        print(f'{keys[i]}: p={ps[i]:.3f}, p_cor={p_corr[i]:.3f}, '
-              f'valid={valid[i]}')
+    if print_latex:
 
-    print("For latex:")
-    for i in range(len(ns)):
-        raw_p = f"{ps[i]:.3f}" if ps[i] >= 0.001 else '<0.001'
-        p = f"{p_corr[i]:.3f}" if p_corr[i] >= 0.001 else '<0.001'
-        print(f'{keys[i]} & ${raw_p}$ & ${p}{"^{*}" if valid[i] else ""}$')
+        print("For latex:")
+        for i in range(len(ns)):
+
+            label = str(keys[i])
+
+            label = label.replace("'", "").replace(", ", " - ")\
+                .replace("(", "").replace(")", "")
+            label = _format_model_name(label)
+
+            raw_p = f"{ps[i]:.3f}" if ps[i] >= 0.001 else '<0.001'
+            p = f"{p_corr[i]:.3f}" if p_corr[i] >= 0.001 else '<0.001'
+            print(f'{label} & $U$ & '
+                  f'${us[i]}$ & '
+                  f'${raw_p}$ & ${p}{"^{*}" if valid[i] else ""}$ & ' 
+                  f'${ns[i]}$'
+                  + r"\\")
+
+    else:
+        for i in range(len(ns)):
+            print(f'{keys[i]}: p={ps[i]:.3f}, p_cor={p_corr[i]:.3f}, '
+                  f'valid={valid[i]}')
