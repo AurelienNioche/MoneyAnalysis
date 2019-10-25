@@ -81,6 +81,13 @@ def main_sim_and_xp():
     best_parameters, mean_p, lls, bic, eco = \
         analysis.fit.data.get(model=model)
 
+    print("Average best parameters")
+
+    for k in sorted(best_parameters.keys()):
+        x = best_parameters[k]
+        print(f"{k}: ${np.mean(x):.3f} \pm {np.std(x):.3f}")
+    print()
+
     data["Post-Hoc Sim."] = simulation.run_based_on_fit.get_data(
         xp_data_list=data["Human"],
         best_parameters=best_parameters,

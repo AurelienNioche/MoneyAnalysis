@@ -21,7 +21,10 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "MoneyAnalysis.settings")
 from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 
+from backup import backup
+
 import simulation.run
+
 import analysis.supplementary
 
 
@@ -40,7 +43,17 @@ def n_eco():
     print()
 
 
+def n_eco_asym():
+
+    print('[3 goods - Asym]', end=' ')
+    print(len(backup.load("data/phase_3_goods_asymmetric/seed.p")))
+    print()
+    print('[4 goods - Asym]', end=' ')
+    print(len(backup.load("data/phase_3_goods_asymmetric/seed.p")))
+
+
 if __name__ == '__main__':
 
     n_eco()
+    n_eco_asym()
     main_reward()
