@@ -151,7 +151,7 @@ def main_sim_and_xp():
 
 
 @print_info
-def sup_post_hoc(force=False):
+def sup_post_hoc(force=False, seed=0):
 
     bkp_file = "data/sup_post_hoc.p"
     os.makedirs(os.path.dirname(bkp_file), exist_ok=True)
@@ -175,18 +175,20 @@ def sup_post_hoc(force=False):
             best_parameters=best_parameters,
             eco=eco,
             heterogeneous=True,
-            t_max=1000,
+            t_max=500,
+            seed=seed
         )
 
-        data["Post-Hoc Sim. Non-Het."] = simulation.run_based_on_fit.get_data(
+        data["Post-Hoc Sim. Hom."] = simulation.run_based_on_fit.get_data(
             xp_data_list=data_human,
             best_parameters=best_parameters,
             eco=eco,
-            heterogeneous=False)
+            heterogeneous=False,
+            seed=seed)
 
         backup.save(obj=(data, room_n_good, room_uniform), file_name=bkp_file)
 
-    category = ["Post-Hoc Sim. Non-Het.", "Post-Hoc Sim. Extended"]
+    category = ["Post-Hoc Sim. Hom.", "Post-Hoc Sim. Extended"]
     assert np.all([i in data.keys() for i in category])
 
     fig_data = fig_sim_xp_post(
@@ -381,7 +383,7 @@ if __name__ == '__main__':
     fig_bic()
     sup_parameter_recovery()
     sup_post_hoc()
-    sup_asymmetric(force=True)
+    sup_asymmetric()
     phase_diagram()
     sup_sensitivity_analysis()
     sup_age()
